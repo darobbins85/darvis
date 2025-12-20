@@ -58,9 +58,9 @@ def get_latest_session_id():
     try:
         result = subprocess.run(["opencode", "session", "list"], capture_output=True, text=True, timeout=10)
         lines = result.stdout.strip().split('\n')
-        if len(lines) > 1:  # Skip header
-            # Latest session is the first data line
-            data_line = lines[1].strip()
+        if len(lines) > 2:  # Skip header and separator
+            # Latest session is the first data line (lines[2])
+            data_line = lines[2].strip()
             if data_line:
                 # Session ID is the first field
                 session_id = data_line.split()[0]
