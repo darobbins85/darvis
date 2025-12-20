@@ -116,19 +116,15 @@ def listen_loop():
                             {"type": "insert", "text": "Query: " + query + chr(10)}
                         )
                         try:
+                            result = subprocess.run(["opencode", "run", query], capture_output=True, text=True, timeout=30)
+                            response = (result.stdout or "").strip() or "No response"
                             msg_queue.put(
                                 {
                                     "type": "insert",
                                     "text": "AI Response: " + response + chr(10),
                                 }
                             )
-                            response = result.stdout.strip() or "No response"
-                            msg_queue.put(
-                                {
-                                    "type": "insert",
-                                    "text": "AI Response: " + response + chr(10),
-                                }
-                            )
+                            speak("Response received")
                             speak("Response received")
                         except subprocess.TimeoutExpired:
                             msg_queue.put(
