@@ -12,6 +12,7 @@ import sys
 
 os.environ["ALSA_LOG_LEVEL"] = "0"
 
+conversation_history = []
 
 def speak(text):
     try:
@@ -116,15 +117,17 @@ def listen_loop():
                             {"type": "insert", "text": "Query: " + query + chr(10)}
                         )
                         try:
-                            result = subprocess.run(["opencode", "run", query], capture_output=True, text=True, timeout=30)
+                            conversation_history.append("User: " + query)
+                            full_prompt = "\n".join(conversation_history)
+                            result = subprocess.run(["opencode", "run", full_prompt], capture_output=True, text=True, timeout=60)
                             response = (result.stdout or "").strip() or "No response"
+                            conversation_history.append("Assistant: " + response)
                             msg_queue.put(
                                 {
                                     "type": "insert",
                                     "text": "AI Response: " + response + chr(10),
                                 }
                             )
-                            speak("Response received")
                             speak("Response received")
                         except subprocess.TimeoutExpired:
                             msg_queue.put(
