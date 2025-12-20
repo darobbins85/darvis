@@ -61,7 +61,11 @@ def open_app(app_name):
 def toggle_ai():
     global ai_mode
     ai_mode.set(not ai_mode.get())
-    ai_button.config(text="AI Mode: ON" if ai_mode.get() else "AI Mode: OFF")
+    ai_button.config(text="AI Mode: ON" if ai_mode.get() else "AI Mode: OFF",
+                     bg="green" if ai_mode.get() else "red",
+                     fg="white",
+                     width=15,
+                     relief="raised")
 
 
 def update_gui():
