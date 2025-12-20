@@ -58,14 +58,13 @@ def get_latest_session_id():
     try:
         result = subprocess.run(["opencode", "session", "list"], capture_output=True, text=True, timeout=10)
         lines = result.stdout.strip().split('\n')
-        # Assume the latest session ID is on the first line or after a marker
-        for line in lines:
-            if line.strip():
-                # Parse, e.g., "Session ID: abc123" -> "abc123"
-                if "Session ID:" in line:
-                    return line.split("Session ID:")[-1].strip()
-                # Or assume first non-empty line is the ID
-                return line.strip()
+        if len(lines) > 1:  # Skip header
+            # Latest session is the first data line
+            data_line = lines[1].strip()
+            if data_line:
+                # Session ID is the first field
+                session_id = data_line.split()[0]
+                return session_id
         return None
     except (subprocess.TimeoutExpired, FileNotFoundError):
         return None
