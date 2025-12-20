@@ -4,6 +4,8 @@ import os
 import pyttsx3
 import pyaudio
 import tkinter as tk
+import threading
+import queue
 
 os.environ['ALSA_LOG_LEVEL'] = '0'
 
@@ -50,60 +52,50 @@ def open_app(app_name):
     except FileNotFoundError:
         return f"Sorry, I don't know how to open {app_name}"
 
-def main():
-    root = tk.Tk()
-    root.title("Darvis Voice Assistant")
-    header = tk.Label(root, text="🤖 Darvis", font=("Arial", 20))
-    header.pack(pady=10)
-    ai_mode = tk.BooleanVar()
-    ai_checkbox = tk.Checkbutton(root, text="AI Mode", variable=ai_mode, font=("Arial", 12))
-    ai_checkbox.pack(pady=5)
-    status_label = tk.Label(root, text="Status: Listening", fg="red", font=("Arial", 14))
-    status_label.pack(pady=5)
-    text = tk.Text(root, height=10, width=50, font=("Arial", 12))
-    text.pack(pady=10)
-    text.insert(tk.END, "Starting Darvis...\n")
-    root.update()
+def toggle_ai():
+    global ai_mode
+    ai_mode.set(not ai_mode.get())
+    ai_button.config(text="AI Mode: ON" if ai_mode.get() else "AI Mode: OFF")
 
-    list_microphones()  # This will print to console, but GUI hides it
+def update_gui():
+    global msg_queue, root, text, status_label
+    try:
+        msg = msg_queue.get_nowait()
+        if msg['type'] == 'insert':
+            text.insert(tk.END, msg['text'])
+            text.see(tk.END)
+        elif msg['type'] == 'status':
+            status_label.config(text=msg['text'], fg=msg['color'])
+    except queue.Empty:
+        pass
+    root.after(100, update_gui)
 
-    wake_words = ["hey darvis", "hey jarvis", "play darvis", "play jarvis", "hi darvis", "hi jarvis"]
+def listen_loop():
+    global wake_words, ai_mode, msg_queue
     while True:
         text_widget = listen()
         if text_widget:
             activated = any(wake in text_widget.lower() for wake in wake_words)
             if activated:
-                status_label.config(text="Status: Activated", fg="green")
-                text.insert(tk.END, "Activated!\n")
-                text.see(tk.END)
-                root.update()
+                msg_queue.put({'type': 'status', 'text': 'Status: Activated', 'color': 'green'})
+                msg_queue.put({'type': 'insert', 'text': 'Activated!\n'})
                 speak("Activated!")
                 if ai_mode.get():
                     # AI Mode: listen for query and run opencode
                     query = listen()
                     if query:
-                        text.insert(tk.END, f"Query: {query}\n")
-                        text.see(tk.END)
-                        root.update()
+                        msg_queue.put({'type': 'insert', 'text': f"Query: {query}\n'})
                         try:
                             result = subprocess.run(["opencode", "run", query], capture_output=True, text=True, timeout=30)
                             response = result.stdout.strip() or "No response"
-                            text.insert(tk.END, f"AI Response: {response}\n")
-                            text.see(tk.END)
-                            root.update()
+                            msg_queue.put({'type': 'insert', 'text': f"AI Response: {response}\n'})
                             speak("Response received")
                         except subprocess.TimeoutExpired:
-                            text.insert(tk.END, "AI query timed out\n")
-                            text.see(tk.END)
-                            root.update()
+                            msg_queue.put({'type': 'insert', 'text': "AI query timed out\n"})
                         except FileNotFoundError:
-                            text.insert(tk.END, "opencode command not found\n")
-                            text.see(tk.END)
-                            root.update()
+                            msg_queue.put({'type': 'insert', 'text': "opencode command not found\n"})
                     else:
-                        text.insert(tk.END, "No query heard\n")
-                        text.see(tk.END)
-                        root.update()
+                        msg_queue.put({'type': 'insert', 'text': "No query heard\n"})
                 else:
                     # Normal Mode
                     command = listen()
@@ -111,25 +103,39 @@ def main():
                         if "open" in command:
                             app = command.split("open")[-1].strip()
                             response = open_app(app)
-                            text.insert(tk.END, f"{response}\n")
-                            text.see(tk.END)
-                            root.update()
+                            msg_queue.put({'type': 'insert', 'text': f"{response}\n"})
                             speak(response)
                         else:
-                            text.insert(tk.END, f"Heard: {command}\n")
-                            text.see(tk.END)
-                            root.update()
+                            msg_queue.put({'type': 'insert', 'text': f"Heard: {command}\n"})
                     else:
-                        text.insert(tk.END, "No command heard\n")
-                        text.see(tk.END)
-                        root.update()
-                status_label.config(text="Status: Listening", fg="red")
+                        msg_queue.put({'type': 'insert', 'text': "No command heard\n"})
+                msg_queue.put({'type': 'status', 'text': 'Status: Listening', 'color': 'red'})
             else:
-                text.insert(tk.END, f"Darvis heard: {text_widget}\n")
-                text.see(tk.END)
-                root.update()
-        # Silent if no speech
-        root.update_idletasks()
+                msg_queue.put({'type': 'insert', 'text': f"Darvis heard: {text_widget}\n"})
+
+def main():
+    global msg_queue, wake_words, ai_mode, ai_button, text, status_label, root
+    msg_queue = queue.Queue()
+    wake_words = ["hey darvis", "hey jarvis", "play darvis", "play jarvis", "hi darvis", "hi jarvis"]
+
+    root = tk.Tk()
+    root.title("Darvis Voice Assistant")
+    header = tk.Label(root, text="🤖 Darvis", font=("Arial", 20))
+    header.pack(pady=10)
+    ai_mode = tk.BooleanVar()
+    ai_button = tk.Button(root, text="AI Mode: OFF", command=toggle_ai, font=("Arial", 12))
+    ai_button.pack(pady=5)
+    status_label = tk.Label(root, text="Status: Listening", fg="red", font=("Arial", 14))
+    status_label.pack(pady=5)
+    text = tk.Text(root, height=10, width=50, font=("Arial", 12))
+    text.pack(pady=10)
+    text.insert(tk.END, "Starting Darvis...\n")
+
+    list_microphones()
+
+    threading.Thread(target=listen_loop, daemon=True).start()
+    update_gui()
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
