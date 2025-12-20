@@ -51,8 +51,17 @@ def listen(device_index=None):
 
 
 def open_app(app_name):
+    # Map common app names to commands
+    app_map = {
+        "chrome": "chromium",
+        "browser": "firefox",
+        "terminal": "xterm",
+        "editor": "gedit",
+        "calculator": "galculator"
+    }
+    app_command = app_map.get(app_name.lower(), app_name)
     try:
-        subprocess.Popen([app_name])
+        subprocess.Popen([app_command])
         return "Opening " + app_name
     except FileNotFoundError:
         return "Sorry, I don't know how to open " + app_name
