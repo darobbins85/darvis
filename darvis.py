@@ -7,6 +7,8 @@ import tkinter as tk
 import pyaudio
 import pyttsx3
 import speech_recognition as sr
+import os
+import sys
 
 os.environ["ALSA_LOG_LEVEL"] = "0"
 
@@ -75,6 +77,9 @@ def toggle_ai():
                      fg="white",
                      width=15,
                      relief="raised")
+
+def restart_app():
+    os.execv(sys.executable, [sys.executable] + sys.argv)
 
 
 def update_gui():
@@ -180,9 +185,15 @@ def main():
     header.pack(pady=10)
     ai_mode = tk.BooleanVar()
     ai_button = tk.Button(
-        root, text="AI Mode: OFF", command=toggle_ai, font=("Arial", 12)
+        root, text="AI Mode: OFF", command=toggle_ai, font=("Arial", 12),
+        bg="red", fg="white", width=15, relief="raised"
     )
     ai_button.pack(pady=5)
+    restart_button = tk.Button(
+        root, text="Restart", command=restart_app, font=("Arial", 12),
+        bg="blue", fg="white", width=15, relief="raised"
+    )
+    restart_button.pack(pady=5)
     status_label = tk.Label(
         root, text="Status: Listening", fg="red", font=("Arial", 14)
     )
