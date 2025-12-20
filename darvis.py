@@ -55,6 +55,9 @@ def main():
     root.title("Darvis Voice Assistant")
     header = tk.Label(root, text="🤖 Darvis", font=("Arial", 20))
     header.pack(pady=10)
+    ai_mode = tk.BooleanVar()
+    ai_checkbox = tk.Checkbutton(root, text="AI Mode", variable=ai_mode, font=("Arial", 12))
+    ai_checkbox.pack(pady=5)
     status_label = tk.Label(root, text="Status: Listening", fg="red", font=("Arial", 14))
     status_label.pack(pady=5)
     text = tk.Text(root, height=10, width=50, font=("Arial", 12))
@@ -75,23 +78,51 @@ def main():
                 text.see(tk.END)
                 root.update()
                 speak("Activated!")
-                command = listen()
-                if command:
-                    if "open" in command:
-                        app = command.split("open")[-1].strip()
-                        response = open_app(app)
-                        text.insert(tk.END, f"{response}\n")
+                if ai_mode.get():
+                    # AI Mode: listen for query and run opencode
+                    query = listen()
+                    if query:
+                        text.insert(tk.END, f"Query: {query}\n")
                         text.see(tk.END)
                         root.update()
-                        speak(response)
+                        try:
+                            result = subprocess.run(["opencode", "run", query], capture_output=True, text=True, timeout=30)
+                            response = result.stdout.strip() or "No response"
+                            text.insert(tk.END, f"AI Response: {response}\n")
+                            text.see(tk.END)
+                            root.update()
+                            speak("Response received")
+                        except subprocess.TimeoutExpired:
+                            text.insert(tk.END, "AI query timed out\n")
+                            text.see(tk.END)
+                            root.update()
+                        except FileNotFoundError:
+                            text.insert(tk.END, "opencode command not found\n")
+                            text.see(tk.END)
+                            root.update()
                     else:
-                        text.insert(tk.END, f"Heard: {command}\n")
+                        text.insert(tk.END, "No query heard\n")
                         text.see(tk.END)
                         root.update()
                 else:
-                    text.insert(tk.END, "No command heard\n")
-                    text.see(tk.END)
-                    root.update()
+                    # Normal Mode
+                    command = listen()
+                    if command:
+                        if "open" in command:
+                            app = command.split("open")[-1].strip()
+                            response = open_app(app)
+                            text.insert(tk.END, f"{response}\n")
+                            text.see(tk.END)
+                            root.update()
+                            speak(response)
+                        else:
+                            text.insert(tk.END, f"Heard: {command}\n")
+                            text.see(tk.END)
+                            root.update()
+                    else:
+                        text.insert(tk.END, "No command heard\n")
+                        text.see(tk.END)
+                        root.update()
                 status_label.config(text="Status: Listening", fg="red")
             else:
                 text.insert(tk.END, f"Darvis heard: {text_widget}\n")
