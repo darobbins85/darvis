@@ -48,9 +48,9 @@ def listen(device_index=None):
 def open_app(app_name):
     try:
         subprocess.Popen([app_name])
-        return f"Opening {app_name}"
+        return "Opening " + app_name
     except FileNotFoundError:
-        return f"Sorry, I don't know how to open {app_name}"
+        return "Sorry, I don't know how to open " + app_name
 
 def toggle_ai():
     global ai_mode
@@ -84,11 +84,15 @@ def listen_loop():
                     # AI Mode: listen for query and run opencode
                     query = listen()
                     if query:
-                        msg_queue.put({'type': 'insert', 'text': f"Query: {query}\n'})
+                        msg_queue.put({'type': 'insert', 'text': 'Query: ' + query + chr(10)})
+"})
+"})
                         try:
-                            result = subprocess.run(["opencode", "run", query], capture_output=True, text=True, timeout=30)
+                            msg_queue.put({'type': 'insert', 'text': 'AI Response: ' + response + chr(10)})
+'})
                             response = result.stdout.strip() or "No response"
-                            msg_queue.put({'type': 'insert', 'text': f"AI Response: {response}\n'})
+                            msg_queue.put({'type': 'insert', 'text': "AI Response: " + response + "
+"})
                             speak("Response received")
                         except subprocess.TimeoutExpired:
                             msg_queue.put({'type': 'insert', 'text': "AI query timed out\n"})
@@ -103,15 +107,15 @@ def listen_loop():
                         if "open" in command:
                             app = command.split("open")[-1].strip()
                             response = open_app(app)
-                            msg_queue.put({'type': 'insert', 'text': f"{response}\n"})
+                            msg_queue.put({'type': 'insert', 'text': response + "\n"})
                             speak(response)
                         else:
-                            msg_queue.put({'type': 'insert', 'text': f"Heard: {command}\n"})
+                            msg_queue.put({'type': 'insert', 'text': "Heard: " + command + "\n"})
                     else:
                         msg_queue.put({'type': 'insert', 'text': "No command heard\n"})
                 msg_queue.put({'type': 'status', 'text': 'Status: Listening', 'color': 'red'})
             else:
-                msg_queue.put({'type': 'insert', 'text': f"Darvis heard: {text_widget}\n"})
+                msg_queue.put({'type': 'insert', 'text': "Darvis heard: " + text_widget + "\n"})
 
 def main():
     global msg_queue, wake_words, ai_mode, ai_button, text, status_label, root
