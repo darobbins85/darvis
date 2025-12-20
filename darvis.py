@@ -13,6 +13,7 @@ import sys
 os.environ["ALSA_LOG_LEVEL"] = "0"
 
 conversation_history = []
+current_session_id = None
 
 def speak(text):
     try:
@@ -52,6 +53,22 @@ def listen(device_index=None):
     except sr.WaitTimeoutError:
         return ""
 
+
+def get_latest_session_id():
+    try:
+        result = subprocess.run(["opencode", "session", "list"], capture_output=True, text=True, timeout=10)
+        lines = result.stdout.strip().split('\n')
+        # Assume the latest session ID is on the first line or after a marker
+        for line in lines:
+            if line.strip():
+                # Parse, e.g., "Session ID: abc123" -> "abc123"
+                if "Session ID:" in line:
+                    return line.split("Session ID:")[-1].strip()
+                # Or assume first non-empty line is the ID
+                return line.strip()
+        return None
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return None
 
 def open_app(app_name):
     # Map common app names to commands
@@ -117,11 +134,21 @@ def listen_loop():
                             {"type": "insert", "text": "Query: " + query + chr(10)}
                         )
                         try:
-                            conversation_history.append("User: " + query)
-                            full_prompt = "\n".join(conversation_history)
-                            result = subprocess.run(["opencode", "run", full_prompt], capture_output=True, text=True, timeout=60)
-                            response = (result.stdout or "").strip() or "No response"
-                            conversation_history.append("Assistant: " + response)
+                            global current_session_id
+                            if current_session_id is None:
+                                # First query: start new session
+                                result = subprocess.run(["opencode", "run", query], capture_output=True, text=True, timeout=60)
+                                response = (result.stdout or "").strip() or "No response"
+                                # Get the session ID
+                                current_session_id = get_latest_session_id()
+                                if current_session_id:
+                                    msg_queue.put({'type': 'insert', 'text': "New AI session started (ID: " + current_session_id + ")" + chr(10)})
+                                else:
+                                    msg_queue.put({'type': 'insert', 'text': "Warning: Could not retrieve session ID" + chr(10)})
+                            else:
+                                # Subsequent queries: use existing session
+                                result = subprocess.run(["opencode", "run", "--session", current_session_id, query], capture_output=True, text=True, timeout=60)
+                                response = (result.stdout or "").strip() or "No response"
                             msg_queue.put(
                                 {
                                     "type": "insert",
