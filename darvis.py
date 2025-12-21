@@ -35,23 +35,30 @@ def list_microphones():
 
 
 def listen(device_index=None):
-    r = sr.Recognizer()
-    r.energy_threshold = 400
-    try:
-        with sr.Microphone(device_index=device_index) as source:
-            audio = r.listen(source, timeout=5, phrase_time_limit=5)
+    global manual_input_mode
+    if manual_input_mode.get():
         try:
-            return r.recognize_google(audio).lower()
-        except sr.UnknownValueError:
+            return input("Manual input: ").lower()
+        except EOFError:
             return ""
-        except sr.RequestError as e:
-            print(f"API error: {e}")
+    else:
+        r = sr.Recognizer()
+        r.energy_threshold = 400
+        try:
+            with sr.Microphone(device_index=device_index) as source:
+                audio = r.listen(source, timeout=5, phrase_time_limit=5)
+            try:
+                return r.recognize_google(audio).lower()
+            except sr.UnknownValueError:
+                return ""
+            except sr.RequestError as e:
+                print(f"API error: {e}")
+                return ""
+        except OSError as e:
+            print(f"Microphone error: {e}")
             return ""
-    except OSError as e:
-        print(f"Microphone error: {e}")
-        return ""
-    except sr.WaitTimeoutError:
-        return ""
+        except sr.WaitTimeoutError:
+            return ""
 
 
 def get_latest_session_id():
