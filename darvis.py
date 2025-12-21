@@ -200,7 +200,7 @@ def listen_loop():
 
 
 def main():
-    global msg_queue, wake_words, ai_mode, ai_button, text, status_label, root
+    global msg_queue, wake_words, ai_mode, ai_button, manual_input_mode, text, status_label, root
     msg_queue = queue.Queue()
     wake_words = [
         "hey darvis",
@@ -211,21 +211,27 @@ def main():
         "hi jarvis",
     ]
 
+    # Initialize variables before threading
+    manual_input_mode = tk.BooleanVar()
+    ai_mode = tk.BooleanVar()
+
     root = tk.Tk()
     root.title("Darvis Voice Assistant")
     header = tk.Label(root, text="🤖 Darvis", font=("Arial", 20))
     header.pack(pady=10)
-    ai_mode = tk.BooleanVar()
+
     ai_button = tk.Button(
         root, text="AI Mode: OFF", command=toggle_ai, font=("Arial", 12),
         bg="red", fg="white", width=15, relief="raised"
     )
     ai_button.pack(pady=5)
-    restart_button = tk.Button(
-        root, text="Restart", command=restart_app, font=("Arial", 12),
-        bg="blue", fg="white", width=15, relief="raised"
+    manual_checkbox = tk.Checkbutton(root, text="Manual Input Mode", variable=manual_input_mode, font=("Arial", 12))
+    manual_checkbox.pack(pady=5)
+    activate_button = tk.Button(
+        root, text="Activate", command=manual_activate, font=("Arial", 12),
+        bg="orange", fg="white", width=15, relief="raised"
     )
-    restart_button.pack(pady=5)
+    activate_button.pack(pady=5)
     status_label = tk.Label(
         root, text="Status: Listening", fg="red", font=("Arial", 14)
     )
