@@ -20,6 +20,6 @@ fi
 export PYTHONPATH="$PROJECT_DIR:$PYTHONPATH"
 
 # Launch the application (using the main script for now)
-python darvis.py
+python darvis/darvis.py
 
 # Future: python -m darvis.ui (once modules are fully integrated)
