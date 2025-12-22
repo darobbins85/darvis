@@ -18,7 +18,7 @@ from .config import (
     WAKE_WORDS, FONT_SIZE_NORMAL, FONT_SIZE_LARGE,
     GLOW_DURATION_MS, MSG_TYPES
 )
-from .speech import speak
+from .speech import speak, listen
 from .apps import open_app
 from .ai import process_ai_query, is_ai_command
 
@@ -39,9 +39,24 @@ class DarvisGUI:
         self.logo_label = None
         self.tray_icon = None
 
+        # Voice and AI variables
+        self.wake_words = [
+            "hey darvis",
+            "hey jarvis",
+            "play darvis",
+            "play jarvis",
+            "hi darvis",
+            "hi jarvis",
+        ]
+        self.ai_mode = tk.BooleanVar()
+        self.conversation_history = []
+        self.current_session_id = None
+
         self.setup_ui()
         self.bind_events()
         self.setup_system_tray()
+        self.start_voice_processing()
+        self.start_message_processing()
 
     def setup_ui(self):
         """Set up the main UI components."""
@@ -110,6 +125,109 @@ class DarvisGUI:
 
         # Initialize info text
         self.text_info.insert(tk.END, "Darvis is Listening...\n")
+
+    def start_voice_processing(self):
+        """Start the voice recognition processing thread."""
+        import threading
+        voice_thread = threading.Thread(target=self.listen_loop, daemon=True)
+        voice_thread.start()
+
+    def listen_loop(self):
+        """Main voice processing loop - continuously listen for speech."""
+        listening_for_command = False
+        while True:
+            try:
+                text = listen()
+                if text:
+                    activated = any(wake in text.lower() for wake in self.wake_words)
+                    if activated:
+                        # Trigger wake word glow
+                        self.msg_queue.put({"type": "wake_word_detected"})
+                        listening_for_command = True
+                        # Trigger manual activation when wake word is detected
+                        self.manual_activate()
+                        # Stop glowing after activation completes
+                        self.msg_queue.put({"type": "wake_word_end"})
+                        listening_for_command = False
+                    else:
+                        self.msg_queue.put(
+                            {"type": "insert", "text": "Darvis heard: " + text + "\n"}
+                        )
+            except Exception as e:
+                # Silently handle microphone errors to keep listening
+                continue
+
+    def manual_activate(self):
+        """Manually activate command listening mode."""
+        self.display_message("Activated!\n")
+        speak("Activated!")
+
+        # Listen for the actual command
+        command = listen()
+        if command:
+            self.process_command(command, "voice")
+
+    def process_ai_command(self, command: str):
+        """Process a command using AI assistance."""
+        self.glow_logo(True, True)  # Red glow for AI
+        try:
+            response, session_id = process_ai_query(command)
+            if session_id:
+                self.display_message(f"New AI session started (ID: {session_id})\n")
+            self.display_message(f"AI Response: {response}\n")
+            speak("Response received")
+        except Exception as e:
+            error_msg = str(e)
+            if "opencode" in error_msg.lower():
+                self.display_message("AI assistance not available (opencode not found)\n")
+            else:
+                self.display_message(f"AI error: {error_msg}\n")
+        finally:
+            self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
+
+    def start_message_processing(self):
+        """Start processing messages from the queue."""
+        import threading
+        gui_thread = threading.Thread(target=self.update_gui, daemon=True)
+        gui_thread.start()
+
+    def update_gui(self):
+        """Process messages from the queue and update GUI."""
+        try:
+            msg = self.msg_queue.get_nowait()
+            if msg["type"] == "insert":
+                # Route messages to appropriate text widgets
+                if msg["text"].startswith("Darvis heard:"):
+                    # Remove the "Darvis heard:" prefix and just show the text
+                    clean_text = msg["text"].replace("Darvis heard: ", "", 1)
+                    # Start glow effect during insertion
+                    self.glow_textbox(self.text_heard, True)
+                    self.text_heard.insert(tk.END, clean_text)
+                    self.text_heard.see(tk.END)
+                    # Keep glowing for a moment then stop
+                    self.root.after(1500, lambda: self.glow_textbox(self.text_heard, False))
+                elif msg["text"].startswith("Command:") or msg["text"].startswith("AI Query:") or msg["text"].startswith("AI Response:"):
+                    self.text_info.insert(tk.END, msg["text"])
+                    self.text_info.see(tk.END)
+                    # Glow effect for info text
+                    self.glow_textbox(self.text_info, True, "#FFFF00")  # Yellow glow
+                    self.root.after(1000, lambda: self.glow_textbox(self.text_info, False))
+                else:
+                    # General info messages (like "Activated!")
+                    self.text_info.insert(tk.END, msg["text"])
+                    self.text_info.see(tk.END)
+                    # Glow effect for info text
+                    self.glow_textbox(self.text_info, True, "#FFFF00")  # Yellow glow
+                    self.root.after(1000, lambda: self.glow_textbox(self.text_info, False))
+            elif msg["type"] == "wake_word_detected":
+                # Glow logo when wake word is detected
+                self.glow_logo(True)
+            elif msg["type"] == "wake_word_end":
+                self.root.after(1000, lambda: self.glow_logo(False))
+        except queue.Empty:
+            pass
+        # Schedule next check
+        self.root.after(100, self.update_gui)
 
     def bind_events(self):
         """Bind UI events for interactive elements."""

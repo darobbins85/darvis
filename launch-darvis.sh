@@ -12,6 +12,11 @@ cd "$PROJECT_DIR"
 # Set PYTHONPATH explicitly
 export PYTHONPATH="$PROJECT_DIR:$PYTHONPATH"
 
+# Add opencode to PATH if available
+if [ -d "$HOME/.opencode/bin" ]; then
+    export PATH="$HOME/.opencode/bin:$PATH"
+fi
+
 # Launch the application using the modular UI with system tray
 if [ -f "venv/bin/activate" ]; then
     # Use exec to replace the shell process entirely
