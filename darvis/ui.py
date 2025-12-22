@@ -108,7 +108,7 @@ class DarvisGUI:
 
         # Logo centered at bottom
         try:
-            logo_image = tk.PhotoImage(file="darvis-logo.png")
+            logo_image = tk.PhotoImage(file="assets/darvis-logo.png")
             self.logo_label = tk.Label(self.root, image=logo_image, bg="black")
             self.logo_label.image = logo_image  # Keep a reference
             self.logo_label.pack(side=tk.BOTTOM, pady=20)
@@ -349,13 +349,9 @@ class DarvisGUI:
 
         try:
             # Load the icon
-            icon_path = "darvis-logo.png"
-            if os.path.exists(icon_path):
-                icon_image = Image.open(icon_path)
-                # Convert to appropriate format for system tray
-                icon_image = icon_image.resize((64, 64))
-            else:
-                print("Warning: darvis-logo.png not found for system tray")
+            icon_path = "assets/darvis-logo.png"
+            if not os.path.exists(icon_path):
+                print("Warning: assets/darvis-logo.png not found for system tray")
                 return
 
             # Create tray menu
