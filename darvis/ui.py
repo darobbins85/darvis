@@ -221,3 +221,15 @@ def init_gui():
 def get_gui():
     """Get the current GUI instance."""
     return _gui_instance
+
+
+def main():
+    """Main entry point for running the GUI application."""
+    # For now, just run the GUI - voice processing is handled differently
+    # This allows the desktop launcher to work
+    gui = DarvisGUI()
+    gui.run()
+
+
+if __name__ == "__main__":
+    main()

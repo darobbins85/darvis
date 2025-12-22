@@ -4,12 +4,22 @@
 
 **Run Application:**
 - `source venv/bin/activate && python darvis.py` - Execute the main application with dependencies
-- Or create a simple script: `echo 'source venv/bin/activate && python darvis.py' > run.sh && chmod +x run.sh && ./run.sh`
+- `./launch-darvis.sh` - Clean launcher script with proper environment setup
+- Desktop menu: Search for "Darvis Voice Assistant" after running `./install-desktop.sh`
+
+**Desktop Integration:**
+- `./install-desktop.sh` - Install as system application with icon in menu
+- Creates desktop entry in `~/.local/share/applications/`
+- Adds icon to `~/.local/share/icons/`
+- Updates desktop database for menu integration
 
 **Assets:**
 - `darvis-black.png` - Original high-resolution logo
 - `darvis-logo-hires.png` - High-resolution transparent version
 - `darvis-logo.png` - UI-sized logo (150x150) with transparent background
+- `darvis.desktop` - Desktop integration file
+- `launch-darvis.sh` - Application launcher script
+- `install-desktop.sh` - Desktop integration installer
 
 **Linting (recommended setup):**
 - `flake8 darvis.py` - Check code style and errors
