@@ -354,6 +354,9 @@ class DarvisGUI:
                 print("Warning: assets/darvis-logo.png not found for system tray")
                 return
 
+            icon_image = Image.open(icon_path)
+            icon_image = icon_image.resize((64, 64))
+
             # Create tray menu
             menu = pystray.Menu(
                 pystray.MenuItem("Show/Hide", self.toggle_window),
