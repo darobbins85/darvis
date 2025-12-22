@@ -2,24 +2,23 @@
 # Darvis Voice Assistant Launcher Script
 # This script provides a clean way to launch Darvis with proper environment setup
 
-# Get the directory where this script is located
+# Get the absolute path of the script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_DIR="$SCRIPT_DIR"
 
-# Change to project directory
+# Ensure we're in the correct directory
 cd "$PROJECT_DIR"
 
-# Set up Python virtual environment
-if [ -d "venv" ]; then
-    source venv/bin/activate
-else
-    echo "Warning: Virtual environment not found. Using system Python."
-fi
-
-# Set environment variables for better integration
+# Set PYTHONPATH explicitly
 export PYTHONPATH="$PROJECT_DIR:$PYTHONPATH"
 
-# Launch the application (using the main script for now)
-python darvis/darvis.py
-
-# Future: python -m darvis.ui (once modules are fully integrated)
+# Launch the application - try multiple approaches for venv activation
+if [ -f "venv/bin/activate" ]; then
+    # Use exec to replace the shell process entirely
+    exec bash -c "cd '$PROJECT_DIR' && source venv/bin/activate && exec python darvis.py"
+elif [ -f ".venv/bin/activate" ]; then
+    exec bash -c "cd '$PROJECT_DIR' && source .venv/bin/activate && exec python darvis.py"
+else
+    echo "Warning: Virtual environment not found. Using system Python."
+    exec python darvis.py
+fi
