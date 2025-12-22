@@ -20,6 +20,7 @@ def speak(text: str) -> None:
     """
     try:
         import pyttsx3
+
         engine = pyttsx3.init()
         engine.say(text)
         engine.runAndWait()
@@ -50,7 +51,9 @@ def listen(device_index: Optional[int] = None) -> str:
     r.energy_threshold = ENERGY_THRESHOLD
     try:
         with sr.Microphone(device_index=device_index) as source:
-            audio = r.listen(source, timeout=LISTEN_TIMEOUT, phrase_time_limit=PHRASE_TIME_LIMIT)
+            audio = r.listen(
+                source, timeout=LISTEN_TIMEOUT, phrase_time_limit=PHRASE_TIME_LIMIT
+            )
         try:
             return r.recognize_google(audio).lower()
         except sr.UnknownValueError:

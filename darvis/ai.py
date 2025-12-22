@@ -36,10 +36,7 @@ def process_ai_query(query: str) -> Tuple[str, str]:
         if current_session_id is None:
             # First query: start new session
             result = subprocess.run(
-                ["opencode", "run", query],
-                capture_output=True,
-                text=True,
-                timeout=60
+                ["opencode", "run", query], capture_output=True, text=True, timeout=60
             )
             response = (result.stdout or "").strip() or "No response"
 
@@ -53,7 +50,7 @@ def process_ai_query(query: str) -> Tuple[str, str]:
                 ["opencode", "run", "--session", current_session_id, query],
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=60,
             )
             response = (result.stdout or "").strip() or "No response"
             return response, current_session_id
@@ -90,9 +87,19 @@ def is_ai_command(query: str) -> bool:
 
     # Handle obvious AI queries
     ai_indicators = [
-        "what", "how", "why", "explain", "tell me",
-        "calculate", "solve", "convert", "translate",
-        "write", "create", "generate", "code"
+        "what",
+        "how",
+        "why",
+        "explain",
+        "tell me",
+        "calculate",
+        "solve",
+        "convert",
+        "translate",
+        "write",
+        "create",
+        "generate",
+        "code",
     ]
 
     return any(indicator in query_lower for indicator in ai_indicators)

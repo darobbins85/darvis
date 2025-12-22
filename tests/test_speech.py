@@ -10,11 +10,20 @@ from darvis.speech import speak, listen, list_microphones
 class TestSpeech:
     """Test cases for speech functionality."""
 
-    @patch('darvis.speech.pyttsx3')
-    def test_speak_success(self, mock_pyttsx3):
+    @patch('builtins.__import__')
+    def test_speak_success(self, mock_import):
         """Test successful text-to-speech."""
+        mock_pyttsx3 = MagicMock()
         mock_engine = MagicMock()
         mock_pyttsx3.init.return_value = mock_engine
+
+        # Mock the import to return our mock
+        def mock_import_func(name, *args, **kwargs):
+            if name == 'pyttsx3':
+                return mock_pyttsx3
+            return __import__(name, *args, **kwargs)
+
+        mock_import.side_effect = mock_import_func
 
         speak("Hello world")
 
@@ -63,7 +72,8 @@ class TestSpeech:
         mock_sr.Microphone.return_value.__enter__ = MagicMock(return_value=mock_microphone)
         mock_sr.Microphone.return_value.__exit__ = MagicMock(return_value=None)
         mock_recognizer.listen.return_value = mock_audio
-        mock_recognizer.recognize_google.side_effect = mock_sr.UnknownValueError()
+        from speech_recognition import UnknownValueError
+        mock_recognizer.recognize_google.side_effect = UnknownValueError()
 
         result = listen()
 
@@ -81,7 +91,8 @@ class TestSpeech:
         mock_sr.Microphone.return_value.__enter__ = MagicMock(return_value=mock_microphone)
         mock_sr.Microphone.return_value.__exit__ = MagicMock(return_value=None)
         mock_recognizer.listen.return_value = mock_audio
-        mock_recognizer.recognize_google.side_effect = mock_sr.RequestError("API error")
+        from speech_recognition import RequestError
+        mock_recognizer.recognize_google.side_effect = RequestError("API error")
 
         result = listen()
 

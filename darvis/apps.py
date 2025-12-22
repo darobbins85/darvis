@@ -61,7 +61,9 @@ def find_app_command(app_name: str) -> str:
     for desktop_dir in DESKTOP_DIRS:
         if os.path.exists(desktop_dir):
             # Look for .desktop files that match the app name
-            for desktop_file in glob.glob(os.path.join(desktop_dir, f"*{app_name_lower}*.desktop")):
+            for desktop_file in glob.glob(
+                os.path.join(desktop_dir, f"*{app_name_lower}*.desktop")
+            ):
                 try:
                     exec_cmd = parse_desktop_file(desktop_file)
                     if exec_cmd and is_command_available(exec_cmd.split()[0]):
@@ -88,7 +90,7 @@ def find_app_command(app_name: str) -> str:
         app_name_lower,
         f"{app_name_lower}-desktop",
         f"{app_name_lower}.bin",
-        f"{app_name_lower}.sh"
+        f"{app_name_lower}.sh",
     ]
 
     for variation in variations:
@@ -110,13 +112,13 @@ def is_command_available(cmd: str) -> bool:
 def parse_desktop_file(desktop_file: str) -> str:
     """Parse a .desktop file to extract the Exec command."""
     try:
-        with open(desktop_file, 'r', encoding='utf-8') as f:
+        with open(desktop_file, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Look for the Exec line
-        for line in content.split('\n'):
-            if line.startswith('Exec='):
-                exec_cmd = line.split('=', 1)[1].strip()
+        for line in content.split("\n"):
+            if line.startswith("Exec="):
+                exec_cmd = line.split("=", 1)[1].strip()
                 # Remove field codes like %f, %F, %u, %U, etc.
                 exec_cmd = exec_cmd.split()[0]  # Take just the command, not args
                 return exec_cmd

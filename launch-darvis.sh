@@ -12,13 +12,13 @@ cd "$PROJECT_DIR"
 # Set PYTHONPATH explicitly
 export PYTHONPATH="$PROJECT_DIR:$PYTHONPATH"
 
-# Launch the application - try multiple approaches for venv activation
+# Launch the application using the modular UI with system tray
 if [ -f "venv/bin/activate" ]; then
     # Use exec to replace the shell process entirely
-    exec bash -c "cd '$PROJECT_DIR' && source venv/bin/activate && exec python darvis.py"
+    exec bash -c "cd '$PROJECT_DIR' && source venv/bin/activate && exec python -m darvis.ui"
 elif [ -f ".venv/bin/activate" ]; then
-    exec bash -c "cd '$PROJECT_DIR' && source .venv/bin/activate && exec python darvis.py"
+    exec bash -c "cd '$PROJECT_DIR' && source .venv/bin/activate && exec python -m darvis.ui"
 else
     echo "Warning: Virtual environment not found. Using system Python."
-    exec python darvis.py
+    exec python -m darvis.ui
 fi

@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""
+Waybar custom module script for Darvis status.
+Reads from FIFO pipe and outputs JSON for waybar consumption.
+
+This script runs continuously and provides real-time status updates
+to waybar's custom module. It reads JSON status updates from a FIFO pipe
+and outputs them in the format expected by waybar.
+"""
+
+import sys
+import os
+import json
+import time
+from pathlib import Path
+
+# User-specific FIFO path
+FIFO_PATH = Path.home() / ".cache" / "darvis" / "status.fifo"
+
+def main():
+    """Main function to run the waybar status monitor."""
+
+    # Default status when Darvis is not running or available
+    current_status = {
+        "text": "❌",
+        "class": "error",
+        "tooltip": "Darvis: Not running"
+    }
+
+    # Output initial status
+    print(json.dumps(current_status), flush=True)
+
+    try:
+        # Ensure FIFO directory exists
+        fifo_dir = FIFO_PATH.parent
+        fifo_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create FIFO if it doesn't exist
+        if not FIFO_PATH.exists():
+            os.mkfifo(FIFO_PATH)
+
+        while True:
+            try:
+                # Open FIFO for reading (blocking)
+                with open(FIFO_PATH, 'r') as fifo:
+                    while True:
+                        line = fifo.readline()
+                        if line:
+                            try:
+                                # Parse JSON from FIFO
+                                new_status = json.loads(line.strip())
+                                current_status.update(new_status)
+                                # Output to waybar
+                                print(json.dumps(current_status), flush=True)
+                            except json.JSONDecodeError as e:
+                                # Invalid JSON, skip this line
+                                print(f"Warning: Invalid JSON received: {line.strip()}", file=sys.stderr)
+                                continue
+                        else:
+                            # No data available, small delay to prevent busy waiting
+                            time.sleep(0.1)
+
+            except FileNotFoundError:
+                # FIFO doesn't exist yet, wait and try again
+                time.sleep(1)
+                continue
+
+            except KeyboardInterrupt:
+                # Clean exit
+                break
+
+    except Exception as e:
+        # If anything goes wrong, show error status
+        error_status = {
+            "text": "❌",
+            "class": "error",
+            "tooltip": f"Darvis: Script error - {e}"
+        }
+        print(json.dumps(error_status), flush=True)
+
+if __name__ == "__main__":
+    main()

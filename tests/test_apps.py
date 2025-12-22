@@ -3,7 +3,7 @@ Unit tests for the application detection module.
 """
 
 import pytest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, MagicMock
 from darvis.apps import (
     find_app_command, is_command_available, parse_desktop_file, open_app
 )
@@ -88,16 +88,13 @@ Type=Application
 
         assert result == ""
 
-    @patch('darvis.apps.WEB_SERVICES')
     @patch('subprocess.Popen')
-    def test_open_app_web_service(self, mock_popen, mock_web_services):
+    def test_open_app_web_service(self, mock_popen):
         """Test opening web service."""
-        mock_web_services.__contains__.return_value = True
-        mock_web_services.__getitem__.return_value = "https://youtube.com"
-
         result = open_app("youtube")
 
         assert result == "Opening youtube"
+        mock_popen.assert_called_with(["xdg-open", "https://www.youtube.com"])
         mock_popen.assert_called_once_with(["xdg-open", "https://youtube.com"])
 
     @patch('darvis.apps.find_app_command')

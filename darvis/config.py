@@ -24,7 +24,7 @@ WEB_SERVICES = {
     "gmail": "https://gmail.com",
     "github": "https://github.com",
     "netflix": "https://netflix.com",
-    "spotify": "https://spotify.com"
+    "spotify": "https://spotify.com",
 }
 
 # GUI configuration
@@ -42,7 +42,7 @@ DESKTOP_DIRS = [
     "/usr/share/applications/",
     "/usr/local/share/applications/",
     os.path.expanduser("~/.local/share/applications/"),
-    "/var/lib/snapd/desktop/applications/"
+    "/var/lib/snapd/desktop/applications/",
 ]
 
 # Message queue types
@@ -50,5 +50,15 @@ MSG_TYPES = {
     "INSERT": "insert",
     "STATUS": "status",
     "WAKE_WORD_DETECTED": "wake_word_detected",
-    "WAKE_WORD_END": "wake_word_end"
+    "WAKE_WORD_END": "wake_word_end",
+}
+
+# Waybar integration configuration
+WAYBAR_MODULE_CONFIG = {
+    "custom/darvis": {
+        "exec": "python3 /home/david/Code/github/darobbins85/darvis/scripts/darvis-waybar-status",
+        "return-type": "json",
+        "restart-interval": 0,
+        "tooltip-format": "{tooltip}",
+    }
 }
