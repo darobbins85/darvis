@@ -1,68 +1,50 @@
-# Darvis Voice Assistant
+# 🤖 Darvis Voice Assistant
 
-A cross-platform voice assistant with intelligent command processing, featuring system tray integration and optional waybar status display.
+A modern, cross-platform voice assistant with intelligent command processing, featuring system tray integration and optional waybar status display.
 
-## Features
+## ✨ Features
 
-- **Cross-Platform**: Works on Linux, macOS, and Windows
-- **Voice Recognition**: Wake word detection and speech-to-text
-- **Intelligent Commands**: Automatic local app detection with AI fallback
-- **Modern UI**: Dark-themed tkinter interface with visual feedback
-- **System Tray**: Native system tray icon on all platforms
-- **Waybar Integration**: Real-time status display for Linux/Hyprland users
-- **Waybar Integration**: Optional enhanced status display for Linux/waybar users
-- **Modern UI**: Dark-themed tkinter interface with visual feedback
+- **🎤 Voice Recognition**: Wake word detection ("hey darvis") and speech-to-text
+- **🧠 AI Integration**: Powered by opencode CLI for intelligent responses
+- **💻 Cross-Platform**: Works on Linux, macOS, and Windows
+- **🎨 Modern UI**: Dark-themed tkinter interface with visual feedback
+- **📱 System Tray**: Native system tray icon with show/hide functionality
+- **📊 Waybar Integration**: Real-time status display for Linux/Hyprland users
+- **🚀 Smart Commands**: Automatic local app detection with AI fallback
 
-## Platform Support
+## 🏗️ Project Structure
 
-### Linux
-- **System Tray**: GTK/AppIndicator backends
-- **Waybar**: Optional custom module with styled states
-- **Display**: X11 and Wayland support
-
-### macOS
-- **System Tray**: Native macOS menubar integration
-- **Display**: Native macOS display detection
-
-### Windows
-- **System Tray**: Win32 API integration
-- **Display**: Native Windows display detection
-
-## Waybar Integration (Linux Only)
-
-Darvis provides real-time status integration with waybar, showing live updates of the assistant's state in your status bar.
-
-### Setup
-```bash
-# Configure waybar for Darvis integration
-python3 scripts/configure-waybar.py
-
-# Restart waybar to apply changes
-omarchy-restart-waybar
+```
+darvis/
+├── assets/                 # Logo and visual assets
+├── darvis/                 # Main package
+│   ├── __init__.py
+│   ├── ai.py              # AI integration (opencode CLI)
+│   ├── apps.py            # Application detection and launching
+│   ├── config.py          # Configuration constants
+│   ├── speech.py          # Voice recognition and TTS
+│   ├── ui.py              # Cross-platform GUI and system tray
+│   └── waybar_status.py   # Waybar IPC communication
+├── docs/                   # Documentation
+├── scripts/                # Utility scripts
+│   ├── configure-waybar.py
+│   └── darvis-waybar-status
+├── tests/                  # Unit tests
+├── archive/                # Legacy code (darvis_legacy.py)
+├── AGENTS.md              # Development guidelines
+├── LICENSE                # MIT License
+├── README.md              # This file
+├── requirements.txt       # Core dependencies
+├── requirements-dev.txt   # Development dependencies
+├── pytest.ini            # Test configuration
+├── darvis.desktop        # Desktop integration
+├── install-desktop.sh    # Desktop installer
+└── launch-darvis.sh      # Application launcher
 ```
 
-### Status Indicators
-- 🤖 **Idle**: Ready for commands
-- 🎤 **Listening**: Processing voice input
-- ⚙️ **Processing**: Executing commands or AI queries
-- ✅ **Success**: Command completed successfully
-- ❌ **Error**: Command failed or error occurred
+## 🚀 Quick Start
 
-### Manual Configuration
-Add to your `~/.config/waybar/config.jsonc`:
-```jsonc
-"custom/darvis": {
-  "exec": "python3 /path/to/darvis/scripts/darvis-waybar-status",
-  "return-type": "json",
-  "restart-interval": 0,
-  "tooltip-format": "{tooltip}"
-}
-```
-
-And add `"custom/darvis"` to your `modules-right` array.
-
-## Installation
-
+### Installation
 ```bash
 # Clone the repository
 git clone https://github.com/darobbins85/darvis.git
@@ -83,128 +65,69 @@ pip install PyGObject
 ./install-desktop.sh
 ```
 
-## Usage
-
-### Basic Launch
+### Launch
 ```bash
 ./launch-darvis.sh  # Linux/macOS
-python darvis.py    # Windows
 ```
 
 ### Voice Commands
-- Say "hey darvis" to wake the assistant
-- Follow with commands like:
+- Say **"hey darvis"** to wake the assistant
+- Try commands like:
   - "open calculator"
   - "open firefox"
-  - "what time is it?"
+  - "what is 2 + 2"
 
-### System Tray
-- Right-click the tray icon for menu options
-- Left-click to show/hide the main window
+## 📊 Waybar Integration (Linux Only)
 
-### Waybar Integration (Linux only)
-The application automatically detects waybar and provides enhanced status display with states:
-- `idle`: Default state
-- `listening`: When processing voice input
-- `processing`: When executing commands
-- `success`: Command completed successfully
-- `error`: Command failed
+Darvis provides real-time status integration with waybar.
 
-## Configuration
+### Setup
+```bash
+# Configure waybar for Darvis integration
+python3 scripts/configure-waybar.py
 
-### Waybar Custom Module
-Add to your `~/.config/waybar/config.jsonc`:
-
-```jsonc
-"custom/darvis": {
-  "exec": "echo '🤖'",
-  "return-type": "string",
-  "interval": 1,
-  "on-click": "pkill -USR1 waybar"  // Toggle visibility
-}
+# Restart waybar
+omarchy-restart-waybar
 ```
 
-### Waybar Styling
-Add to your `~/.config/waybar/style.css`:
+### Status Indicators
+- 🤖 **Idle**: Ready for commands
+- 🎤 **Listening**: Voice input detected
+- ⚙️ **Processing**: AI/command execution
+- ✅ **Success**: Command completed
+- ❌ **Error**: Command failed
 
-```css
-#custom-darvis {
-  color: #9CBB6C;
-  font-size: 22px;
-  min-width: 100px;
-}
-
-#custom-darvis.listening {
-  color: #FFA500;
-  animation: pulse 1.5s infinite;
-}
-
-#custom-darvis.processing,
-#custom-darvis.thinking {
-  color: #87CEEB;
-}
-
-#custom-darvis.speaking {
-  color: #98FB98;
-}
-
-#custom-darvis.success {
-  color: #90EE90;
-}
-
-#custom-darvis.error {
-  color: #FF6B6B;
-}
-
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.6; }
-  100% { opacity: 1; }
-}
-```
-
-## Architecture
-
-```
-darvis/
-├── ui.py           # Cross-platform GUI and system tray
-├── speech.py       # Voice recognition and TTS
-├── apps.py         # Application detection and launching
-├── ai.py           # AI integration and processing
-├── config.py       # Configuration constants
-├── waybar_status.py # Waybar IPC communication
-└── __init__.py
-
-scripts/
-├── darvis-waybar-status   # Waybar custom module script
-└── configure-waybar.py    # Waybar configuration tool
-```
-
-## Development
+## 🛠️ Development
 
 ```bash
 # Run tests
 pytest
 
 # Lint code
-black darvis/
 flake8 darvis/
+black darvis/ --check
 
 # Format code
 black darvis/
 isort darvis/
 ```
 
-## Cross-Platform Compatibility
+## 📋 Platform Support
 
-The system tray implementation uses `pystray` which provides:
-- **Linux**: GTK, AppIndicator, and Xorg backends
-- **macOS**: Native macOS system tray
-- **Windows**: Win32 API integration
+### Linux
+- **System Tray**: GTK/AppIndicator backends
+- **Waybar**: Optional custom module with styled states
+- **Display**: X11 and Wayland support
 
-Waybar integration is Linux-only but optional - the core functionality works without it on all platforms.
+### macOS
+- **System Tray**: Native macOS menubar integration
+- **Display**: Native macOS display detection
 
-## Contributing
+### Windows
+- **System Tray**: Win32 API integration
+- **Display**: Native Windows display detection
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -212,6 +135,10 @@ Waybar integration is Linux-only but optional - the core functionality works wit
 4. Ensure cross-platform compatibility
 5. Submit a pull request
 
-## License
+## 📄 License
 
 MIT License - see LICENSE file for details.
+
+---
+
+**Built with ❤️ for the voice assistant community**
