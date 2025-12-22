@@ -42,7 +42,6 @@ class DarvisGUI:
         self.setup_ui()
         self.bind_events()
         self.setup_system_tray()
-        self.setup_system_tray()
 
     def setup_ui(self):
         """Set up the main UI components."""
