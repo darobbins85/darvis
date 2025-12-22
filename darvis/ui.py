@@ -21,6 +21,7 @@ from .config import (
 from .speech import speak, listen
 from .apps import open_app
 from .ai import process_ai_query, is_ai_command
+from .waybar_status import init_waybar, update_waybar_status
 
 
 class DarvisGUI:
@@ -51,12 +52,70 @@ class DarvisGUI:
         self.ai_mode = tk.BooleanVar()
         self.conversation_history = []
         self.current_session_id = None
+        self.is_speaking = False
 
         self.setup_ui()
         self.bind_events()
         self.setup_system_tray()
         self.start_voice_processing()
         self.start_message_processing()
+
+        # Enhanced window management
+        self.setup_window_positioning()
+
+    def setup_window_positioning(self):
+        """Set up enhanced window positioning and behavior."""
+        # Center the window on the screen
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        window_width = 600
+        window_height = 400
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+        # Make window visible and focused
+        self.root.deiconify()
+        self.root.lift()
+        self.root.focus_force()
+
+        # Handle window close button (X) - minimize to tray instead of quit
+        self.root.protocol("WM_DELETE_WINDOW", self.minimize_to_tray)
+
+        # Handle minimize events
+        self.root.bind("<Unmap>", self.on_minimize)
+
+    def minimize_to_tray(self):
+        """Minimize to system tray instead of quitting."""
+        if self.tray_icon:
+            self.root.withdraw()
+            # Could show a notification here
+        else:
+            # No tray icon available, quit normally
+            self.quit_app()
+
+    def on_minimize(self, event=None):
+        """Handle window minimize events."""
+        # On some systems, this could trigger tray minimization
+        pass
+
+    def show_about(self):
+        """Show about dialog."""
+        about_text = """Darvis Voice Assistant
+
+A modern, cross-platform voice assistant
+with intelligent command processing.
+
+Features:
+• Voice wake word detection
+• AI-powered responses
+• System tray integration
+• Waybar status support
+• Cross-platform compatibility
+
+Version: 1.0.0
+Built with ❤️"""
+        self.display_message(f"About Darvis:\n{about_text}\n")
 
     def setup_ui(self):
         """Set up the main UI components."""
@@ -170,18 +229,23 @@ class DarvisGUI:
     def process_ai_command(self, command: str):
         """Process a command using AI assistance."""
         self.glow_logo(True, True)  # Red glow for AI
+        update_waybar_status("thinking", f"Thinking about: {command[:30]}...")
         try:
             response, session_id = process_ai_query(command)
             if session_id:
                 self.display_message(f"New AI session started (ID: {session_id})\n")
+            update_waybar_status("speaking", "Speaking response...")
             self.display_message(f"AI Response: {response}\n")
-            speak("Response received")
+            speak(response)  # Speak the actual response
+            update_waybar_status("success", "Response delivered")
         except Exception as e:
             error_msg = str(e)
             if "opencode" in error_msg.lower():
                 self.display_message("AI assistance not available (opencode not found)\n")
+                update_waybar_status("error", "AI not available")
             else:
                 self.display_message(f"AI error: {error_msg}\n")
+                update_waybar_status("error", f"AI error: {error_msg[:50]}")
         finally:
             self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
 
@@ -357,10 +421,18 @@ class DarvisGUI:
             icon_image = Image.open(icon_path)
             icon_image = icon_image.resize((64, 64))
 
-            # Create tray menu
+            # Create enhanced tray menu
             menu = pystray.Menu(
-                pystray.MenuItem("Show/Hide", self.toggle_window),
+                pystray.MenuItem("Show/Hide Window", self.toggle_window),
+                pystray.MenuItem("Minimize to Tray", self.minimize_to_tray),
                 pystray.Menu.SEPARATOR,
+                pystray.MenuItem("Voice Commands", pystray.Menu(
+                    pystray.MenuItem("Say 'hey darvis'", lambda: None, enabled=False),
+                    pystray.MenuItem("Say 'open calculator'", lambda: None, enabled=False),
+                    pystray.MenuItem("Say 'what is 2+2'", lambda: None, enabled=False),
+                )),
+                pystray.Menu.SEPARATOR,
+                pystray.MenuItem("About", self.show_about),
                 pystray.MenuItem("Quit", self.quit_app)
             )
 

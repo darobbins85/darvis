@@ -71,8 +71,11 @@ class WaybarStatusManager:
             "idle": {"text": "🤖", "class": "idle"},
             "listening": {"text": "🎤", "class": "listening"},
             "processing": {"text": "⚙️", "class": "processing"},
+            "thinking": {"text": "🧠", "class": "thinking"},
+            "speaking": {"text": "🔊", "class": "speaking"},
             "success": {"text": "✅", "class": "success"},
             "error": {"text": "❌", "class": "error"},
+            "warning": {"text": "⚠️", "class": "warning"}
         }
 
         if status in status_map:
