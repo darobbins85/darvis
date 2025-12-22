@@ -175,18 +175,24 @@ python3 darvis.py  # Should start GUI without errors
 ### 6. System Application Launch
 
 #### Test Case: APP-001 - System Applications
-**Objective**: Verify local application launching
+**Objective**: Verify local application launching with intelligent detection
 
 **Steps**:
-1. Test each command:
-   - "open calculator"
-   - "open terminal"
-   - "open editor"
+1. Test installed applications:
+   - "open signal" (should find signal-desktop)
+   - "open calculator" (should find galculator or gnome-calculator)
+   - "open terminal" (should find xterm, gnome-terminal, etc.)
+   - "open editor" (should find gedit, kate, etc.)
+
+2. Test unavailable applications:
+   - "open steam" (should show "not installed" message)
+   - "open photoshop" (should show "not found" message)
 
 **Expected Results**:
-- ✅ Applications launch successfully
-- ✅ Appropriate applications open (galculator, xterm, gedit)
-- ✅ Error messages for unavailable applications
+- ✅ Installed applications launch successfully
+- ✅ Uninstalled applications show clear "not installed" messages
+- ✅ Intelligent detection finds correct command names
+- ✅ Desktop file parsing works for GUI applications
 
 ### 7. Visual Feedback & Effects
 

@@ -1,0 +1,223 @@
+"""
+User interface and GUI components for Darvis Voice Assistant.
+"""
+
+import queue
+import tkinter as tk
+from typing import Optional
+
+from .config import (
+    WAKE_WORDS, FONT_SIZE_NORMAL, FONT_SIZE_LARGE,
+    GLOW_DURATION_MS, MSG_TYPES
+)
+from .speech import speak
+from .apps import open_app
+from .ai import process_ai_query, is_ai_command
+
+
+class DarvisGUI:
+    """Main GUI class for the Darvis Voice Assistant."""
+
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Darvis Voice Assistant")
+        self.root.configure(bg="black")
+
+        # Initialize variables
+        self.msg_queue = queue.Queue()
+        self.manual_input_entry = None
+        self.text_heard = None
+        self.text_info = None
+        self.logo_label = None
+
+        self.setup_ui()
+        self.bind_events()
+
+    def setup_ui(self):
+        """Set up the main UI components."""
+        # Top frame for header and buttons (now just input)
+        top_frame = tk.Frame(self.root, bg="black")
+        top_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        # Manual input section
+        input_frame = tk.Frame(self.root, bg="black")
+        input_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        self.manual_input_entry = tk.Entry(
+            input_frame,
+            font=("Arial", FONT_SIZE_NORMAL),
+            bg="#333333",
+            fg="white",
+            insertbackground="white"
+        )
+        self.manual_input_entry.pack(fill=tk.X, pady=2)
+        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
+
+        # Heard text section
+        heard_frame = tk.Frame(self.root, bg="black")
+        heard_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        self.text_heard = tk.Text(
+            heard_frame,
+            height=4,
+            width=50,
+            font=("Arial", FONT_SIZE_NORMAL),
+            bg="#333333",
+            fg="green"
+        )
+        self.text_heard.pack(fill=tk.X, pady=2)
+
+        # Info messages section
+        info_frame = tk.Frame(self.root, bg="black")
+        info_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        self.text_info = tk.Text(
+            info_frame,
+            height=6,
+            width=50,
+            font=("Arial", FONT_SIZE_NORMAL),
+            bg="#333333",
+            fg="yellow"
+        )
+        self.text_info.pack(fill=tk.X, pady=2)
+
+        # Logo centered at bottom
+        try:
+            logo_image = tk.PhotoImage(file="darvis-logo.png")
+            self.logo_label = tk.Label(self.root, image=logo_image, bg="black")
+            self.logo_label.image = logo_image  # Keep a reference
+            self.logo_label.pack(side=tk.BOTTOM, pady=20)
+        except Exception as e:
+            # Fallback if image fails to load
+            self.logo_label = tk.Label(
+                self.root,
+                text="DARVIS",
+                font=("Arial", FONT_SIZE_LARGE),
+                bg="black",
+                fg="white"
+            )
+            self.logo_label.pack(side=tk.BOTTOM, pady=20)
+
+        # Initialize info text
+        self.text_info.insert(tk.END, "Darvis is Listening...\n")
+
+    def bind_events(self):
+        """Bind UI events for interactive elements."""
+        # Glow effects for manual input
+        self.manual_input_entry.bind("<Key>", lambda e: self.glow_textbox(self.manual_input_entry, True, "#FFFFFF"))
+        self.manual_input_entry.bind("<FocusOut>", lambda e: self.glow_textbox(self.manual_input_entry, False))
+
+    def glow_textbox(self, widget, enable_glow, color="#00FF00"):
+        """Add or remove glow effect from text widgets."""
+        if enable_glow:
+            widget.config(highlightbackground=color, highlightcolor=color, highlightthickness=2)
+        else:
+            widget.config(highlightbackground="black", highlightcolor="black", highlightthickness=0)
+
+    def glow_logo(self, enable_glow, ai_active=False):
+        """Add or remove glow effect from logo."""
+        try:
+            if enable_glow:
+                if ai_active:
+                    # Red glow for AI processing
+                    self.logo_label.config(highlightbackground="#FF0000", highlightcolor="#FF0000", highlightthickness=3)
+                else:
+                    # Green glow for wake word
+                    self.logo_label.config(highlightbackground="#00FF00", highlightcolor="#00FF00", highlightthickness=3)
+            else:
+                self.logo_label.config(highlightbackground="black", highlightcolor="black", highlightthickness=0)
+        except AttributeError:
+            pass  # logo_label not available
+
+    def submit_manual_input(self):
+        """Process manual text input from the GUI input field."""
+        input_text = self.manual_input_entry.get().strip()
+        if input_text:
+            # Change text color to green when submitted
+            self.manual_input_entry.config(fg="green")
+            self.root.after(1000, lambda: self.manual_input_entry.config(fg="white"))
+
+            # Intelligent command processing
+            self.process_command(input_text, "manual")
+            self.manual_input_entry.delete(0, tk.END)  # Clear the input field
+
+    def process_command(self, command: str, source: str):
+        """Process a command with intelligent AI fallback."""
+        command_lower = command.lower()
+
+        # Check if it's a local command first
+        if command_lower.startswith("open "):
+            # Handle open commands locally
+            app = command_lower.split("open")[-1].strip()
+            response = open_app(app)
+            self.display_message(f"Command: {command}\n{response}\n")
+            speak(response)
+        else:
+            # Check if it looks like a command we can handle locally
+            local_commands = ["calculator", "terminal", "editor", "browser"]
+            if any(cmd in command_lower for cmd in local_commands):
+                # Try to handle as local command
+                app = command_lower  # Pass the full input to open_app
+                response = open_app(app)
+                if "not installed" in response or "not found" in response:
+                    # Fall back to AI
+                    self.display_message(f"Local command failed, using AI assistance...\nAI Query: {command}\n")
+                    self.process_ai_command(command)
+                else:
+                    self.display_message(f"Command: {command}\n{response}\n")
+                    speak(response)
+            else:
+                # Default to AI for unrecognized inputs
+                self.display_message(f"Using AI assistance...\nAI Query: {command}\n")
+                self.process_ai_command(command)
+
+    def process_ai_command(self, command: str):
+        """Process a command using AI assistance."""
+        self.glow_logo(True, True)  # Red glow for AI
+        try:
+            response, session_id = process_ai_query(command)
+            if session_id:
+                self.display_message(f"New AI session started (ID: {session_id})\n")
+            self.display_message(f"AI Response: {response}\n")
+            speak("Response received")
+        except Exception as e:
+            self.display_message(f"AI error: {str(e)}\n")
+        finally:
+            self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
+
+    def display_message(self, message: str):
+        """Display a message in the appropriate text area."""
+        if message.startswith("Darvis heard:") or message.startswith("Heard:"):
+            # Remove prefix and show in heard area
+            clean_text = message.replace("Darvis heard: ", "").replace("Heard: ", "")
+            self.glow_textbox(self.text_heard, True)
+            self.text_heard.insert(tk.END, clean_text)
+            self.text_heard.see(tk.END)
+            self.root.after(GLOW_DURATION_MS, lambda: self.glow_textbox(self.text_heard, False))
+        else:
+            # Show in info area
+            if "AI Response:" in message or "Command:" in message:
+                self.glow_textbox(self.text_info, True, "#FFFF00")  # Yellow glow
+            else:
+                self.glow_textbox(self.text_info, True, "#FFFF00")  # Yellow glow
+            self.text_info.insert(tk.END, message)
+            self.text_info.see(tk.END)
+            self.root.after(GLOW_DURATION_MS, lambda: self.glow_textbox(self.text_info, False))
+
+    def run(self):
+        """Start the GUI event loop."""
+        self.root.mainloop()
+
+
+# Global GUI instance for backward compatibility
+_gui_instance = None
+
+def init_gui():
+    """Initialize the GUI instance."""
+    global _gui_instance
+    _gui_instance = DarvisGUI()
+    return _gui_instance
+
+def get_gui():
+    """Get the current GUI instance."""
+    return _gui_instance
