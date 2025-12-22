@@ -1,21 +1,51 @@
 import os
+#!/usr/bin/env python3
+"""
+Darvis Voice Assistant
+
+A modern, interactive voice assistant with both voice and manual text input capabilities.
+Features a sleek dark-themed GUI with real-time visual feedback and intelligent command processing.
+
+Main Components:
+- Voice Recognition: Google Speech API with wake word detection
+- Manual Input: Always-available text input with Enter key submission
+- AI Mode: Optional AI-powered responses via opencode CLI
+- Smart Commands: Web services, system applications, and custom commands
+- Visual Feedback: Dynamic glow effects for user interactions
+
+Author: Darvis Development Team
+Version: 1.0.0
+"""
+
+import os
 import queue
 import subprocess
+import sys
 import threading
 import tkinter as tk
+from typing import Optional, List
 
 import pyaudio
 import pyttsx3
 import speech_recognition as sr
-import os
-import sys
 
+# Suppress ALSA warnings for cleaner output
 os.environ["ALSA_LOG_LEVEL"] = "0"
 
 conversation_history = []
 current_session_id = None
 
-def speak(text):
+def speak(text: str) -> None:
+    """
+    Convert text to speech using pyttsx3 TTS engine.
+
+    Args:
+        text: The text to speak aloud
+
+    Note:
+        Silently ignores TTS errors to prevent application interruption.
+        Text feedback is still provided through the GUI.
+    """
     try:
         engine = pyttsx3.init()
         engine.say(text)
@@ -35,7 +65,24 @@ def list_microphones():
     p.terminate()
 
 
-def listen(device_index=None):
+def listen(device_index: Optional[int] = None) -> str:
+    """
+    Capture and transcribe voice input using Google Speech Recognition.
+
+    Args:
+        device_index: Specific microphone device index to use.
+                     If None, uses system default.
+
+    Returns:
+        Lowercase transcribed text from speech, or empty string on errors.
+
+    Raises:
+        No exceptions - gracefully handles all audio/speech errors.
+
+    Note:
+        Manual input is handled separately through the GUI input field.
+        This function focuses solely on voice-to-text conversion.
+    """
     # Manual input is always available through the GUI input field
     # This function now only handles voice recognition
     r = sr.Recognizer()
@@ -72,7 +119,25 @@ def get_latest_session_id():
     except (subprocess.TimeoutExpired, FileNotFoundError):
         return None
 
-def open_app(app_name):
+def open_app(app_name: str) -> str:
+    """
+    Launch applications or open web services based on user commands.
+
+    Supports both local system applications and web services. Uses xdg-open
+    for cross-desktop compatibility on Linux systems.
+
+    Args:
+        app_name: Name of application or web service to launch
+
+    Returns:
+        Success message or error description
+
+    Supported Web Services:
+        - youtube, google, gmail, github, netflix, spotify
+
+    Supported System Apps:
+        - calculator, terminal, editor, browser, chrome, chromium, firefox
+    """
     app_name_lower = app_name.lower()
 
     # Map common app names to commands
@@ -125,83 +190,130 @@ def open_app(app_name):
             return "Sorry, I don't know how to open " + app_name
 
 
-def toggle_ai():
-    global ai_mode
+def toggle_ai() -> None:
+    """
+    Toggle between local command processing and AI-powered responses.
+
+    Switches the assistant between two modes:
+    - AI Mode OFF: Commands processed locally (apps, web services)
+    - AI Mode ON: Commands sent to AI system for intelligent responses
+
+    Visual Feedback:
+        - Button text: "AI Mode: ON/OFF"
+        - Button color: Green (ON) / Red (OFF)
+    """
+    global ai_mode, ai_button
     ai_mode.set(not ai_mode.get())
     ai_button.config(text="AI Mode: ON" if ai_mode.get() else "AI Mode: OFF",
-                      bg="green" if ai_mode.get() else "red",
-                      fg="white",
-                      width=15,
-                      relief="raised")
+                     bg="green" if ai_mode.get() else "red",
+                     fg="white",
+                     width=15,
+                     relief="raised")
 
 
 
-def manual_activate():
-    global msg_queue, ai_mode
+def manual_activate() -> None:
+    """
+    Manually trigger voice assistant activation sequence.
+
+    Simulates the wake word detection process without requiring voice input.
+    Activates the assistant and begins listening for commands.
+
+    Process:
+        1. Show activation status
+        2. Listen for voice command (or accept manual input)
+        3. Process command based on AI mode setting
+        4. Return to listening state
+
+    Note: Typically triggered by voice wake words, but can be called manually
+          for testing or when voice detection fails.
+    """
+    global msg_queue, ai_mode, current_session_id
     msg_queue.put(
         {"type": "status", "text": "Status: Activated", "color": "green"}
     )
     msg_queue.put({"type": "insert", "text": "Activated!\n"})
     speak("Activated!")
 
-    if ai_mode.get():
-        # AI Mode: listen for query and run opencode
-        query = listen()
-        if query:
-            msg_queue.put(
-                {"type": "insert", "text": "Query: " + query + chr(10)}
-            )
-            try:
-                global current_session_id
-                if current_session_id is None:
-                    # First query: start new session
-                    result = subprocess.run(["opencode", "run", query], capture_output=True, text=True, timeout=60)
-                    response = (result.stdout or "").strip() or "No response"
-                    # Get the session ID
-                    current_session_id = get_latest_session_id()
-                    if current_session_id:
-                        msg_queue.put({'type': 'insert', 'text': "New AI session started (ID: " + current_session_id + ")" + chr(10)})
-                    else:
-                        msg_queue.put({'type': 'insert', 'text': "Warning: Could not retrieve session ID" + chr(10)})
-                else:
-                    # Subsequent queries: use existing session
-                    result = subprocess.run(["opencode", "run", "--session", current_session_id, query], capture_output=True, text=True, timeout=60)
-                    response = (result.stdout or "").strip() or "No response"
-                msg_queue.put(
-                    {
-                        "type": "insert",
-                        "text": "AI Response: " + response + chr(10),
-                    }
-                )
-                speak("Response received")
-            except subprocess.TimeoutExpired:
-                msg_queue.put(
-                    {"type": "insert", "text": "AI query timed out\n"}
-                )
-            except FileNotFoundError:
-                msg_queue.put(
-                    {
-                        "type": "insert",
-                        "text": "opencode command not found\n",
-                    }
-                )
+    # Intelligent voice command processing
+    command = listen()
+    if command:
+        command_lower = command.lower()
+
+        # Check if it's a local command first
+        if command_lower.startswith("open "):
+            # Handle open commands locally
+            app = command_lower.split("open")[-1].strip()
+            response = open_app(app)
+            msg_queue.put({"type": "insert", "text": f"Command: {command}\n{response}\n"})
+            speak(response)
         else:
-            msg_queue.put({"type": "insert", "text": "No query heard\n"})
-    else:
-        # Normal Mode
-        command = listen()
-        if command:
-            if "open" in command:
-                app = command.split("open")[-1].strip()
+            # Check if it looks like a command we can handle locally
+            local_commands = ["calculator", "terminal", "editor", "browser"]
+            if any(cmd in command_lower for cmd in local_commands):
+                # Try to handle as local command
+                app = command_lower  # Pass the full input to open_app
                 response = open_app(app)
-                msg_queue.put({"type": "insert", "text": response + "\n"})
-                speak(response)
+                if "Sorry, I don't know how to open" in response:
+                    # Fall back to AI
+                    msg_queue.put({"type": "insert", "text": f"Local command failed, using AI assistance...\nAI Query: {command}\n"})
+                    glow_logo(True, True)  # Red glow for AI
+                    try:
+                        global current_session_id
+                        if current_session_id is None:
+                            # First query: start new session
+                            result = subprocess.run(["opencode", "run", command], capture_output=True, text=True, timeout=60)
+                            response = (result.stdout or "").strip() or "No response"
+                            # Get the session ID
+                            current_session_id = get_latest_session_id()
+                            if current_session_id:
+                                msg_queue.put({'type': 'insert', 'text': "New AI session started (ID: " + current_session_id + ")" + chr(10)})
+                            else:
+                                msg_queue.put({'type': 'insert', 'text': "Warning: Could not retrieve session ID" + chr(10)})
+                        else:
+                            # Subsequent queries: use existing session
+                            result = subprocess.run(["opencode", "run", "--session", current_session_id, command], capture_output=True, text=True, timeout=60)
+                            response = (result.stdout or "").strip() or "No response"
+                        msg_queue.put({"type": "insert", "text": "AI Response: " + response + "\n"})
+                        speak("Response received")
+                    except subprocess.TimeoutExpired:
+                        msg_queue.put({"type": "insert", "text": "AI query timed out\n"})
+                    except FileNotFoundError:
+                        msg_queue.put({"type": "insert", "text": "AI assistance not available\n"})
+                    finally:
+                        root.after(1000, lambda: glow_logo(False, False))  # Stop red glow
+                else:
+                    msg_queue.put({"type": "insert", "text": f"Command: {command}\n{response}\n"})
+                    speak(response)
             else:
-                msg_queue.put(
-                    {"type": "insert", "text": "Heard: " + command + "\n"}
-                )
-        else:
-            msg_queue.put({"type": "insert", "text": "No command heard\n"})
+                # Default to AI for unrecognized voice inputs
+                msg_queue.put({"type": "insert", "text": f"Using AI assistance...\nAI Query: {command}\n"})
+                glow_logo(True, True)  # Red glow for AI
+                try:
+                    if current_session_id is None:
+                        # First query: start new session
+                        result = subprocess.run(["opencode", "run", command], capture_output=True, text=True, timeout=60)
+                        response = (result.stdout or "").strip() or "No response"
+                        # Get the session ID
+                        current_session_id = get_latest_session_id()
+                        if current_session_id:
+                            msg_queue.put({'type': 'insert', 'text': "New AI session started (ID: " + current_session_id + ")" + chr(10)})
+                        else:
+                            msg_queue.put({'type': 'insert', 'text': "Warning: Could not retrieve session ID" + chr(10)})
+                    else:
+                        # Subsequent queries: use existing session
+                        result = subprocess.run(["opencode", "run", "--session", current_session_id, command], capture_output=True, text=True, timeout=60)
+                        response = (result.stdout or "").strip() or "No response"
+                    msg_queue.put({"type": "insert", "text": "AI Response: " + response + "\n"})
+                    speak("Response received")
+                except subprocess.TimeoutExpired:
+                    msg_queue.put({"type": "insert", "text": "AI query timed out\n"})
+                except FileNotFoundError:
+                    msg_queue.put({"type": "insert", "text": "AI assistance not available\n"})
+                finally:
+                    root.after(1000, lambda: glow_logo(False, False))  # Stop red glow
+    else:
+        msg_queue.put({"type": "insert", "text": "No command heard\n"})
     msg_queue.put(
         {"type": "status", "text": "Status: Listening", "color": "red"}
     )
@@ -294,31 +406,33 @@ def update_gui():
             if msg["text"].startswith("Darvis heard:"):
                 # Remove the "Darvis heard:" prefix and just show the text
                 clean_text = msg["text"].replace("Darvis heard: ", "", 1)
+                # Start glow effect during insertion
+                glow_textbox(text_heard, True)
                 text_heard.insert(tk.END, clean_text)
                 text_heard.see(tk.END)
-                # Glow effect for heard text
-                glow_textbox(text_heard, True)
-                root.after(1000, lambda: glow_textbox(text_heard, False))
+                # Keep glowing for a moment then stop
+                root.after(1500, lambda: glow_textbox(text_heard, False))
             elif msg["text"].startswith("Heard:"):
                 # Remove the "Heard:" prefix and just show the text
                 clean_text = msg["text"].replace("Heard: ", "", 1)
+                # Start glow effect during insertion
+                glow_textbox(text_heard, True)
                 text_heard.insert(tk.END, clean_text)
                 text_heard.see(tk.END)
-                # Glow effect for heard text
-                glow_textbox(text_heard, True)
-                root.after(1000, lambda: glow_textbox(text_heard, False))
+                # Keep glowing for a moment then stop
+                root.after(1500, lambda: glow_textbox(text_heard, False))
             elif msg["text"].startswith("Command:") or msg["text"].startswith("AI Query:") or msg["text"].startswith("AI Response:"):
                 text_info.insert(tk.END, msg["text"])
                 text_info.see(tk.END)
                 # Glow effect for info text
-                glow_textbox(text_info, True)
+                glow_textbox(text_info, True, "#FFFF00")  # Yellow glow
                 root.after(1000, lambda: glow_textbox(text_info, False))
             else:
                 # General info messages
                 text_info.insert(tk.END, msg["text"])
                 text_info.see(tk.END)
                 # Glow effect for info text
-                glow_textbox(text_info, True)
+                glow_textbox(text_info, True, "#FFFF00")  # Yellow glow
                 root.after(1000, lambda: glow_textbox(text_info, False))
         elif msg["type"] == "wake_word_detected":
             # Glow logo when wake word is detected
@@ -332,25 +446,45 @@ def update_gui():
     root.after(100, update_gui)
 
 
-def glow_textbox(widget, enable_glow):
+def glow_textbox(widget, enable_glow, color="#00FF00"):
     """Add or remove glow effect from text widgets"""
     if enable_glow:
-        widget.config(highlightbackground="#00FF00", highlightcolor="#00FF00", highlightthickness=2)
+        widget.config(highlightbackground=color, highlightcolor=color, highlightthickness=2)
     else:
         widget.config(highlightbackground="black", highlightcolor="black", highlightthickness=0)
 
-def glow_logo(enable_glow):
+def glow_logo(enable_glow, ai_active=False):
     """Add or remove glow effect from logo"""
     try:
         if enable_glow:
-            logo_label.config(highlightbackground="#00FF00", highlightcolor="#00FF00", highlightthickness=3)
+            if ai_active:
+                # Red glow for AI processing
+                logo_label.config(highlightbackground="#FF0000", highlightcolor="#FF0000", highlightthickness=3)
+            else:
+                # Green glow for wake word
+                logo_label.config(highlightbackground="#00FF00", highlightcolor="#00FF00", highlightthickness=3)
         else:
             logo_label.config(highlightbackground="black", highlightcolor="black", highlightthickness=0)
     except NameError:
         pass  # logo_label not yet defined
 
-def submit_manual_input():
-    """Handle manual input submission from the input field"""
+def submit_manual_input() -> None:
+    """
+    Process manual text input from the GUI input field.
+
+    Handles both AI queries and direct commands based on current mode.
+    Provides visual feedback and clears input field after processing.
+
+    Triggers:
+        - Enter key press in manual input field
+        - Submit button click (if implemented)
+
+    Effects:
+        - Input field flashes green
+        - Text is processed as command or AI query
+        - Input field is cleared
+        - Results displayed in appropriate text areas
+    """
     global manual_input_entry, msg_queue, ai_mode, current_session_id
     input_text = manual_input_entry.get().strip()
     if input_text:
@@ -358,19 +492,57 @@ def submit_manual_input():
         manual_input_entry.config(fg="green")
         root.after(1000, lambda: manual_input_entry.config(fg="white"))  # Reset after 1 second
 
-        # Process the input the same way as voice/manual input
-        if ai_mode.get():
-            # AI Mode: check if it's a basic command first, otherwise send to AI
-            input_lower = input_text.lower()
-            if input_lower.startswith("open "):
-                # Handle open commands even in AI mode
-                app = input_lower.split("open")[-1].strip()
+        # Intelligent command processing with automatic AI fallback
+        input_lower = input_text.lower()
+
+        # Check if it's a local command first
+        if input_lower.startswith("open "):
+            # Handle open commands locally
+            app = input_lower.split("open")[-1].strip()
+            response = open_app(app)
+            msg_queue.put({"type": "insert", "text": f"Command: {input_text}\n{response}\n"})
+            speak(response)
+        else:
+            # Check if it looks like a command we can handle locally
+            local_commands = ["calculator", "terminal", "editor", "browser"]
+            if any(cmd in input_lower for cmd in local_commands):
+                # Try to handle as local command
+                app = input_lower  # Pass the full input to open_app
                 response = open_app(app)
-                msg_queue.put({"type": "insert", "text": f"Command: {input_text}\n{response}\n"})
-                speak(response)
+                if "Sorry, I don't know how to open" in response:
+                    # Fall back to AI
+                    msg_queue.put({"type": "insert", "text": f"Local command failed, using AI assistance...\nAI Query: {input_text}\n"})
+                    glow_logo(True, True)  # Red glow for AI
+                    try:
+                        if current_session_id is None:
+                            # First query: start new session
+                            result = subprocess.run(["opencode", "run", input_text], capture_output=True, text=True, timeout=60)
+                            response = (result.stdout or "").strip() or "No response"
+                            # Get the session ID
+                            current_session_id = get_latest_session_id()
+                            if current_session_id:
+                                msg_queue.put({'type': 'insert', 'text': "New AI session started (ID: " + current_session_id + ")" + chr(10)})
+                            else:
+                                msg_queue.put({'type': 'insert', 'text': "Warning: Could not retrieve session ID" + chr(10)})
+                        else:
+                            # Subsequent queries: use existing session
+                            result = subprocess.run(["opencode", "run", "--session", current_session_id, input_text], capture_output=True, text=True, timeout=60)
+                            response = (result.stdout or "").strip() or "No response"
+                        msg_queue.put({"type": "insert", "text": "AI Response: " + response + "\n"})
+                        speak("Response received")
+                    except subprocess.TimeoutExpired:
+                        msg_queue.put({"type": "insert", "text": "AI query timed out\n"})
+                    except FileNotFoundError:
+                        msg_queue.put({"type": "insert", "text": "AI assistance not available\n"})
+                    finally:
+                        root.after(1000, lambda: glow_logo(False, False))  # Stop red glow
+                else:
+                    msg_queue.put({"type": "insert", "text": f"Command: {input_text}\n{response}\n"})
+                    speak(response)
             else:
-                # Send to AI
-                msg_queue.put({"type": "insert", "text": "AI Query: " + input_text + "\n"})
+                # Default to AI for unrecognized inputs
+                msg_queue.put({"type": "insert", "text": f"Using AI assistance...\nAI Query: {input_text}\n"})
+                glow_logo(True, True)  # Red glow for AI
                 try:
                     if current_session_id is None:
                         # First query: start new session
@@ -391,17 +563,9 @@ def submit_manual_input():
                 except subprocess.TimeoutExpired:
                     msg_queue.put({"type": "insert", "text": "AI query timed out\n"})
                 except FileNotFoundError:
-                    msg_queue.put({"type": "insert", "text": "opencode command not found\n"})
-        else:
-            # Normal Mode: process commands directly
-            command = input_text
-            if "open" in command.lower():
-                app = command.lower().split("open")[-1].strip()
-                response = open_app(app)
-                msg_queue.put({"type": "insert", "text": f"Command: {command}\n{response}\n"})
-                speak(response)
-            else:
-                msg_queue.put({"type": "insert", "text": "Heard: " + command + "\n"})
+                    msg_queue.put({"type": "insert", "text": "AI assistance not available\n"})
+                finally:
+                    root.after(1000, lambda: glow_logo(False, False))  # Stop red glow
 
         manual_input_entry.delete(0, tk.END)  # Clear the input field
 
@@ -436,24 +600,24 @@ def main():
     input_frame = tk.Frame(root, bg="black")
     input_frame.pack(fill=tk.X, padx=10, pady=5)
 
-    manual_input_entry = tk.Entry(input_frame, font=("Arial", 12), bg="#333333", fg="white", insertbackground="white")
+    manual_input_entry = tk.Entry(input_frame, font=("Arial", 16), bg="#333333", fg="white", insertbackground="white")
     manual_input_entry.pack(fill=tk.X, pady=2)
     manual_input_entry.bind("<Return>", lambda e: submit_manual_input())
-    manual_input_entry.bind("<Key>", lambda e: glow_textbox(manual_input_entry, True))
+    manual_input_entry.bind("<Key>", lambda e: glow_textbox(manual_input_entry, True, "#FFFFFF"))
     manual_input_entry.bind("<FocusOut>", lambda e: glow_textbox(manual_input_entry, False))
 
     # Heard text section
     heard_frame = tk.Frame(root, bg="black")
     heard_frame.pack(fill=tk.X, padx=10, pady=5)
 
-    text_heard = tk.Text(heard_frame, height=4, width=50, font=("Arial", 12), bg="#333333", fg="green")
+    text_heard = tk.Text(heard_frame, height=4, width=50, font=("Arial", 16), bg="#333333", fg="green")
     text_heard.pack(fill=tk.X, pady=2)
 
     # Info messages section
     info_frame = tk.Frame(root, bg="black")
     info_frame.pack(fill=tk.X, padx=10, pady=5)
 
-    text_info = tk.Text(info_frame, height=6, width=50, font=("Arial", 12), bg="#333333", fg="yellow")
+    text_info = tk.Text(info_frame, height=6, width=50, font=("Arial", 16), bg="#333333", fg="yellow")
     text_info.pack(fill=tk.X, pady=2)
 
     # Initialize info text
@@ -465,23 +629,16 @@ def main():
     text_info.insert(tk.END, "Darvis is Listening...\n")
     update_gui()
 
-    # AI button in bottom left corner
-    ai_button = tk.Button(
-        root, text="AI Mode: OFF", command=toggle_ai, font=("Arial", 12),
-        bg="red", fg="white", width=15, relief="raised"
-    )
-    ai_button.pack(side=tk.BOTTOM, anchor=tk.W, padx=10, pady=10)
-
     # Logo centered at bottom
     try:
         logo_image = tk.PhotoImage(file="darvis-logo.png")
         logo_label = tk.Label(root, image=logo_image, bg="black")
         logo_label.image = logo_image  # Keep a reference to prevent garbage collection
-        logo_label.pack(side=tk.BOTTOM, pady=10)
+        logo_label.pack(side=tk.BOTTOM, pady=20)
     except Exception as e:
         # Fallback if image fails to load
-        logo_label = tk.Label(root, text="DARVIS", font=("Arial", 20), bg="black", fg="white")
-        logo_label.pack(side=tk.BOTTOM, pady=10)
+        logo_label = tk.Label(root, text="DARVIS", font=("Arial", 24), bg="black", fg="white")
+        logo_label.pack(side=tk.BOTTOM, pady=20)
 
     root.mainloop()
 
