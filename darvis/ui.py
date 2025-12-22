@@ -2,9 +2,17 @@
 User interface and GUI components for Darvis Voice Assistant.
 """
 
+import os
 import queue
 import tkinter as tk
 from typing import Optional
+from PIL import Image
+
+try:
+    import pystray
+    HAS_PYSTRAY = True
+except ImportError:
+    HAS_PYSTRAY = False
 
 from .config import (
     WAKE_WORDS, FONT_SIZE_NORMAL, FONT_SIZE_LARGE,
@@ -29,9 +37,12 @@ class DarvisGUI:
         self.text_heard = None
         self.text_info = None
         self.logo_label = None
+        self.tray_icon = None
 
         self.setup_ui()
         self.bind_events()
+        self.setup_system_tray()
+        self.setup_system_tray()
 
     def setup_ui(self):
         """Set up the main UI components."""
@@ -207,6 +218,75 @@ class DarvisGUI:
     def run(self):
         """Start the GUI event loop."""
         self.root.mainloop()
+
+    def setup_system_tray(self):
+        """Set up the system tray icon."""
+        if not HAS_PYSTRAY:
+            print("System tray not available - pystray not installed")
+            return
+
+        # Check if we have a display and system tray
+        if not os.environ.get('DISPLAY'):
+            print("No display detected - system tray not available")
+            return
+
+        try:
+            # Load the icon
+            icon_path = "darvis-logo.png"
+            if os.path.exists(icon_path):
+                icon_image = Image.open(icon_path)
+                # Convert to appropriate format for system tray
+                icon_image = icon_image.resize((64, 64))
+            else:
+                print("Warning: darvis-logo.png not found for system tray")
+                return
+
+            # Create tray menu
+            menu = pystray.Menu(
+                pystray.MenuItem("Show/Hide", self.toggle_window),
+                pystray.Menu.SEPARATOR,
+                pystray.MenuItem("Quit", self.quit_app)
+            )
+
+            # Create the tray icon
+            self.tray_icon = pystray.Icon(
+                "darvis",
+                icon_image,
+                "Darvis Voice Assistant",
+                menu
+            )
+
+            # Run the tray icon in a separate thread
+            import threading
+            tray_thread = threading.Thread(target=self._run_tray_icon, daemon=True)
+            tray_thread.start()
+
+            print("System tray icon initialized successfully")
+
+        except Exception as e:
+            print(f"System tray not available: {e}")
+            print("Application will run without system tray icon")
+
+    def _run_tray_icon(self):
+        """Run the tray icon with error handling."""
+        try:
+            self.tray_icon.run()
+        except Exception as e:
+            print(f"System tray icon failed: {e}")
+            # Continue running the application without tray icon
+
+    def toggle_window(self):
+        """Toggle the main window visibility."""
+        if self.root.state() == 'withdrawn':
+            self.root.deiconify()
+        else:
+            self.root.withdraw()
+
+    def quit_app(self):
+        """Quit the application."""
+        if self.tray_icon:
+            self.tray_icon.stop()
+        self.root.quit()
 
 
 # Global GUI instance for backward compatibility
