@@ -1,0 +1,57 @@
+# AGENTS.md - Development Guide for Darvis Voice Assistant
+
+## Build/Lint/Test Commands
+
+**Run Application:**
+- `source venv/bin/activate && python darvis.py` - Execute the main application with dependencies
+- Or create a simple script: `echo 'source venv/bin/activate && python darvis.py' > run.sh && chmod +x run.sh && ./run.sh`
+
+**Assets:**
+- `darvis-black.png` - Original high-resolution logo
+- `darvis-logo-hires.png` - High-resolution transparent version
+- `darvis-logo.png` - UI-sized logo (150x150) with transparent background
+
+**Linting (recommended setup):**
+- `flake8 darvis.py` - Check code style and errors
+- `pylint darvis.py` - Comprehensive code analysis
+- `black darvis.py --check` - Check formatting compliance
+
+**Formatting:**
+- `black darvis.py` - Auto-format code
+- `isort darvis.py` - Sort import statements
+
+**Testing (manual testing recommended):**
+- Run `python3 darvis.py` and test voice commands manually
+- Test microphone detection with `python3 -c "import darvis; darvis.list_microphones()"`
+- For automated tests (future): `pytest` (requires test setup)
+
+## Code Style Guidelines
+
+**Imports:**
+- Standard library imports first, then third-party packages
+- One import per line, use `import X` or `from X import Y`
+- Group related imports with blank lines between groups
+
+**Naming Conventions:**
+- Functions: `snake_case` (e.g., `speak()`, `listen()`)
+- Variables: `snake_case` (e.g., `wake_words`, `ai_mode`)
+- Constants: `UPPER_CASE` (not currently used)
+- Classes: `PascalCase` (not currently used)
+
+**Formatting:**
+- 4-space indentation
+- Line length: ~100 characters
+- Blank lines between function definitions
+- Use double quotes for strings
+
+**Error Handling:**
+- Use try/except blocks for external operations (microphone, subprocess, etc.)
+- Print error messages to console for debugging
+- Handle specific exceptions (OSError, TimeoutExpired, etc.)
+
+**Best Practices:**
+- Add docstrings to functions (future enhancement)
+- Use descriptive variable names
+- Separate concerns into functions
+- Handle global state carefully in threaded applications</content>
+<parameter name="filePath">/home/david/Code/github/darobbins85/darvis/AGENTS.md
