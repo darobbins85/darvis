@@ -24,8 +24,8 @@ echo ""
 # Check if required files exist
 echo -e "${YELLOW}Checking required files...${NC}"
 
-if [ ! -f "$PROJECT_DIR/darvis-logo.png" ]; then
-    echo -e "${RED}Error: darvis-logo.png not found in $PROJECT_DIR${NC}"
+if [ ! -f "$PROJECT_DIR/assets/darvis-logo.png" ]; then
+    echo -e "${RED}Error: assets/darvis-logo.png not found in $PROJECT_DIR${NC}"
     exit 1
 fi
 
@@ -54,7 +54,7 @@ echo ""
 
 # Copy icon
 echo -e "${YELLOW}Installing application icon...${NC}"
-cp "$PROJECT_DIR/darvis-logo.png" "$ICON_DIR/"
+cp "$PROJECT_DIR/assets/darvis-logo.png" "$ICON_DIR/"
 echo -e "${GREEN}✓ Icon installed to $ICON_DIR${NC}"
 echo ""
 

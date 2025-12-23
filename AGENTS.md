@@ -14,9 +14,9 @@
 - Updates desktop database for menu integration
 
 **Assets:**
-- `darvis-black.png` - Original high-resolution logo
-- `darvis-logo-hires.png` - High-resolution transparent version
-- `darvis-logo.png` - UI-sized logo (150x150) with transparent background
+- `assets/darvis-black.png` - Original high-resolution logo
+- `assets/darvis-logo-hires.png` - High-resolution transparent version
+- `assets/darvis-logo.png` - UI-sized logo (150x150) with transparent background
 - `darvis.desktop` - Desktop integration file
 - `launch-darvis.sh` - Application launcher script
 - `install-desktop.sh` - Desktop integration installer

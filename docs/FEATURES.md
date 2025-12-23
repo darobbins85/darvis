@@ -82,13 +82,28 @@ Darvis is a modern, interactive voice assistant with both voice and manual input
 
 ```
 darvis/
-├── darvis.py              # Main application
-├── darvis-logo.png        # UI logo (150x150)
-├── darvis-logo-hires.png  # High-res source (1024x1024)
-├── darvis-black.png       # Original logo
-├── AGENTS.md             # Development guide
-├── requirements.txt      # Python dependencies
-└── run.sh               # Launch script
+├── assets/                 # Visual assets
+│   ├── darvis-logo.png        # UI logo (150x150)
+│   ├── darvis-logo-hires.png  # High-res transparent
+│   └── darvis-black.png       # Original high-res logo
+├── darvis/                 # Main package
+│   ├── ui.py              # GUI and system tray
+│   ├── speech.py          # Voice recognition & TTS
+│   ├── apps.py            # App detection & launching
+│   ├── ai.py              # AI integration
+│   ├── config.py          # Configuration constants
+│   └── waybar_status.py   # Waybar IPC
+├── docs/                  # Documentation
+├── scripts/               # Utility scripts
+├── tests/                 # Unit tests
+├── archive/               # Legacy code
+├── AGENTS.md             # Development guidelines
+├── LICENSE               # MIT License
+├── requirements.txt      # Core dependencies
+├── requirements-dev.txt  # Development dependencies
+├── darvis.desktop        # Desktop integration
+├── install-desktop.sh    # Desktop installer
+└── launch-darvis.sh      # Application launcher
 ```
 
 ### Audio Requirements
