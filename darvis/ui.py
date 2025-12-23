@@ -132,8 +132,8 @@ Built with ❤️"""
             # Create base PhotoImage for tkinter
             self.base_logo_image = ImageTk.PhotoImage(base_img)
 
-            # Create wake word glow effect (green border) - more intense
-            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=5, intensity=0.8)
+            # Create wake word glow effect (green border) - very intense and visible
+            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=6, intensity=1.0)
             self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
 
             # Create AI glow effect (red eyes) - more intense for Terminator effect
@@ -193,15 +193,15 @@ Built with ❤️"""
         width, height = image.size
         eye_glow = image.copy()
 
-        # Create eye glow regions (approximate positions for dramatic effect)
+        # Create eye glow regions (adjusted positions for better alignment)
         eye_regions = [
-            (width//2 - 25, height//3 - 15, width//2 - 2, height//3 + 8),   # Left eye - larger
-            (width//2 + 2, height//3 - 15, width//2 + 25, height//3 + 8),   # Right eye - larger
+            (width//2 - 20, height//3 - 8, width//2 - 5, height//3 + 8),   # Left eye - moved down and closer
+            (width//2 + 5, height//3 - 8, width//2 + 20, height//3 + 8),   # Right eye - moved down and closer
         ]
 
-        # Create a more dramatic glow effect
-        glow_radius = 8  # Much larger glow radius
-        max_alpha = 240  # More intense glow
+        # Create a more dramatic glow effect with brighter center
+        glow_radius = 10  # Even larger glow radius for better visibility
+        max_alpha = 255  # Maximum brightness
 
         # Apply intense glow to eye regions with larger radius
         for x in range(width):
@@ -215,8 +215,14 @@ Built with ❤️"""
                     distance = ((x - eye_center_x) ** 2 + (y - eye_center_y) ** 2) ** 0.5
 
                     if distance <= glow_radius:
-                        # Create intense radial glow effect
-                        alpha = int(max_alpha * (1 - distance/glow_radius) ** 0.5)  # Exponential falloff
+                        # Create intense radial glow effect with brighter center
+                        if distance <= 2:  # Very center - maximum brightness
+                            alpha = max_alpha
+                        elif distance <= 4:  # Near center - very bright
+                            alpha = int(max_alpha * 0.9)
+                        else:  # Outer glow - exponential falloff
+                            alpha = int(max_alpha * (1 - (distance-4)/(glow_radius-4)) ** 0.7)
+
                         if alpha > 0:
                             r, g, b, a = eye_glow.getpixel((x, y))
                             # More aggressive color blending for dramatic effect
