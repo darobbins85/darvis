@@ -60,102 +60,6 @@ class DarvisGUI:
         self.ai_glow_image = None
         self.current_logo_state = "normal"
 
-    def load_logo_images(self):
-        """Load and create enhanced logo images with glow effects."""
-        try:
-            # Load base image
-            base_img = Image.open("assets/darvis-logo.png").convert("RGBA")
-
-            # Create base PhotoImage for tkinter
-            self.base_logo_image = ImageTk.PhotoImage(base_img)
-
-            # Create wake word glow effect (green border)
-            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=3)
-            self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
-
-            # Create AI glow effect (red eyes)
-            ai_glow = self.create_eye_glow(base_img, (255, 0, 0, 255))
-            self.ai_glow_image = ImageTk.PhotoImage(ai_glow)
-
-        except Exception as e:
-            print(f"Failed to create enhanced logo effects: {e}")
-            # Fallback to basic image
-            self.base_logo_image = ImageTk.PhotoImage(Image.open("assets/darvis-logo.png").convert("RGBA"))
-
-    def create_border_glow(self, image, glow_color, blur_radius=3):
-        """Create a glowing border effect around the image."""
-        # Create a larger canvas for the glow
-        width, height = image.size
-        glow_size = blur_radius * 2
-        canvas_size = (width + glow_size * 2, height + glow_size * 2)
-
-        # Create glow layer
-        glow_layer = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
-
-        # Draw the original image in the center
-        glow_layer.paste(image, (glow_size, glow_size), image)
-
-        # Create border glow effect
-        border_glow = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
-
-        # Add glow around the edges
-        for x in range(glow_size):
-            for y in range(glow_size):
-                if x == 0 or y == 0 or x == glow_size-1 or y == glow_size-1:
-                    # Draw glow pixels around the border
-                    glow_alpha = int(255 * (1 - (x + y) / (glow_size * 2)))
-                    if glow_alpha > 0:
-                        border_glow.putpixel((x, y), glow_color[:3] + (glow_alpha,))
-                        border_glow.putpixel((width + glow_size + x, y), glow_color[:3] + (glow_alpha,))
-                        border_glow.putpixel((x, height + glow_size + y), glow_color[:3] + (glow_alpha,))
-                        border_glow.putpixel((width + glow_size + x, height + glow_size + y), glow_color[:3] + (glow_alpha,))
-
-        # Apply gaussian blur to the glow
-        border_glow = border_glow.filter(ImageFilter.GaussianBlur(radius=blur_radius/2))
-
-        # Composite the original image over the glow
-        result = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
-        result.paste(border_glow, (0, 0), border_glow)
-        result.paste(image, (glow_size, glow_size), image)
-
-        return result
-
-    def create_eye_glow(self, image, eye_color):
-        """Create a red glow effect in the eyes of the face."""
-        # This is a simplified implementation - in a real scenario,
-        # you'd need to detect the eye regions in the image
-        # For now, we'll create a general glow effect
-
-        width, height = image.size
-        eye_glow = image.copy()
-
-        # Create eye glow regions (approximate positions - would need image analysis for precision)
-        # Assuming eyes are in the upper portion of the face
-        eye_regions = [
-            (width//2 - 20, height//3 - 10, width//2 - 5, height//3 + 5),  # Left eye
-            (width//2 + 5, height//3 - 10, width//2 + 20, height//3 + 5),  # Right eye
-        ]
-
-        # Apply glow to eye regions
-        for x in range(width):
-            for y in range(height):
-                for eye_region in eye_regions:
-                    ex1, ey1, ex2, ey2 = eye_region
-                    if ex1 <= x <= ex2 and ey1 <= y <= ey2:
-                        # Create glow effect around eyes
-                        distance = min(abs(x - ex1), abs(x - ex2), abs(y - ey1), abs(y - ey2))
-                        if distance <= 3:  # Within glow radius
-                            alpha = int(180 * (1 - distance/3))  # Fade with distance
-                            if alpha > 0:
-                                r, g, b, a = eye_glow.getpixel((x, y))
-                                # Blend with glow color
-                                new_r = int((r * (255 - alpha) + eye_color[0] * alpha) / 255)
-                                new_g = int((g * (255 - alpha) + eye_color[1] * alpha) / 255)
-                                new_b = int((b * (255 - alpha) + eye_color[2] * alpha) / 255)
-                                eye_glow.putpixel((x, y), (new_r, new_g, new_b, a))
-
-        return eye_glow
-
         self.setup_ui()
         self.bind_events()
         self.setup_system_tray()
@@ -219,6 +123,103 @@ Version: 1.0.0
 Built with ❤️"""
         self.display_message(f"About Darvis:\n{about_text}\n")
 
+    def load_logo_images(self):
+        """Load and create enhanced logo images with glow effects."""
+        try:
+            # Load base image
+            base_img = Image.open("assets/darvis-logo.png").convert("RGBA")
+
+            # Create base PhotoImage for tkinter
+            self.base_logo_image = ImageTk.PhotoImage(base_img)
+
+            # Create wake word glow effect (green border)
+            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=3)
+            self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
+
+            # Create AI glow effect (red eyes)
+            ai_glow = self.create_eye_glow(base_img, (255, 0, 0, 255))
+            self.ai_glow_image = ImageTk.PhotoImage(ai_glow)
+
+        except Exception as e:
+            # Fallback to basic image
+            try:
+                self.base_logo_image = ImageTk.PhotoImage(Image.open("assets/darvis-logo.png").convert("RGBA"))
+            except Exception:
+                self.base_logo_image = None
+
+    def create_border_glow(self, image, glow_color, blur_radius=3):
+        """Create a glowing border effect around the image."""
+        # Create a larger canvas for the glow
+        width, height = image.size
+        glow_size = blur_radius * 2
+        canvas_size = (width + glow_size * 2, height + glow_size * 2)
+
+        # Create glow layer
+        glow_layer = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
+
+        # Draw the original image in the center
+        glow_layer.paste(image, (glow_size, glow_size), image)
+
+        # Create border glow effect
+        border_glow = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
+
+        # Add glow around the edges
+        for x in range(glow_size):
+            for y in range(glow_size):
+                if x == 0 or y == 0 or x == glow_size-1 or y == glow_size-1:
+                    # Draw glow pixels around the border
+                    glow_alpha = int(255 * (1 - (x + y) / (glow_size * 2)))
+                    if glow_alpha > 0:
+                        border_glow.putpixel((x, y), glow_color[:3] + (glow_alpha,))
+                        border_glow.putpixel((width + glow_size + x, y), glow_color[:3] + (glow_alpha,))
+                        border_glow.putpixel((x, height + glow_size + y), glow_color[:3] + (glow_alpha,))
+                        border_glow.putpixel((width + glow_size + x, height + glow_size + y), glow_color[:3] + (glow_alpha,))
+
+        # Apply gaussian blur to the glow
+        border_glow = border_glow.filter(ImageFilter.GaussianBlur(radius=blur_radius/2))
+
+        # Composite the original image over the glow
+        result = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
+        result.paste(border_glow, (0, 0), border_glow)
+        result.paste(image, (glow_size, glow_size), image)
+
+        return result
+
+    def create_eye_glow(self, image, eye_color):
+        """Create a red glow effect in the eyes of the face."""
+        # This is a simplified implementation - in a real scenario,
+        # you'd need to detect the eye regions in the image
+        # For now, we'll create a general glow effect
+
+        width, height = image.size
+        eye_glow = image.copy()
+
+        # Create eye glow regions (approximate positions - would need image analysis for precision)
+        eye_regions = [
+            (width//2 - 20, height//3 - 10, width//2 - 5, height//3 + 5),  # Left eye
+            (width//2 + 5, height//3 - 10, width//2 + 20, height//3 + 5),  # Right eye
+        ]
+
+        # Apply glow to eye regions
+        for x in range(width):
+            for y in range(height):
+                for eye_region in eye_regions:
+                    ex1, ey1, ex2, ey2 = eye_region
+                    if ex1 <= x <= ex2 and ey1 <= y <= ey2:
+                        # Create glow effect around eyes
+                        distance = min(abs(x - ex1), abs(x - ex2), abs(y - ey1), abs(y - ey2))
+                        if distance <= 3:  # Within glow radius
+                            alpha = int(180 * (1 - distance/3))  # Fade with distance
+                            if alpha > 0:
+                                r, g, b, a = eye_glow.getpixel((x, y))
+                                # Blend with glow color
+                                new_r = int((r * (255 - alpha) + eye_color[0] * alpha) / 255)
+                                new_g = int((g * (255 - alpha) + eye_color[1] * alpha) / 255)
+                                new_b = int((b * (255 - alpha) + eye_color[2] * alpha) / 255)
+                                eye_glow.putpixel((x, y), (new_r, new_g, new_b, a))
+
+        return eye_glow
+
     def setup_ui(self):
         """Set up the main UI components."""
         # Top frame for header and buttons (now just input)
@@ -276,7 +277,6 @@ Built with ❤️"""
             else:
                 raise Exception("Logo images failed to load")
         except Exception as e:
-            print(f"Enhanced logo loading failed: {e}")
             # Fallback if image fails to load
             self.logo_label = tk.Label(
                 self.root,
