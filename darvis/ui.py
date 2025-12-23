@@ -132,8 +132,8 @@ Built with ❤️"""
             # Create base PhotoImage for tkinter
             self.base_logo_image = ImageTk.PhotoImage(base_img)
 
-            # Create wake word glow effect (green border) - ultra intense for maximum visibility
-            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=8, intensity=1.2)
+            # Create wake word glow effect (green eyes) - same as AI but green
+            wake_glow = self.create_eye_glow(base_img, (0, 255, 0, 255))  # Green eyes for wake word
             self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
 
             # Create AI glow effect (red eyes) - more intense for Terminator effect
