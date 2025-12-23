@@ -10,13 +10,17 @@ from PIL import Image, ImageTk, ImageFilter
 
 try:
     import pystray
+
     HAS_PYSTRAY = True
 except ImportError:
     HAS_PYSTRAY = False
 
 from .config import (
-    WAKE_WORDS, FONT_SIZE_NORMAL, FONT_SIZE_LARGE,
-    GLOW_DURATION_MS, MSG_TYPES
+    WAKE_WORDS,
+    FONT_SIZE_NORMAL,
+    FONT_SIZE_LARGE,
+    GLOW_DURATION_MS,
+    MSG_TYPES,
 )
 from .speech import speak, listen
 from .apps import open_app
@@ -143,7 +147,8 @@ Built with ❤️"""
         self.stop_timer()  # Stop any existing timer
         self.timer_seconds = 0
         self.timer_active = True
-        self.timer_label.config(fg=color)
+        if self.timer_label:
+            self.timer_label.config(fg=color)
         self._update_timer_display()
         self.timer_callback = self.root.after(1000, self._countup_tick)
 
@@ -188,17 +193,23 @@ Built with ❤️"""
             self.base_logo_image = ImageTk.PhotoImage(base_img)
 
             # Create wake word glow effect (green eyes) - same as AI but green
-            wake_glow = self.create_eye_glow(base_img, (0, 255, 0, 255))  # Green eyes for wake word
+            wake_glow = self.create_eye_glow(
+                base_img, (0, 255, 0, 255)
+            )  # Green eyes for wake word
             self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
 
             # Create AI glow effect (red eyes) - more intense for Terminator effect
-            ai_glow = self.create_eye_glow(base_img, (255, 20, 20, 255))  # Slightly orange-tinted red
+            ai_glow = self.create_eye_glow(
+                base_img, (255, 20, 20, 255)
+            )  # Slightly orange-tinted red
             self.ai_glow_image = ImageTk.PhotoImage(ai_glow)
 
         except Exception as e:
             # Fallback to basic image
             try:
-                self.base_logo_image = ImageTk.PhotoImage(Image.open("assets/darvis-logo.png").convert("RGBA"))
+                self.base_logo_image = ImageTk.PhotoImage(
+                    Image.open("assets/darvis-logo.png").convert("RGBA")
+                )
             except Exception:
                 self.base_logo_image = None
 
@@ -222,19 +233,28 @@ Built with ❤️"""
         for x in range(glow_size):
             for y in range(glow_size):
                 # Create glow on all edges for better visibility
-                if (x <= 2 or y <= 2 or x >= glow_size-3 or y >= glow_size-3):
+                if x <= 2 or y <= 2 or x >= glow_size - 3 or y >= glow_size - 3:
                     # Calculate distance from edge for fade effect
-                    edge_distance = min(x, y, glow_size-1-x, glow_size-1-y)
+                    edge_distance = min(x, y, glow_size - 1 - x, glow_size - 1 - y)
                     glow_alpha = min(255, int(255 * intensity * (edge_distance / 3.0)))
                     if glow_alpha > 0:
                         # Apply glow to all four corners of the canvas
                         border_glow.putpixel((x, y), glow_color[:3] + (glow_alpha,))
-                        border_glow.putpixel((width + glow_size + x, y), glow_color[:3] + (glow_alpha,))
-                        border_glow.putpixel((x, height + glow_size + y), glow_color[:3] + (glow_alpha,))
-                        border_glow.putpixel((width + glow_size + x, height + glow_size + y), glow_color[:3] + (glow_alpha,))
+                        border_glow.putpixel(
+                            (width + glow_size + x, y), glow_color[:3] + (glow_alpha,)
+                        )
+                        border_glow.putpixel(
+                            (x, height + glow_size + y), glow_color[:3] + (glow_alpha,)
+                        )
+                        border_glow.putpixel(
+                            (width + glow_size + x, height + glow_size + y),
+                            glow_color[:3] + (glow_alpha,),
+                        )
 
         # Apply gaussian blur to the glow
-        border_glow = border_glow.filter(ImageFilter.GaussianBlur(radius=blur_radius/2))
+        border_glow = border_glow.filter(
+            ImageFilter.GaussianBlur(radius=blur_radius / 2)
+        )
 
         # Composite the original image over the glow
         result = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
@@ -250,8 +270,18 @@ Built with ❤️"""
 
         # Create eye glow regions (closer together for perfect alignment)
         eye_regions = [
-            (width//2 - 17, height//3 - 8, width//2 - 2, height//3 + 8),   # Left eye - even closer
-            (width//2 + 2, height//3 - 8, width//2 + 17, height//3 + 8),   # Right eye - even closer
+            (
+                width // 2 - 17,
+                height // 3 - 8,
+                width // 2 - 2,
+                height // 3 + 8,
+            ),  # Left eye - even closer
+            (
+                width // 2 + 2,
+                height // 3 - 8,
+                width // 2 + 17,
+                height // 3 + 8,
+            ),  # Right eye - even closer
         ]
 
         # Create a more dramatic glow effect with brighter center
@@ -267,7 +297,9 @@ Built with ❤️"""
                     eye_center_y = (ey1 + ey2) // 2
 
                     # Calculate distance from eye center
-                    distance = ((x - eye_center_x) ** 2 + (y - eye_center_y) ** 2) ** 0.5
+                    distance = (
+                        (x - eye_center_x) ** 2 + (y - eye_center_y) ** 2
+                    ) ** 0.5
 
                     if distance <= glow_radius:
                         # Create intense radial glow effect with brighter center
@@ -276,16 +308,27 @@ Built with ❤️"""
                         elif distance <= 4:  # Near center - very bright
                             alpha = int(max_alpha * 0.9)
                         else:  # Outer glow - exponential falloff
-                            alpha = int(max_alpha * (1 - (distance-4)/(glow_radius-4)) ** 0.7)
+                            alpha = int(
+                                max_alpha
+                                * (1 - (distance - 4) / (glow_radius - 4)) ** 0.7
+                            )
 
                         if alpha > 0:
                             r, g, b, a = eye_glow.getpixel((x, y))
                             # More aggressive color blending for dramatic effect
                             blend_factor = alpha / 255.0
-                            new_r = int(eye_color[0] * blend_factor + r * (1 - blend_factor))
-                            new_g = int(eye_color[1] * blend_factor + g * (1 - blend_factor))
-                            new_b = int(eye_color[2] * blend_factor + b * (1 - blend_factor))
-                            eye_glow.putpixel((x, y), (new_r, new_g, new_b, max(a, alpha)))
+                            new_r = int(
+                                eye_color[0] * blend_factor + r * (1 - blend_factor)
+                            )
+                            new_g = int(
+                                eye_color[1] * blend_factor + g * (1 - blend_factor)
+                            )
+                            new_b = int(
+                                eye_color[2] * blend_factor + b * (1 - blend_factor)
+                            )
+                            eye_glow.putpixel(
+                                (x, y), (new_r, new_g, new_b, max(a, alpha))
+                            )
 
         return eye_glow
 
@@ -304,7 +347,7 @@ Built with ❤️"""
             font=("Arial", FONT_SIZE_NORMAL),
             bg="#333333",
             fg="white",
-            insertbackground="white"
+            insertbackground="white",
         )
         self.manual_input_entry.pack(fill=tk.X, pady=2)
         self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
@@ -319,7 +362,7 @@ Built with ❤️"""
             width=60,
             font=("Arial", FONT_SIZE_NORMAL),
             bg="#1a1a1a",  # Slightly darker background
-            fg="white"
+            fg="white",
         )
         self.text_info.pack(fill=tk.BOTH, expand=True, pady=2)
 
@@ -327,7 +370,9 @@ Built with ❤️"""
         try:
             self.load_logo_images()
             if self.base_logo_image:
-                self.logo_label = tk.Label(self.root, image=self.base_logo_image, bg="black")
+                self.logo_label = tk.Label(
+                    self.root, image=self.base_logo_image, bg="black"
+                )
                 self.logo_label.pack(side=tk.BOTTOM, pady=10)
 
                 # Add timer label above logo (but still below text area)
@@ -336,7 +381,7 @@ Built with ❤️"""
                     text="",
                     font=("Arial", FONT_SIZE_LARGE, "bold"),
                     bg="black",
-                    fg="white"
+                    fg="white",
                 )
                 self.timer_label.pack(side=tk.BOTTOM, pady=5)
             else:
@@ -348,7 +393,7 @@ Built with ❤️"""
                 text="DARVIS",
                 font=("Arial", FONT_SIZE_LARGE),
                 bg="black",
-                fg="white"
+                fg="white",
             )
             self.logo_label.pack(side=tk.BOTTOM, pady=20)
 
@@ -358,6 +403,7 @@ Built with ❤️"""
     def start_voice_processing(self):
         """Start the voice recognition processing thread."""
         import threading
+
         voice_thread = threading.Thread(target=self.listen_loop, daemon=True)
         voice_thread.start()
 
@@ -440,7 +486,9 @@ Built with ❤️"""
         except Exception as e:
             error_msg = str(e)
             if "opencode" in error_msg.lower():
-                self.display_message("AI assistance not available (opencode not found)\n")
+                self.display_message(
+                    "AI assistance not available (opencode not found)\n"
+                )
                 update_waybar_status("error", "AI not available")
             else:
                 self.display_message(f"AI error: {error_msg}\n")
@@ -453,6 +501,7 @@ Built with ❤️"""
     def start_message_processing(self):
         """Start processing messages from the queue."""
         import threading
+
         gui_thread = threading.Thread(target=self.update_gui, daemon=True)
         gui_thread.start()
 
@@ -466,10 +515,17 @@ Built with ❤️"""
                     # Heard text - green with "HEARD:" prefix
                     clean_text = msg["text"].replace("Darvis heard: ", "", 1)
                     self._insert_colored_text(f"HEARD: {clean_text}\n", "green")
-                elif "AI assistance not available" in msg["text"] or "AI error:" in msg["text"]:
+                elif (
+                    "AI assistance not available" in msg["text"]
+                    or "AI error:" in msg["text"]
+                ):
                     # Error messages - red with "LOG:" prefix
                     self._insert_colored_text(f"LOG: {msg['text']}\n", "red")
-                elif msg["text"].startswith("Command:") or msg["text"].startswith("AI Query:") or msg["text"].startswith("AI Response:"):
+                elif (
+                    msg["text"].startswith("Command:")
+                    or msg["text"].startswith("AI Query:")
+                    or msg["text"].startswith("AI Response:")
+                ):
                     # AI and command messages - yellow with "LOG:" prefix
                     self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
                 elif "New AI session" in msg["text"] or "Activated!" in msg["text"]:
@@ -511,12 +567,10 @@ Built with ❤️"""
         # Glow effects for manual input
         # No text box animations needed anymore
 
-
-
     def glow_logo(self, enable_glow, ai_active=False):
         """Add or remove sophisticated glow effect from logo."""
         try:
-            if not hasattr(self, 'logo_label') or not self.logo_label:
+            if not hasattr(self, "logo_label") or not self.logo_label:
                 return
 
             if enable_glow:
@@ -576,7 +630,9 @@ Built with ❤️"""
                 response = open_app(app)
                 if "not installed" in response or "not found" in response:
                     # Fall back to AI
-                    self.display_message(f"Local command failed, using AI assistance...\nAI Query: {command}\n")
+                    self.display_message(
+                        f"Local command failed, using AI assistance...\nAI Query: {command}\n"
+                    )
                     self.process_ai_command(command)
                 else:
                     self.display_message(f"Command: {command}\n{response}\n")
@@ -585,20 +641,6 @@ Built with ❤️"""
                 # Default to AI for unrecognized inputs
                 self.display_message(f"Using AI assistance...\nAI Query: {command}\n")
                 self.process_ai_command(command)
-
-    def process_ai_command(self, command: str):
-        """Process a command using AI assistance."""
-        self.glow_logo(True, True)  # Red glow for AI
-        try:
-            response, session_id = process_ai_query(command)
-            if session_id:
-                self.display_message(f"New AI session started (ID: {session_id})\n")
-            self.display_message(f"AI Response: {response}\n")
-            speak("Response received")
-        except Exception as e:
-            self.display_message(f"AI error: {str(e)}\n")
-        finally:
-            self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
 
     def display_message(self, message: str):
         """Display a message by adding it to the message queue."""
@@ -616,7 +658,7 @@ Built with ❤️"""
             return
 
         # Check if we have a display and system tray
-        if not os.environ.get('DISPLAY'):
+        if not os.environ.get("DISPLAY"):
             print("No display detected - system tray not available")
             return
 
@@ -635,26 +677,33 @@ Built with ❤️"""
                 pystray.MenuItem("Show/Hide Window", self.toggle_window),
                 pystray.MenuItem("Minimize to Tray", self.minimize_to_tray),
                 pystray.Menu.SEPARATOR,
-                pystray.MenuItem("Voice Commands", pystray.Menu(
-                    pystray.MenuItem("Say 'hey darvis'", lambda: None, enabled=False),
-                    pystray.MenuItem("Say 'open calculator'", lambda: None, enabled=False),
-                    pystray.MenuItem("Say 'what is 2+2'", lambda: None, enabled=False),
-                )),
+                pystray.MenuItem(
+                    "Voice Commands",
+                    pystray.Menu(
+                        pystray.MenuItem(
+                            "Say 'hey darvis'", lambda: None, enabled=False
+                        ),
+                        pystray.MenuItem(
+                            "Say 'open calculator'", lambda: None, enabled=False
+                        ),
+                        pystray.MenuItem(
+                            "Say 'what is 2+2'", lambda: None, enabled=False
+                        ),
+                    ),
+                ),
                 pystray.Menu.SEPARATOR,
                 pystray.MenuItem("About", self.show_about),
-                pystray.MenuItem("Quit", self.quit_app)
+                pystray.MenuItem("Quit", self.quit_app),
             )
 
             # Create the tray icon
             self.tray_icon = pystray.Icon(
-                "darvis",
-                icon_image,
-                "Darvis Voice Assistant",
-                menu
+                "darvis", icon_image, "Darvis Voice Assistant", menu
             )
 
             # Run the tray icon in a separate thread
             import threading
+
             tray_thread = threading.Thread(target=self._run_tray_icon, daemon=True)
             tray_thread.start()
 
@@ -674,7 +723,7 @@ Built with ❤️"""
 
     def toggle_window(self):
         """Toggle the main window visibility."""
-        if self.root.state() == 'withdrawn':
+        if self.root.state() == "withdrawn":
             self.root.deiconify()
         else:
             self.root.withdraw()
@@ -689,11 +738,13 @@ Built with ❤️"""
 # Global GUI instance for backward compatibility
 _gui_instance = None
 
+
 def init_gui():
     """Initialize the GUI instance."""
     global _gui_instance
     _gui_instance = DarvisGUI()
     return _gui_instance
+
 
 def get_gui():
     """Get the current GUI instance."""

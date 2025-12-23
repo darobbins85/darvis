@@ -44,9 +44,11 @@ Darvis is a modern, interactive voice assistant with both voice and manual input
 ┌─────────────────────────────────────┐
 │ [Manual Input Field]                │ ← White glow when typing
 ├─────────────────────────────────────┤
-│ [Speech Recognition Display]        │ ← Green glow during updates
+│ [Consolidated Info Panel]           │ ← Color-coded messages:
+│ HEARD: [voice input] (green)        │   • HEARD: voice input (green)
+│ LOG: [system messages] (yellow/red) │   • LOG: system/status (yellow/red)
 ├─────────────────────────────────────┤
-│ [System Messages & Responses]       │ ← Yellow glow on new messages
+│              [TIMER]                │ ← Green countdown / Red count-up
 ├─────────────────────────────────────┤
 │                        [DARVIS LOGO]│ ← Green glow on wake, red eyes for AI
 └─────────────────────────────────────┘
@@ -56,15 +58,22 @@ Darvis is a modern, interactive voice assistant with both voice and manual input
 
 - **Theme**: Dark background (#000000) with styled components
 - **Text Areas**: Dark grey backgrounds (#333333) with colored text
+- **Message Types**: Color-coded text in consolidated info panel
+  - Green: HEARD messages (voice input recognition)
+  - Yellow: LOG messages (system status, commands)
+  - Red: LOG messages (errors, warnings)
+- **Timer Display**: Large bold countdown/count-up above logo
 - **Glow Effects**: Dynamic highlights (2-3px border) for active elements
-- **Typography**: Arial 16pt for inputs, Arial 24pt for branding
+- **Typography**: Arial 16pt for inputs, Arial 24pt for branding and timers
 - **Cursor**: Blinking cursor in manual input field until selected
 
 ### Interactive Feedback
 
 - **Typing**: Manual input field glows white during text entry
-- **Speech Recognition**: Heard text area glows green while being updated
-- **System Responses**: Info area glows yellow when new messages arrive
+- **Speech Recognition**: "HEARD: [text]" appears in green when voice input recognized
+- **System Messages**: "LOG: [message]" appears in yellow for status, red for errors
+- **Voice Timer**: Green countdown (8 seconds) shows remaining time for voice input
+- **AI Timer**: Red count-up shows elapsed time during AI processing
 - **Wake Word**: Logo glows green when activation phrases detected
 - **AI Processing**: Logo eyes glow red when AI (opencode) is being invoked
 

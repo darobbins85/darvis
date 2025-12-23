@@ -39,16 +39,17 @@ python3 darvis.py  # Should start GUI without errors
 1. Run `python3 darvis.py`
 2. Verify window appears with title "Darvis Voice Assistant"
 3. Confirm presence of:
-   - Manual input text field (top)
-   - Speech recognition text area (middle)
-   - System messages text area (bottom)
-   - AI Mode button (bottom-left)
-   - Darvis logo (bottom-center)
+    - Manual input text field (top)
+    - Consolidated info panel (middle) with color-coded messages
+    - Timer display (above logo)
+    - Darvis logo (bottom-center) with glow effects
 
 **Expected Results**:
 - ✅ Window opens with dark theme
 - ✅ All UI elements visible and properly positioned
-- ✅ "Darvis is Listening..." message appears in system area
+- ✅ "Darvis is Listening..." message appears in info panel
+- ✅ Timer area is empty initially
+- ✅ Logo loads with glow capabilities
 - ✅ No console errors
 
 ### 2. Manual Input Functionality
@@ -67,7 +68,8 @@ python3 darvis.py  # Should start GUI without errors
 - ✅ Green flash when Enter pressed
 - ✅ Input field clears after submission
 - ✅ Browser opens YouTube
-- ✅ "Opening youtube" appears in system messages
+- ✅ "LOG: Command: open youtube" appears in yellow
+- ✅ "LOG: Opening youtube" appears in yellow
 
 #### Test Case: INPUT-002 - AI Mode Manual Input
 **Objective**: Test manual input with AI mode enabled
@@ -108,10 +110,12 @@ python3 darvis.py  # Should start GUI without errors
 4. Observe application launch
 
 **Expected Results**:
-- ✅ Wake word triggers activation
-- ✅ Voice command recognized and displayed
+- ✅ Wake word triggers activation with green logo glow
+- ✅ Green countdown timer appears (8 seconds)
+- ✅ Voice command appears as "HEARD: open calculator" in green
+- ✅ Timer stops when command processed
 - ✅ Calculator application opens
-- ✅ Success message in system area
+- ✅ "LOG: Command: open calculator" appears in yellow
 
 ### 4. AI Mode Functionality
 
@@ -138,8 +142,12 @@ python3 darvis.py  # Should start GUI without errors
 3. Wait for AI response
 
 **Expected Results**:
-- ✅ AI query sent to processing system
-- ✅ Response appears in system messages
+- ✅ Logo eyes glow red during AI processing
+- ✅ Red count-up timer appears and increments
+- ✅ "LOG: Using AI assistance..." appears in yellow
+- ✅ "LOG: AI Query: explain recursion in programming" appears in yellow
+- ✅ AI response appears as "LOG: AI Response: [response]" in yellow
+- ✅ Timer stops when response received
 - ✅ No timeout errors
 - ✅ Response is relevant to query
 
@@ -210,6 +218,37 @@ python3 darvis.py  # Should start GUI without errors
 - ✅ Green borders appear (2-3px)
 - ✅ Effects last 1 second then disappear
 - ✅ No performance impact from effects
+
+#### Test Case: GFX-002 - Timer System
+**Objective**: Verify countdown and count-up timers work correctly
+
+**Steps**:
+1. Say "hey darvis" → observe green countdown timer (8 seconds)
+2. Wait for timer to count down or speak command to stop it
+3. Say "hey darvis" then ask AI question → observe red count-up timer
+4. Wait for AI response and timer to stop
+
+**Expected Results**:
+- ✅ Green countdown starts at 8 and decreases by 1 each second
+- ✅ Timer stops when voice command is processed
+- ✅ Red count-up starts at 0 and increases during AI processing
+- ✅ Timer stops when AI response is received
+- ✅ Timer displays above logo with appropriate colors
+
+#### Test Case: GFX-003 - Color-Coded Messages
+**Objective**: Verify message routing and color coding in consolidated info panel
+
+**Steps**:
+1. Say "hey darvis open youtube" → check for green "HEARD:" message
+2. Submit manual command → check for yellow "LOG:" messages
+3. Trigger AI query → check for yellow "LOG:" status messages
+4. Cause an error (e.g., AI unavailable) → check for red "LOG:" messages
+
+**Expected Results**:
+- ✅ Voice input appears as "HEARD: [text]" in green
+- ✅ System status appears as "LOG: [message]" in yellow
+- ✅ Errors appear as "LOG: [error]" in red
+- ✅ Messages auto-scroll and display in consolidated panel
 
 ### 8. Error Handling
 

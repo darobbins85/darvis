@@ -3,7 +3,7 @@
 ## Build/Lint/Test Commands
 
 **Run Application:**
-- `source venv/bin/activate && python darvis.py` - Execute the main application with dependencies
+- `source venv/bin/activate && python3 -m darvis.ui` - Execute the main application with dependencies
 - `./launch-darvis.sh` - Clean launcher script with proper environment setup
 - Desktop menu: Search for "Darvis Voice Assistant" after running `./install-desktop.sh`
 
@@ -22,18 +22,18 @@
 - `install-desktop.sh` - Desktop integration installer
 
 **Linting (recommended setup):**
-- `flake8 darvis.py` - Check code style and errors
-- `pylint darvis.py` - Comprehensive code analysis
-- `black darvis.py --check` - Check formatting compliance
+- `flake8 darvis/` - Check code style and errors across all modules
+- `pylint darvis/` - Comprehensive code analysis
+- `black darvis/ --check` - Check formatting compliance
 
 **Formatting:**
-- `black darvis.py` - Auto-format code
-- `isort darvis.py` - Sort import statements
+- `black darvis/` - Auto-format all modules
+- `isort darvis/` - Sort import statements across modules
 
 **Testing (manual testing recommended):**
-- Run `python3 darvis.py` and test voice commands manually
-- Test microphone detection with `python3 -c "import darvis; darvis.list_microphones()"`
-- For automated tests (future): `pytest` (requires test setup)
+- Run `python3 -m darvis.ui` and test voice commands manually
+- Test microphone detection with `python3 -c "import darvis.speech; darvis.speech.list_microphones()"`
+- For automated tests: `pytest` (run existing test suite)
 
 ## Code Style Guidelines
 
