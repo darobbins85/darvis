@@ -132,12 +132,12 @@ Built with ❤️"""
             # Create base PhotoImage for tkinter
             self.base_logo_image = ImageTk.PhotoImage(base_img)
 
-            # Create wake word glow effect (green border)
-            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=3)
+            # Create wake word glow effect (green border) - more intense
+            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=5, intensity=0.8)
             self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
 
-            # Create AI glow effect (red eyes)
-            ai_glow = self.create_eye_glow(base_img, (255, 0, 0, 255))
+            # Create AI glow effect (red eyes) - more intense for Terminator effect
+            ai_glow = self.create_eye_glow(base_img, (255, 20, 20, 255))  # Slightly orange-tinted red
             self.ai_glow_image = ImageTk.PhotoImage(ai_glow)
 
         except Exception as e:
@@ -147,7 +147,7 @@ Built with ❤️"""
             except Exception:
                 self.base_logo_image = None
 
-    def create_border_glow(self, image, glow_color, blur_radius=3):
+    def create_border_glow(self, image, glow_color, blur_radius=3, intensity=0.6):
         """Create a glowing border effect around the image."""
         # Create a larger canvas for the glow
         width, height = image.size
@@ -163,13 +163,16 @@ Built with ❤️"""
         # Create border glow effect
         border_glow = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
 
-        # Add glow around the edges
+        # Add glow around the edges - more intense and visible
         for x in range(glow_size):
             for y in range(glow_size):
-                if x == 0 or y == 0 or x == glow_size-1 or y == glow_size-1:
-                    # Draw glow pixels around the border
-                    glow_alpha = int(255 * (1 - (x + y) / (glow_size * 2)))
+                # Create glow on all edges for better visibility
+                if (x <= 2 or y <= 2 or x >= glow_size-3 or y >= glow_size-3):
+                    # Calculate distance from edge for fade effect
+                    edge_distance = min(x, y, glow_size-1-x, glow_size-1-y)
+                    glow_alpha = int(255 * intensity * (edge_distance / 3.0))
                     if glow_alpha > 0:
+                        # Apply glow to all four corners of the canvas
                         border_glow.putpixel((x, y), glow_color[:3] + (glow_alpha,))
                         border_glow.putpixel((width + glow_size + x, y), glow_color[:3] + (glow_alpha,))
                         border_glow.putpixel((x, height + glow_size + y), glow_color[:3] + (glow_alpha,))
@@ -186,37 +189,42 @@ Built with ❤️"""
         return result
 
     def create_eye_glow(self, image, eye_color):
-        """Create a red glow effect in the eyes of the face."""
-        # This is a simplified implementation - in a real scenario,
-        # you'd need to detect the eye regions in the image
-        # For now, we'll create a general glow effect
-
+        """Create a dramatic red glow effect in the eyes of the face - Terminator style."""
         width, height = image.size
         eye_glow = image.copy()
 
-        # Create eye glow regions (approximate positions - would need image analysis for precision)
+        # Create eye glow regions (approximate positions for dramatic effect)
         eye_regions = [
-            (width//2 - 20, height//3 - 10, width//2 - 5, height//3 + 5),  # Left eye
-            (width//2 + 5, height//3 - 10, width//2 + 20, height//3 + 5),  # Right eye
+            (width//2 - 25, height//3 - 15, width//2 - 2, height//3 + 8),   # Left eye - larger
+            (width//2 + 2, height//3 - 15, width//2 + 25, height//3 + 8),   # Right eye - larger
         ]
 
-        # Apply glow to eye regions
+        # Create a more dramatic glow effect
+        glow_radius = 8  # Much larger glow radius
+        max_alpha = 240  # More intense glow
+
+        # Apply intense glow to eye regions with larger radius
         for x in range(width):
             for y in range(height):
                 for eye_region in eye_regions:
                     ex1, ey1, ex2, ey2 = eye_region
-                    if ex1 <= x <= ex2 and ey1 <= y <= ey2:
-                        # Create glow effect around eyes
-                        distance = min(abs(x - ex1), abs(x - ex2), abs(y - ey1), abs(y - ey2))
-                        if distance <= 3:  # Within glow radius
-                            alpha = int(180 * (1 - distance/3))  # Fade with distance
-                            if alpha > 0:
-                                r, g, b, a = eye_glow.getpixel((x, y))
-                                # Blend with glow color
-                                new_r = int((r * (255 - alpha) + eye_color[0] * alpha) / 255)
-                                new_g = int((g * (255 - alpha) + eye_color[1] * alpha) / 255)
-                                new_b = int((b * (255 - alpha) + eye_color[2] * alpha) / 255)
-                                eye_glow.putpixel((x, y), (new_r, new_g, new_b, a))
+                    eye_center_x = (ex1 + ex2) // 2
+                    eye_center_y = (ey1 + ey2) // 2
+
+                    # Calculate distance from eye center
+                    distance = ((x - eye_center_x) ** 2 + (y - eye_center_y) ** 2) ** 0.5
+
+                    if distance <= glow_radius:
+                        # Create intense radial glow effect
+                        alpha = int(max_alpha * (1 - distance/glow_radius) ** 0.5)  # Exponential falloff
+                        if alpha > 0:
+                            r, g, b, a = eye_glow.getpixel((x, y))
+                            # More aggressive color blending for dramatic effect
+                            blend_factor = alpha / 255.0
+                            new_r = int(eye_color[0] * blend_factor + r * (1 - blend_factor))
+                            new_g = int(eye_color[1] * blend_factor + g * (1 - blend_factor))
+                            new_b = int(eye_color[2] * blend_factor + b * (1 - blend_factor))
+                            eye_glow.putpixel((x, y), (new_r, new_g, new_b, max(a, alpha)))
 
         return eye_glow
 
