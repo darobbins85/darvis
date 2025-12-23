@@ -133,9 +133,10 @@ Built with ❤️"""
         self.stop_timer()  # Stop any existing timer
         self.timer_seconds = seconds
         self.timer_active = True
-        self.timer_label.config(fg=color)
-        self._update_timer_display()
-        self.timer_callback = self.root.after(1000, self._countdown_tick)
+        if self.timer_label:
+            self.timer_label.config(fg=color)
+            self._update_timer_display()
+            self.timer_callback = self.root.after(1000, self._countdown_tick)
 
     def start_countup_timer(self, color="red"):
         """Start a count-up timer with specified color."""
@@ -327,9 +328,9 @@ Built with ❤️"""
             self.load_logo_images()
             if self.base_logo_image:
                 self.logo_label = tk.Label(self.root, image=self.base_logo_image, bg="black")
-                self.logo_label.pack(side=tk.BOTTOM, pady=5)
+                self.logo_label.pack(side=tk.BOTTOM, pady=10)
 
-                # Add timer label below logo
+                # Add timer label above logo (but still below text area)
                 self.timer_label = tk.Label(
                     self.root,
                     text="",
@@ -367,16 +368,35 @@ Built with ❤️"""
             try:
                 text = listen()
                 if text:
-                    activated = any(wake in text.lower() for wake in self.wake_words)
+                    text_lower = text.lower()
+                    activated = any(wake in text_lower for wake in self.wake_words)
                     if activated:
                         # Trigger wake word glow
                         self.msg_queue.put({"type": "wake_word_detected"})
-                        listening_for_command = True
-                        # Trigger manual activation when wake word is detected
-                        self.manual_activate()
-                        # Stop glowing after activation completes
-                        self.msg_queue.put({"type": "wake_word_end"})
-                        listening_for_command = False
+
+                        # Extract command from wake word phrase (e.g., "hey darvis open youtube" -> "open youtube")
+                        command = None
+                        for wake in self.wake_words:
+                            if wake in text_lower:
+                                # Remove wake word and extract command
+                                command_part = text_lower.replace(wake, "", 1).strip()
+                                if command_part:
+                                    command = command_part
+                                break
+
+                        if command:
+                            # Wake word + command in one utterance
+                            self.display_message("Activated!\n")
+                            speak("Activated!")
+                            self.start_countdown_timer(seconds=8, color="green")
+                            self.process_command(command, "voice")
+                            self.msg_queue.put({"type": "wake_word_end"})
+                        else:
+                            # Just wake word - listen for separate command
+                            listening_for_command = True
+                            self.manual_activate()
+                            self.msg_queue.put({"type": "wake_word_end"})
+                            listening_for_command = False
                     else:
                         self.msg_queue.put(
                             {"type": "insert", "text": "Darvis heard: " + text + "\n"}
@@ -581,23 +601,9 @@ Built with ❤️"""
             self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
 
     def display_message(self, message: str):
-        """Display a message in the appropriate text area."""
-        if message.startswith("Darvis heard:") or message.startswith("Heard:"):
-            # Remove prefix and show in heard area
-            clean_text = message.replace("Darvis heard: ", "").replace("Heard: ", "")
-            self.glow_textbox(self.text_heard, True)
-            self.text_heard.insert(tk.END, clean_text)
-            self.text_heard.see(tk.END)
-            self.root.after(GLOW_DURATION_MS, lambda: self.glow_textbox(self.text_heard, False))
-        else:
-            # Show in info area
-            if "AI Response:" in message or "Command:" in message:
-                self.glow_textbox(self.text_info, True, "#FFFF00")  # Yellow glow
-            else:
-                self.glow_textbox(self.text_info, True, "#FFFF00")  # Yellow glow
-            self.text_info.insert(tk.END, message)
-            self.text_info.see(tk.END)
-            self.root.after(GLOW_DURATION_MS, lambda: self.glow_textbox(self.text_info, False))
+        """Display a message by adding it to the message queue."""
+        # Put the message in the queue for the GUI thread to handle
+        self.msg_queue.put({"type": "insert", "text": message})
 
     def run(self):
         """Start the GUI event loop."""
