@@ -132,8 +132,8 @@ Built with ❤️"""
             # Create base PhotoImage for tkinter
             self.base_logo_image = ImageTk.PhotoImage(base_img)
 
-            # Create wake word glow effect (green border) - very intense and visible
-            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=6, intensity=1.0)
+            # Create wake word glow effect (green border) - ultra intense for maximum visibility
+            wake_glow = self.create_border_glow(base_img, (0, 255, 0, 255), blur_radius=8, intensity=1.2)
             self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
 
             # Create AI glow effect (red eyes) - more intense for Terminator effect
@@ -170,7 +170,7 @@ Built with ❤️"""
                 if (x <= 2 or y <= 2 or x >= glow_size-3 or y >= glow_size-3):
                     # Calculate distance from edge for fade effect
                     edge_distance = min(x, y, glow_size-1-x, glow_size-1-y)
-                    glow_alpha = int(255 * intensity * (edge_distance / 3.0))
+                    glow_alpha = min(255, int(255 * intensity * (edge_distance / 3.0)))
                     if glow_alpha > 0:
                         # Apply glow to all four corners of the canvas
                         border_glow.putpixel((x, y), glow_color[:3] + (glow_alpha,))
@@ -193,10 +193,10 @@ Built with ❤️"""
         width, height = image.size
         eye_glow = image.copy()
 
-        # Create eye glow regions (adjusted positions for better alignment)
+        # Create eye glow regions (closer together for perfect alignment)
         eye_regions = [
-            (width//2 - 20, height//3 - 8, width//2 - 5, height//3 + 8),   # Left eye - moved down and closer
-            (width//2 + 5, height//3 - 8, width//2 + 20, height//3 + 8),   # Right eye - moved down and closer
+            (width//2 - 17, height//3 - 8, width//2 - 2, height//3 + 8),   # Left eye - even closer
+            (width//2 + 2, height//3 - 8, width//2 + 17, height//3 + 8),   # Right eye - even closer
         ]
 
         # Create a more dramatic glow effect with brighter center
