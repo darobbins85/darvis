@@ -60,6 +60,12 @@ class DarvisGUI:
         self.ai_glow_image = None
         self.current_logo_state = "normal"
 
+        # Timer variables
+        self.timer_label = None
+        self.timer_active = False
+        self.timer_seconds = 0
+        self.timer_callback = None
+
         self.setup_ui()
         self.bind_events()
         self.setup_system_tray()
@@ -122,6 +128,55 @@ Features:
 Version: 1.0.0
 Built with ❤️"""
         self.display_message(f"About Darvis:\n{about_text}\n")
+
+    def start_countdown_timer(self, seconds=8, color="green"):
+        """Start a countdown timer with specified color."""
+        self.stop_timer()  # Stop any existing timer
+        self.timer_seconds = seconds
+        self.timer_active = True
+        self.timer_label.config(fg=color)
+        self._update_timer_display()
+        self.timer_callback = self.root.after(1000, self._countdown_tick)
+
+    def start_countup_timer(self, color="red"):
+        """Start a count-up timer with specified color."""
+        self.stop_timer()  # Stop any existing timer
+        self.timer_seconds = 0
+        self.timer_active = True
+        self.timer_label.config(fg=color)
+        self._update_timer_display()
+        self.timer_callback = self.root.after(1000, self._countup_tick)
+
+    def stop_timer(self):
+        """Stop the active timer."""
+        if self.timer_callback:
+            self.root.after_cancel(self.timer_callback)
+            self.timer_callback = None
+        self.timer_active = False
+        if self.timer_label:
+            self.timer_label.config(text="")
+
+    def _countdown_tick(self):
+        """Handle countdown timer tick."""
+        if self.timer_active and self.timer_seconds > 0:
+            self.timer_seconds -= 1
+            self._update_timer_display()
+            if self.timer_seconds > 0:
+                self.timer_callback = self.root.after(1000, self._countdown_tick)
+            else:
+                self.stop_timer()
+
+    def _countup_tick(self):
+        """Handle count-up timer tick."""
+        if self.timer_active:
+            self.timer_seconds += 1
+            self._update_timer_display()
+            self.timer_callback = self.root.after(1000, self._countup_tick)
+
+    def _update_timer_display(self):
+        """Update the timer label display."""
+        if self.timer_label and self.timer_active:
+            self.timer_label.config(text=str(self.timer_seconds))
 
     def load_logo_images(self):
         """Load and create enhanced logo images with glow effects."""
@@ -287,7 +342,17 @@ Built with ❤️"""
             self.load_logo_images()
             if self.base_logo_image:
                 self.logo_label = tk.Label(self.root, image=self.base_logo_image, bg="black")
-                self.logo_label.pack(side=tk.BOTTOM, pady=20)
+                self.logo_label.pack(side=tk.BOTTOM, pady=5)
+
+                # Add timer label below logo
+                self.timer_label = tk.Label(
+                    self.root,
+                    text="",
+                    font=("Arial", FONT_SIZE_LARGE, "bold"),
+                    bg="black",
+                    fg="white"
+                )
+                self.timer_label.pack(side=tk.BOTTOM, pady=5)
             else:
                 raise Exception("Logo images failed to load")
         except Exception as e:
@@ -327,6 +392,7 @@ Built with ❤️"""
                         # Stop glowing after activation completes
                         self.msg_queue.put({"type": "wake_word_end"})
                         listening_for_command = False
+                        break  # Exit listening loop after wake word processing
                     else:
                         self.msg_queue.put(
                             {"type": "insert", "text": "Darvis heard: " + text + "\n"}
@@ -340,15 +406,25 @@ Built with ❤️"""
         self.display_message("Activated!\n")
         speak("Activated!")
 
+        # Start countdown timer for command input
+        self.start_countdown_timer(seconds=8, color="green")
+
         # Listen for the actual command
         command = listen()
         if command:
             self.process_command(command, "voice")
+        else:
+            # No command heard, stop timer
+            self.stop_timer()
 
     def process_ai_command(self, command: str):
         """Process a command using AI assistance."""
         self.glow_logo(True, True)  # Red glow for AI
         update_waybar_status("thinking", f"Thinking about: {command[:30]}...")
+
+        # Start count-up timer for AI processing
+        self.start_countup_timer(color="red")
+
         try:
             response, session_id = process_ai_query(command)
             if session_id:
@@ -366,6 +442,8 @@ Built with ❤️"""
                 self.display_message(f"AI error: {error_msg}\n")
                 update_waybar_status("error", f"AI error: {error_msg[:50]}")
         finally:
+            # Stop timer and glow after processing
+            self.stop_timer()
             self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
 
     def start_message_processing(self):
@@ -438,7 +516,7 @@ Built with ❤️"""
                     self.logo_label.image = self.ai_glow_image  # Keep reference
                     self.current_logo_state = "ai"
                 elif self.wake_glow_image:
-                    # Green border glow for wake word
+                    # Green eye glow for wake word
                     self.logo_label.config(image=self.wake_glow_image)
                     self.logo_label.image = self.wake_glow_image  # Keep reference
                     self.current_logo_state = "wake"
@@ -448,6 +526,8 @@ Built with ❤️"""
                     self.logo_label.config(image=self.base_logo_image)
                     self.logo_label.image = self.base_logo_image  # Keep reference
                 self.current_logo_state = "normal"
+                # Stop any active timer when returning to normal state
+                self.stop_timer()
         except AttributeError:
             pass  # logo_label not available
 
@@ -465,6 +545,9 @@ Built with ❤️"""
 
     def process_command(self, command: str, source: str):
         """Process a command with intelligent AI fallback."""
+        # Stop countdown timer since command was received
+        self.stop_timer()
+
         command_lower = command.lower()
 
         # Check if it's a local command first
