@@ -35,7 +35,6 @@ class DarvisGUI:
         # Initialize variables
         self.msg_queue = queue.Queue()
         self.manual_input_entry = None
-        self.text_heard = None
         self.text_info = None
         self.logo_label = None
         self.tray_icon = None
@@ -309,33 +308,19 @@ Built with ❤️"""
         self.manual_input_entry.pack(fill=tk.X, pady=2)
         self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
 
-        # Heard text section
-        heard_frame = tk.Frame(self.root, bg="black")
-        heard_frame.pack(fill=tk.X, padx=10, pady=5)
-
-        self.text_heard = tk.Text(
-            heard_frame,
-            height=4,
-            width=50,
-            font=("Arial", FONT_SIZE_NORMAL),
-            bg="#333333",
-            fg="green"
-        )
-        self.text_heard.pack(fill=tk.X, pady=2)
-
-        # Info messages section
+        # Information panel (consolidated - replaces both heard and info sections)
         info_frame = tk.Frame(self.root, bg="black")
-        info_frame.pack(fill=tk.X, padx=10, pady=5)
+        info_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
         self.text_info = tk.Text(
             info_frame,
-            height=6,
-            width=50,
+            height=15,  # Much larger to reach above the image
+            width=60,
             font=("Arial", FONT_SIZE_NORMAL),
-            bg="#333333",
-            fg="yellow"
+            bg="#1a1a1a",  # Slightly darker background
+            fg="white"
         )
-        self.text_info.pack(fill=tk.X, pady=2)
+        self.text_info.pack(fill=tk.BOTH, expand=True, pady=2)
 
         # Logo centered at bottom with enhanced visual effects
         try:
@@ -392,7 +377,6 @@ Built with ❤️"""
                         # Stop glowing after activation completes
                         self.msg_queue.put({"type": "wake_word_end"})
                         listening_for_command = False
-                        break  # Exit listening loop after wake word processing
                     else:
                         self.msg_queue.put(
                             {"type": "insert", "text": "Darvis heard: " + text + "\n"}
@@ -453,33 +437,30 @@ Built with ❤️"""
         gui_thread.start()
 
     def update_gui(self):
-        """Process messages from the queue and update GUI."""
+        """Process messages from the queue and update consolidated info panel."""
         try:
             msg = self.msg_queue.get_nowait()
             if msg["type"] == "insert":
-                # Route messages to appropriate text widgets
+                # Route all messages to the consolidated info panel with appropriate formatting
                 if msg["text"].startswith("Darvis heard:"):
-                    # Remove the "Darvis heard:" prefix and just show the text
+                    # Heard text - green with "HEARD:" prefix
                     clean_text = msg["text"].replace("Darvis heard: ", "", 1)
-                    # Start glow effect during insertion
-                    self.glow_textbox(self.text_heard, True)
-                    self.text_heard.insert(tk.END, clean_text)
-                    self.text_heard.see(tk.END)
-                    # Keep glowing for a moment then stop
-                    self.root.after(1500, lambda: self.glow_textbox(self.text_heard, False))
+                    self._insert_colored_text(f"HEARD: {clean_text}\n", "green")
+                elif "AI assistance not available" in msg["text"] or "AI error:" in msg["text"]:
+                    # Error messages - red with "LOG:" prefix
+                    self._insert_colored_text(f"LOG: {msg['text']}\n", "red")
                 elif msg["text"].startswith("Command:") or msg["text"].startswith("AI Query:") or msg["text"].startswith("AI Response:"):
-                    self.text_info.insert(tk.END, msg["text"])
-                    self.text_info.see(tk.END)
-                    # Glow effect for info text
-                    self.glow_textbox(self.text_info, True, "#FFFF00")  # Yellow glow
-                    self.root.after(1000, lambda: self.glow_textbox(self.text_info, False))
+                    # AI and command messages - yellow with "LOG:" prefix
+                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
+                elif "New AI session" in msg["text"] or "Activated!" in msg["text"]:
+                    # Status messages - yellow with "LOG:" prefix
+                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
+                elif "Using AI assistance" in msg["text"]:
+                    # AI initiation - yellow with "LOG:" prefix
+                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
                 else:
-                    # General info messages (like "Activated!")
-                    self.text_info.insert(tk.END, msg["text"])
-                    self.text_info.see(tk.END)
-                    # Glow effect for info text
-                    self.glow_textbox(self.text_info, True, "#FFFF00")  # Yellow glow
-                    self.root.after(1000, lambda: self.glow_textbox(self.text_info, False))
+                    # General messages - white
+                    self._insert_colored_text(f"{msg['text']}\n", "white")
             elif msg["type"] == "wake_word_detected":
                 # Glow logo when wake word is detected
                 self.glow_logo(True)
@@ -490,18 +471,27 @@ Built with ❤️"""
         # Schedule next check
         self.root.after(100, self.update_gui)
 
+    def _insert_colored_text(self, text, color):
+        """Insert colored text into the info panel."""
+        if self.text_info:
+            # Insert with appropriate color tag
+            start_pos = self.text_info.index(tk.END + "-1c")
+            self.text_info.insert(tk.END, text)
+            end_pos = self.text_info.index(tk.END + "-1c")
+
+            # Apply color tag
+            self.text_info.tag_add(color, start_pos, end_pos)
+            self.text_info.tag_config(color, foreground=color)
+
+            # Auto-scroll to bottom
+            self.text_info.see(tk.END)
+
     def bind_events(self):
         """Bind UI events for interactive elements."""
         # Glow effects for manual input
-        self.manual_input_entry.bind("<Key>", lambda e: self.glow_textbox(self.manual_input_entry, True, "#FFFFFF"))
-        self.manual_input_entry.bind("<FocusOut>", lambda e: self.glow_textbox(self.manual_input_entry, False))
+        # No text box animations needed anymore
 
-    def glow_textbox(self, widget, enable_glow, color="#00FF00"):
-        """Add or remove glow effect from text widgets."""
-        if enable_glow:
-            widget.config(highlightbackground=color, highlightcolor=color, highlightthickness=2)
-        else:
-            widget.config(highlightbackground="black", highlightcolor="black", highlightthickness=0)
+
 
     def glow_logo(self, enable_glow, ai_active=False):
         """Add or remove sophisticated glow effect from logo."""
