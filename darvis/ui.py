@@ -484,38 +484,109 @@ Built with ❤️ using Python & Tkinter"""
         return eye_glow
 
     def setup_ui(self):
-        """Set up the conversational AI assistant UI."""
-        # Initialize speech bubble states
-        self.speech_bubble_text = ""
-        self.speech_bubble_state = "listening"  # listening, awake, processing, speaking
-        self.help_messages = [
-            "How can I help you?",
-            "What can I do for you?",
-            "I'm here to assist!",
-            "What would you like me to do?",
-            "Ready for your command!",
-            "How may I assist you?",
-            "What do you need?",
-            "I'm listening...",
-            "Tell me what you need!",
-            "I'm ready to help!"
-        ]
+        """Set up the modern UI components."""
+        # Modern color scheme
+        self.colors = {
+            'bg_primary': '#0f0f23',      # Deep dark blue
+            'bg_secondary': '#1a1a2e',    # Dark blue-gray
+            'bg_accent': '#16213e',       # Medium dark blue
+            'text_primary': '#e0e0e0',    # Light gray
+            'text_accent': '#00d4ff',     # Cyan accent
+            'success': '#00ff88',         # Green
+            'warning': '#ffaa00',         # Orange
+        }
 
-        # Main container
-        main_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        self.root.configure(bg=self.colors['bg_primary'])
 
-        # Large Darvis image at top
-        self._create_darvis_image_section(main_frame)
+        # Header with title
+        header_frame = tk.Frame(self.root, bg=self.colors['bg_secondary'])
+        header_frame.pack(fill=tk.X, padx=20, pady=(20, 10))
 
-        # Speech bubble in middle
-        self._create_speech_bubble_section(main_frame)
+        title_label = tk.Label(
+            header_frame,
+            text="🤖 DARVIS",
+            font=('JetBrains Mono', 18, 'bold'),
+            fg=self.colors['text_accent'],
+            bg=self.colors['bg_secondary']
+        )
+        title_label.pack(side=tk.LEFT)
 
-        # Input field at bottom
-        self._create_bottom_input_section(main_frame)
+        # Main content area
+        content_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
+        content_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 
-        # Set initial speech bubble
-        self.update_speech_bubble("I'm listening...", "listening")
+        # Large logo at top
+        try:
+            # Load and resize logo to 2x size
+            base_img = Image.open("assets/darvis-logo.png").convert("RGBA")
+            width, height = base_img.size
+            large_img = base_img.resize((width * 2, height * 2), Image.Resampling.LANCZOS)
+            self.logo_image = ImageTk.PhotoImage(large_img)
+
+            logo_label = tk.Label(content_frame, image=self.logo_image, bg=self.colors['bg_primary'])
+            logo_label.pack(pady=(0, 20))
+        except Exception:
+            # Emoji fallback
+            logo_label = tk.Label(
+                content_frame,
+                text="🤖",
+                font=('JetBrains Mono', 64),
+                fg=self.colors['text_accent'],
+                bg=self.colors['bg_primary']
+            )
+            logo_label.pack(pady=(0, 20))
+
+        # Speech bubble effect
+        bubble_frame = tk.Frame(content_frame, bg=self.colors['bg_primary'])
+        bubble_frame.pack(pady=(0, 20))
+
+        self.speech_label = tk.Label(
+            bubble_frame,
+            text="I'm listening...",
+            font=('JetBrains Mono', 14),
+            fg=self.colors['text_primary'],
+            bg=self.colors['bg_accent'],
+            relief='raised',
+            bd=2,
+            padx=20,
+            pady=15
+        )
+        self.speech_label.pack()
+
+        # Timer display
+        self.timer_label = tk.Label(
+            content_frame,
+            text="",
+            font=('JetBrains Mono', 20, 'bold'),
+            fg=self.colors['text_accent'],
+            bg=self.colors['bg_primary']
+        )
+        self.timer_label.pack(pady=(0, 20))
+
+        # Input section at bottom
+        input_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
+        input_frame.pack(fill=tk.X, padx=20, pady=(0, 20))
+
+        input_title = tk.Label(
+            input_frame,
+            text="💬 Manual Input:",
+            font=('JetBrains Mono', 12, 'bold'),
+            fg=self.colors['text_primary'],
+            bg=self.colors['bg_primary']
+        )
+        input_title.pack(anchor=tk.W, pady=(0, 5))
+
+        self.manual_input_entry = tk.Entry(
+            input_frame,
+            font=('JetBrains Mono', 12),
+            bg=self.colors['bg_secondary'],
+            fg=self.colors['text_primary'],
+            insertbackground=self.colors['text_accent'],
+            relief='flat',
+            bd=2
+        )
+        self.manual_input_entry.pack(fill=tk.X, pady=(0, 5), ipady=8)
+        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
 
     def _create_darvis_image_section(self, parent):
         """Create the large Darvis image section at the top."""
