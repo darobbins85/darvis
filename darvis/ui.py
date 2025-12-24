@@ -59,30 +59,7 @@ class DarvisGUI:
         # This will be called after text_info is created
         pass
 
-    def _create_header_section(self, parent):
-        """Create the header section with title and status."""
-        header_frame = tk.Frame(parent, bg=self.colors['bg_secondary'], relief='raised', bd=1)
-        header_frame.pack(fill=tk.X, pady=(0, 15))
-
-        # Title
-        title_label = tk.Label(
-            header_frame,
-            text="🎯 DARVIS",
-            font=('JetBrains Mono', 16, 'bold'),
-            fg=self.colors['text_accent'],
-            bg=self.colors['bg_secondary']
-        )
-        title_label.pack(side=tk.LEFT, padx=15, pady=10)
-
-        # Status indicator
-        self.status_label = tk.Label(
-            header_frame,
-            text="🎤 Listening...",
-            font=('JetBrains Mono', 10),
-            fg=self.colors['text_secondary'],
-            bg=self.colors['bg_secondary']
-        )
-        self.status_label.pack(side=tk.RIGHT, padx=15, pady=10)
+    # Remove header section - going for cleaner look
 
     def _create_input_section(self, parent):
         """Create the input section with modern styling."""
@@ -507,25 +484,151 @@ Built with ❤️ using Python & Tkinter"""
         return eye_glow
 
     def setup_ui(self):
-        """Set up the main UI components with modern design."""
-        # Configure text tags for colored output
-        self._setup_text_tags()
+        """Set up the conversational AI assistant UI."""
+        # Initialize speech bubble states
+        self.speech_bubble_text = ""
+        self.speech_bubble_state = "listening"  # listening, awake, processing, speaking
+        self.help_messages = [
+            "How can I help you?",
+            "What can I do for you?",
+            "I'm here to assist!",
+            "What would you like me to do?",
+            "Ready for your command!",
+            "How may I assist you?",
+            "What do you need?",
+            "I'm listening...",
+            "Tell me what you need!",
+            "I'm ready to help!"
+        ]
 
-        # Main container with padding
+        # Main container
         main_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
         main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
-        # Header section with title and status
-        self._create_header_section(main_frame)
+        # Large Darvis image at top
+        self._create_darvis_image_section(main_frame)
 
-        # Input section with modern styling
-        self._create_input_section(main_frame)
+        # Speech bubble in middle
+        self._create_speech_bubble_section(main_frame)
 
-        # Console/output section
-        self._create_console_section(main_frame)
+        # Input field at bottom
+        self._create_bottom_input_section(main_frame)
 
-        # Status and visual feedback section
-        self._create_status_section(main_frame)
+        # Set initial speech bubble
+        self.update_speech_bubble("I'm listening...", "listening")
+
+    def _create_darvis_image_section(self, parent):
+        """Create the large Darvis image section at the top."""
+        image_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
+        image_frame.pack(pady=(0, 20))
+
+        try:
+            # Load and resize logo to 2x size
+            base_img = Image.open("assets/darvis-logo.png").convert("RGBA")
+            width, height = base_img.size
+            large_img = base_img.resize((width * 2, height * 2), Image.Resampling.LANCZOS)
+            self.large_logo_image = ImageTk.PhotoImage(large_img)
+
+            self.logo_label = tk.Label(
+                image_frame, image=self.large_logo_image, bg=self.colors['bg_primary']
+            )
+        except Exception:
+            # Large emoji fallback
+            self.logo_label = tk.Label(
+                image_frame,
+                text="🤖",
+                font=('JetBrains Mono', 72),
+                fg=self.colors['text_accent'],
+                bg=self.colors['bg_primary']
+            )
+
+        self.logo_label.pack()
+
+    def _create_speech_bubble_section(self, parent):
+        """Create the speech bubble section in the middle."""
+        bubble_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
+        bubble_frame.pack(pady=(0, 20))
+
+        # Speech bubble container
+        self.speech_bubble = tk.Label(
+            bubble_frame,
+            text="",
+            font=('JetBrains Mono', 14),
+            fg=self.colors['text_primary'],
+            bg=self.colors['bg_accent'],
+            relief='raised',
+            bd=2,
+            padx=20,
+            pady=15,
+            wraplength=400
+        )
+        self.speech_bubble.pack()
+
+        # Add a pointer/tail to make it look like a speech bubble
+        pointer_label = tk.Label(
+            bubble_frame,
+            text="▼",
+            font=('JetBrains Mono', 16),
+            fg=self.colors['bg_accent'],
+            bg=self.colors['bg_primary']
+        )
+        pointer_label.pack(pady=(0, 10))
+
+    def _create_bottom_input_section(self, parent):
+        """Create the input section at the bottom."""
+        input_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
+        input_frame.pack(fill=tk.X, pady=(20, 0))
+
+        # Input label
+        input_label = tk.Label(
+            input_frame,
+            text="💬 Type your command:",
+            font=('JetBrains Mono', 11, 'bold'),
+            fg=self.colors['text_primary'],
+            bg=self.colors['bg_primary']
+        )
+        input_label.pack(anchor=tk.W, padx=5, pady=(0, 5))
+
+        # Modern styled entry
+        self.manual_input_entry = tk.Entry(
+            input_frame,
+            font=('JetBrains Mono', 12),
+            bg=self.colors['bg_accent'],
+            fg=self.colors['text_primary'],
+            insertbackground=self.colors['text_accent'],
+            relief='flat',
+            bd=0,
+            highlightthickness=2,
+            highlightcolor=self.colors['border'],
+            highlightbackground=self.colors['border']
+        )
+        self.manual_input_entry.pack(fill=tk.X, padx=5, pady=(0, 5), ipady=8)
+        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
+
+    def update_speech_bubble(self, text, state="normal"):
+        """Update the speech bubble with new text and styling."""
+        if self.speech_bubble:
+            self.speech_bubble_text = text
+            self.speech_bubble_state = state
+
+            # Color based on state
+            if state == "listening":
+                bg_color = self.colors['bg_secondary']
+                fg_color = self.colors['text_secondary']
+            elif state == "awake":
+                bg_color = self.colors['success']  # Green for awake
+                fg_color = self.colors['bg_primary']
+            elif state == "processing":
+                bg_color = self.colors['warning']  # Orange for processing
+                fg_color = self.colors['bg_primary']
+            elif state == "speaking":
+                bg_color = self.colors['text_accent']  # Cyan for speaking
+                fg_color = self.colors['bg_primary']
+            else:
+                bg_color = self.colors['bg_accent']
+                fg_color = self.colors['text_primary']
+
+            self.speech_bubble.config(text=text, bg=bg_color, fg=fg_color)
 
         # Logo centered at bottom with enhanced visual effects
         try:
@@ -558,10 +661,7 @@ Built with ❤️ using Python & Tkinter"""
             )
             self.logo_label.pack(side=tk.BOTTOM, pady=20)
 
-        # Initialize console with welcome message
-        self.display_message("🤖 Darvis Voice Assistant initialized and ready!\n", "header")
-        self.display_message("🎤 Listening for wake words: \"hey darvis\"\n", "accent")
-        self.display_message("💡 Try: \"open slack\" or \"open bluetooth manager\"\n\n", "muted")
+        # Speech bubble is already initialized to "I'm listening..."
 
     def start_voice_processing(self):
         """Start the voice recognition processing thread."""
@@ -595,7 +695,9 @@ Built with ❤️ using Python & Tkinter"""
 
                         if command:
                             # Wake word + command in one utterance
-                            self.display_message("Activated!\n")
+                            import random
+                            help_msg = random.choice(self.help_messages)
+                            self.update_speech_bubble(help_msg, "awake")
                             speak("Activated!")
                             self.start_countdown_timer(seconds=8, color="green")
                             self.process_command(command, "voice")
@@ -616,7 +718,9 @@ Built with ❤️ using Python & Tkinter"""
 
     def manual_activate(self):
         """Manually activate command listening mode."""
-        self.display_message("Activated!\n")
+        import random
+        help_msg = random.choice(self.help_messages)
+        self.update_speech_bubble(help_msg, "awake")
         speak("Activated!")
 
         # Start countdown timer for command input
@@ -627,8 +731,9 @@ Built with ❤️ using Python & Tkinter"""
         if command:
             self.process_command(command, "voice")
         else:
-            # No command heard, stop timer
+            # No command heard, stop timer and return to listening
             self.stop_timer()
+            self.update_speech_bubble("I'm listening...", "listening")
 
     def process_ai_command(self, command: str):
         """Process a command using AI assistance."""
@@ -673,24 +778,36 @@ Built with ❤️ using Python & Tkinter"""
         try:
             msg = self.msg_queue.get_nowait()
             if msg["type"] == "insert":
-                # Use provided tag or auto-detect based on content
-                tag = msg.get("tag")
-                if not tag:
-                    # Auto-detect tag based on content for backward compatibility
-                    if msg["text"].startswith("Darvis heard:"):
-                        tag = "success"  # Green for voice input
-                    elif "AI assistance not available" in msg["text"] or "AI error:" in msg["text"]:
-                        tag = "error"  # Red for errors
-                    elif msg["text"].startswith("Command:") or msg["text"].startswith("AI Query:") or msg["text"].startswith("AI Response:"):
-                        tag = "accent"  # Cyan for AI interactions
-                    elif "New AI session" in msg["text"] or "Activated!" in msg["text"]:
-                        tag = "warning"  # Orange for status
-                    elif "Using AI assistance" in msg["text"]:
-                        tag = "accent"  # Cyan for AI initiation
-                    else:
-                        tag = None  # Default text color
+                # Handle speech bubble updates instead of text output
+                text = msg["text"]
 
-                self._insert_colored_text(f"{msg['text']}\n", tag)
+                # Determine speech bubble state and content
+                if "Darvis heard:" in text:
+                    # Voice input detected - stay in current state
+                    pass
+                elif "Activated!" in text:
+                    # Wake word detected - switch to awake state with random help message
+                    import random
+                    help_msg = random.choice(self.help_messages)
+                    self.update_speech_bubble(help_msg, "awake")
+                elif "Using AI assistance" in text or "AI Query:" in text:
+                    # AI processing started
+                    self.update_speech_bubble("Thinking...", "processing")
+                elif "AI Response:" in text:
+                    # AI response ready
+                    response_text = text.replace("AI Response:", "").strip()
+                    self.update_speech_bubble(response_text, "speaking")
+                elif "Command:" in text:
+                    # Local command executed
+                    cmd_text = text.replace("Command:", "").strip()
+                    self.update_speech_bubble(f"Opening {cmd_text}...", "speaking")
+                elif "not installed" in text:
+                    # App not found
+                    self.update_speech_bubble("I couldn't find that application.", "error")
+                else:
+                    # Other messages - use as speech bubble if it's a user-visible message
+                    if not text.startswith("LOG:") and text.strip():
+                        self.update_speech_bubble(text.strip(), "speaking")
             elif msg["type"] == "wake_word_detected":
                 # Glow logo when wake word is detected
                 self.glow_logo(True)
