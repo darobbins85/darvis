@@ -418,10 +418,19 @@ Built with ❤️"""
             base_img = Image.open("assets/darvis-logo.png").convert("RGBA")
             width, height = base_img.size
             large_img = base_img.resize((width * 2, height * 2), Image.Resampling.LANCZOS)
-            self.large_logo_image = ImageTk.PhotoImage(large_img)
+
+            # Create base image
+            self.base_logo_image = ImageTk.PhotoImage(large_img)
+
+            # Create glow effects for the resized image
+            wake_glow = self.create_eye_glow(large_img, (0, 255, 0, 255))  # Green eyes
+            self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
+
+            ai_glow = self.create_eye_glow(large_img, (255, 20, 20, 255))  # Red eyes
+            self.ai_glow_image = ImageTk.PhotoImage(ai_glow)
 
             self.logo_label = tk.Label(
-                self.root, image=self.large_logo_image, bg=self.colors['bg_primary']
+                self.root, image=self.base_logo_image, bg=self.colors['bg_primary']
             )
             self.logo_label.pack(side=tk.BOTTOM, pady=15)
 
