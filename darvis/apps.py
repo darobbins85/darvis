@@ -34,6 +34,16 @@ def find_app_command(app_name: str) -> str:
         "gedit": ["gedit"],
         "calculator": ["galculator", "gnome-calculator", "kcalc", "speedcrunch"],
         "galculator": ["galculator"],
+        "bluetooth manager": ["blueman-manager"],
+        "bluetooth": ["blueman-manager"],
+        "bluetooth adapters": ["blueman-adapters"],
+        "system settings": ["gnome-settings-daemon", "systemsettings"],
+        "settings": ["gnome-control-center", "systemsettings"],
+        "network manager": ["nm-connection-editor", "networkmanager"],
+        "printer settings": ["system-config-printer"],
+        "volume control": ["pavucontrol", "alsamixer"],
+        "sound settings": ["pavucontrol"],
+        "display settings": ["arandr", "gnome-display-panel"],
         "steam": ["steam"],
         "signal": ["signal-desktop", "signal"],
         "discord": ["discord", "discord-canary"],
@@ -86,25 +96,38 @@ def find_app_command(app_name: str) -> str:
     for desktop_dir in DESKTOP_DIRS:
         if os.path.exists(desktop_dir):
             # Look for .desktop files that match the app name
-            for desktop_file in glob.glob(
-                os.path.join(desktop_dir, f"*{app_name_lower}*.desktop")
-            ):
-                try:
-                    exec_cmd = parse_desktop_file(desktop_file)
-                    if exec_cmd and is_command_available(exec_cmd.split()[0]):
-                        return exec_cmd
-                except:
-                    continue
+            # Try multiple variations: original, spaces replaced with hyphens, underscores
+            search_patterns = [
+                f"*{app_name_lower}*.desktop",
+                f"*{app_name_lower.replace(' ', '-') }*.desktop",
+                f"*{app_name_lower.replace(' ', '_') }*.desktop",
+            ]
 
-            # Also check for exact matches
-            exact_desktop = os.path.join(desktop_dir, f"{app_name_lower}.desktop")
-            if os.path.exists(exact_desktop):
-                try:
-                    exec_cmd = parse_desktop_file(exact_desktop)
-                    if exec_cmd and is_command_available(exec_cmd.split()[0]):
-                        return exec_cmd
-                except:
-                    continue
+            for pattern in search_patterns:
+                for desktop_file in glob.glob(os.path.join(desktop_dir, pattern)):
+                    try:
+                        exec_cmd = parse_desktop_file(desktop_file)
+                        if exec_cmd and is_command_available(exec_cmd.split()[0]):
+                            return exec_cmd
+                    except:
+                        continue
+
+            # Also check for exact matches with various naming patterns
+            exact_patterns = [
+                f"{app_name_lower}.desktop",
+                f"{app_name_lower.replace(' ', '-')}.desktop",
+                f"{app_name_lower.replace(' ', '_')}.desktop",
+            ]
+
+            for exact_pattern in exact_patterns:
+                exact_desktop = os.path.join(desktop_dir, exact_pattern)
+                if os.path.exists(exact_desktop):
+                    try:
+                        exec_cmd = parse_desktop_file(exact_desktop)
+                        if exec_cmd and is_command_available(exec_cmd.split()[0]):
+                            return exec_cmd
+                    except:
+                        continue
 
     # Check if the app name itself is a valid command
     if is_command_available(app_name_lower):

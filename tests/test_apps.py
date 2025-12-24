@@ -104,6 +104,35 @@ Type=Application
         assert result == "Opening basecamp"
         mock_popen.assert_called_once_with(["xdg-open", "https://basecamp.com"])
 
+    @patch('subprocess.Popen')
+    def test_open_app_various_web_services(self, mock_popen):
+        """Test various web services are properly handled."""
+        test_cases = [
+            ("slack", "https://slack.com"),
+            ("discord", "https://discord.com"),
+            ("zoom", "https://zoom.us"),
+            ("notion", "https://notion.so"),
+            ("jira", "https://jira.atlassian.com"),
+        ]
+
+        for service, expected_url in test_cases:
+            mock_popen.reset_mock()
+            result = open_app(service)
+            assert result == f"Opening {service}"
+            mock_popen.assert_called_once_with(["xdg-open", expected_url])
+
+    @patch('darvis.apps.find_app_command')
+    @patch('subprocess.Popen')
+    def test_open_app_bluetooth_manager(self, mock_popen, mock_find):
+        """Test opening bluetooth manager with space in name."""
+        mock_find.return_value = "blueman-manager"
+
+        result = open_app("bluetooth manager")
+
+        assert result == "Opening bluetooth manager"
+        mock_find.assert_called_once_with("bluetooth manager")
+        mock_popen.assert_called_once_with(["blueman-manager"])
+
     @patch('darvis.apps.find_app_command')
     @patch('subprocess.Popen')
     def test_open_app_local_app_success(self, mock_popen, mock_find):
