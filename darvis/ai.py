@@ -34,9 +34,9 @@ def process_ai_query(query: str) -> Tuple[str, str]:
 
     try:
         if current_session_id is None:
-            # First query: start new session
+            # First query: start new session with darvis agent
             result = subprocess.run(
-                ["opencode", "run", query], capture_output=True, text=True, timeout=60
+                ["opencode", "run", "--agent", "darvis", query], capture_output=True, text=True, timeout=60
             )
             response = (result.stdout or "").strip() or "No response"
 
