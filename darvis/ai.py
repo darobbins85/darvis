@@ -45,9 +45,11 @@ def process_ai_query(query: str) -> Tuple[str, str]:
 
             return response, current_session_id or ""
         else:
-            # Subsequent queries: use existing session
+            # Subsequent queries: use existing session with @darvis prefix
+            # This ensures the Build agent invokes the darvis agent
+            darvis_query = f"@darvis {query}"
             result = subprocess.run(
-                ["opencode", "run", "--session", current_session_id, query],
+                ["opencode", "run", "--session", current_session_id, darvis_query],
                 capture_output=True,
                 text=True,
                 timeout=60,
