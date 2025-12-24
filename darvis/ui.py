@@ -95,7 +95,7 @@ class DarvisGUI:
         self.root.focus_force()
 
         # Handle window close button (X) - minimize to tray instead of quit
-        self.root.protocol("WM_DELETE_WINDOW", self.minimize_to_tray)
+        self.root.protocol("WM_DELETE_WINDOW", self.quit_app)
 
         # Handle minimize events
         self.root.bind("<Unmap>", self.on_minimize)
@@ -608,6 +608,10 @@ Built with ❤️"""
 
     def bind_events(self):
         """Bind UI events for interactive elements."""
+        # Keyboard shortcuts for quitting
+        self.root.bind('<Control-q>', lambda e: self.quit_app())
+        self.root.bind('<Control-w>', lambda e: self.quit_app())
+
         # Glow effects for manual input
         # No text box animations needed anymore
 
