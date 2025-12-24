@@ -29,14 +29,14 @@ def find_app_command(app_name: str) -> str:
         "browser": ["firefox", "chromium", "chrome"],
         "firefox": ["firefox"],
         "chromium": ["chromium"],
-        "terminal": ["xterm", "gnome-terminal", "konsole", "terminator"],
-        "editor": ["gedit", "kate", "mousepad", "leafpad", "nano", "vim"],
+        "terminal": ["xterm", "gnome-terminal", "konsole", "terminator", "alacritty"],
+        "editor": ["gedit", "kate", "mousepad", "leafpad", "nano", "vim", "code", "vscode"],
         "gedit": ["gedit"],
         "calculator": ["galculator", "gnome-calculator", "kcalc", "speedcrunch"],
         "galculator": ["galculator"],
         "steam": ["steam"],
         "signal": ["signal-desktop", "signal"],
-        "discord": ["discord"],
+        "discord": ["discord", "discord-canary"],
         "slack": ["slack"],
         "spotify": ["spotify"],
         "vlc": ["vlc"],
@@ -49,6 +49,31 @@ def find_app_command(app_name: str) -> str:
         "inkscape": ["inkscape"],
         "blender": ["blender"],
         "krita": ["krita"],
+        # Productivity apps
+        "obsidian": ["obsidian"],
+        "notion": ["notion", "notion-app"],
+        "evernote": ["evernote"],
+        "onenote": ["onenote"],
+        "zoom": ["zoom", "zoom-client"],
+        "teams": ["teams", "teams-for-linux"],
+        "skype": ["skype", "skypeforlinux"],
+        "whatsapp": ["whatsapp", "whatsapp-desktop"],
+        "telegram": ["telegram", "telegram-desktop"],
+        # Development tools
+        "postman": ["postman"],
+        "insomnia": ["insomnia"],
+        "dbeaver": ["dbeaver"],
+        "mysql-workbench": ["mysql-workbench"],
+        # Graphics and media
+        "krita": ["krita"],
+        "scribus": ["scribus"],
+        "audacity": ["audacity"],
+        "kdenlive": ["kdenlive"],
+        "shotcut": ["shotcut"],
+        # Office and documents
+        "onlyoffice": ["onlyoffice", "onlyoffice-desktopeditors"],
+        "wps": ["wps", "wps-office"],
+        "libreoffice": ["libreoffice"],
     }
 
     # Check if we have a direct mapping
@@ -91,6 +116,11 @@ def find_app_command(app_name: str) -> str:
         f"{app_name_lower}-desktop",
         f"{app_name_lower}.bin",
         f"{app_name_lower}.sh",
+        f"{app_name_lower}-linux",
+        f"{app_name_lower}-client",
+        f"{app_name_lower}-app",
+        f"{app_name_lower}.AppImage",
+        f"{app_name_lower}-flatpak",
     ]
 
     for variation in variations:

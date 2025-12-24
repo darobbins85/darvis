@@ -96,6 +96,14 @@ Type=Application
         assert result == "Opening youtube"
         mock_popen.assert_called_once_with(["xdg-open", "https://youtube.com"])
 
+    @patch('subprocess.Popen')
+    def test_open_app_basecamp_web_service(self, mock_popen):
+        """Test opening Basecamp web service."""
+        result = open_app("basecamp")
+
+        assert result == "Opening basecamp"
+        mock_popen.assert_called_once_with(["xdg-open", "https://basecamp.com"])
+
     @patch('darvis.apps.find_app_command')
     @patch('subprocess.Popen')
     def test_open_app_local_app_success(self, mock_popen, mock_find):

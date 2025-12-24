@@ -25,6 +25,21 @@ WEB_SERVICES = {
     "github": "https://github.com",
     "netflix": "https://netflix.com",
     "spotify": "https://spotify.com",
+    "basecamp": "https://basecamp.com",
+    "slack": "https://slack.com",
+    "discord": "https://discord.com",
+    "zoom": "https://zoom.us",
+    "teams": "https://teams.microsoft.com",
+    "notion": "https://notion.so",
+    "figma": "https://figma.com",
+    "canva": "https://canva.com",
+    "drive": "https://drive.google.com",
+    "docs": "https://docs.google.com",
+    "calendar": "https://calendar.google.com",
+    "trello": "https://trello.com",
+    "asana": "https://asana.com",
+    "jira": "https://jira.atlassian.com",
+    "confluence": "https://confluence.atlassian.com",
 }
 
 # GUI configuration
