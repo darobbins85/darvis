@@ -422,12 +422,20 @@ Built with ❤️"""
             # Create base image
             self.base_logo_image = ImageTk.PhotoImage(large_img)
 
-            # Create glow effects for the resized image
-            wake_glow = self.create_eye_glow(large_img, (0, 255, 0, 255))  # Green eyes
-            self.wake_glow_image = ImageTk.PhotoImage(wake_glow)
+            # Create multiple glow effects for pulsing animation
+            # Full brightness glow
+            wake_glow_full = self.create_eye_glow(large_img, (0, 255, 0, 255))  # Green eyes
+            self.wake_glow_image = ImageTk.PhotoImage(wake_glow_full)
 
-            ai_glow = self.create_eye_glow(large_img, (255, 20, 20, 255))  # Red eyes
-            self.ai_glow_image = ImageTk.PhotoImage(ai_glow)
+            ai_glow_full = self.create_eye_glow(large_img, (255, 20, 20, 255))  # Red eyes
+            self.ai_glow_image = ImageTk.PhotoImage(ai_glow_full)
+
+            # Dim glow for pulsing (much lower intensity for better effect)
+            wake_glow_dim = self.create_eye_glow(large_img, (0, 80, 0, 80))  # Very dim green
+            self.wake_glow_dim_image = ImageTk.PhotoImage(wake_glow_dim)
+
+            ai_glow_dim = self.create_eye_glow(large_img, (80, 5, 5, 80))  # Very dim red
+            self.ai_glow_dim_image = ImageTk.PhotoImage(ai_glow_dim)
 
             self.logo_label = tk.Label(
                 self.root, image=self.base_logo_image, bg=self.colors['bg_primary']
@@ -680,7 +688,7 @@ Built with ❤️"""
 
         def pulse_step():
             if self.current_logo_state in ["wake", "ai"]:
-                # Alternate between bright and dim glow
+                # Alternate between bright and dim glow (no disappearing)
                 if self.pulse_state:
                     # Bright glow
                     if ai_active and self.ai_glow_image:
@@ -690,10 +698,13 @@ Built with ❤️"""
                         self.logo_label.config(image=self.wake_glow_image)
                         self.logo_label.image = self.wake_glow_image
                 else:
-                    # Dim glow (use base image with slight tint)
-                    if self.base_logo_image:
-                        self.logo_label.config(image=self.base_logo_image)
-                        self.logo_label.image = self.base_logo_image
+                    # Dim glow (still glowing, just less bright)
+                    if ai_active and hasattr(self, 'ai_glow_dim_image'):
+                        self.logo_label.config(image=self.ai_glow_dim_image)
+                        self.logo_label.image = self.ai_glow_dim_image
+                    elif hasattr(self, 'wake_glow_dim_image'):
+                        self.logo_label.config(image=self.wake_glow_dim_image)
+                        self.logo_label.image = self.wake_glow_dim_image
 
                 # Toggle pulse state and schedule next pulse
                 self.pulse_state = not self.pulse_state
