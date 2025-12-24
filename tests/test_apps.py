@@ -94,7 +94,6 @@ Type=Application
         result = open_app("youtube")
 
         assert result == "Opening youtube"
-        mock_popen.assert_called_with(["xdg-open", "https://www.youtube.com"])
         mock_popen.assert_called_once_with(["xdg-open", "https://youtube.com"])
 
     @patch('darvis.apps.find_app_command')

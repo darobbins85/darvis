@@ -4,6 +4,7 @@ Unit tests for the speech recognition module.
 
 import pytest
 from unittest.mock import patch, MagicMock
+from speech_recognition.exceptions import UnknownValueError, RequestError
 from darvis.speech import speak, listen, list_microphones
 
 
@@ -31,10 +32,18 @@ class TestSpeech:
         mock_engine.say.assert_called_once_with("Hello world")
         mock_engine.runAndWait.assert_called_once()
 
-    @patch('darvis.speech.pyttsx3')
-    def test_speak_tts_error(self, mock_pyttsx3):
+    @patch('builtins.__import__')
+    def test_speak_tts_error(self, mock_import):
         """Test TTS error handling."""
+        mock_pyttsx3 = MagicMock()
         mock_pyttsx3.init.side_effect = Exception("TTS failed")
+
+        def mock_import_func(name, *args, **kwargs):
+            if name == 'pyttsx3':
+                return mock_pyttsx3
+            return __import__(name, *args, **kwargs)
+
+        mock_import.side_effect = mock_import_func
 
         # Should not raise exception
         speak("Hello world")
@@ -61,18 +70,18 @@ class TestSpeech:
         mock_recognizer.listen.assert_called_once()
         mock_recognizer.recognize_google.assert_called_once_with(mock_audio)
 
-    @patch('darvis.speech.sr')
-    def test_listen_unknown_value_error(self, mock_sr):
+    @patch('speech_recognition.Recognizer')
+    @patch('speech_recognition.Microphone')
+    def test_listen_unknown_value_error(self, mock_microphone_class, mock_recognizer_class):
         """Test handling of unknown speech."""
         mock_recognizer = MagicMock()
         mock_microphone = MagicMock()
         mock_audio = MagicMock()
 
-        mock_sr.Recognizer.return_value = mock_recognizer
-        mock_sr.Microphone.return_value.__enter__ = MagicMock(return_value=mock_microphone)
-        mock_sr.Microphone.return_value.__exit__ = MagicMock(return_value=None)
+        mock_recognizer_class.return_value = mock_recognizer
+        mock_microphone_class.return_value.__enter__ = MagicMock(return_value=mock_microphone)
+        mock_microphone_class.return_value.__exit__ = MagicMock(return_value=None)
         mock_recognizer.listen.return_value = mock_audio
-        from speech_recognition import UnknownValueError
         mock_recognizer.recognize_google.side_effect = UnknownValueError()
 
         result = listen()
@@ -80,18 +89,18 @@ class TestSpeech:
         assert result == ""
         mock_recognizer.recognize_google.assert_called_once()
 
-    @patch('darvis.speech.sr')
-    def test_listen_request_error(self, mock_sr):
+    @patch('speech_recognition.Recognizer')
+    @patch('speech_recognition.Microphone')
+    def test_listen_request_error(self, mock_microphone_class, mock_recognizer_class):
         """Test handling of API errors."""
         mock_recognizer = MagicMock()
         mock_microphone = MagicMock()
         mock_audio = MagicMock()
 
-        mock_sr.Recognizer.return_value = mock_recognizer
-        mock_sr.Microphone.return_value.__enter__ = MagicMock(return_value=mock_microphone)
-        mock_sr.Microphone.return_value.__exit__ = MagicMock(return_value=None)
+        mock_recognizer_class.return_value = mock_recognizer
+        mock_microphone_class.return_value.__enter__ = MagicMock(return_value=mock_microphone)
+        mock_microphone_class.return_value.__exit__ = MagicMock(return_value=None)
         mock_recognizer.listen.return_value = mock_audio
-        from speech_recognition import RequestError
         mock_recognizer.recognize_google.side_effect = RequestError("API error")
 
         result = listen()
