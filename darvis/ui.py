@@ -34,146 +34,7 @@ class DarvisGUI:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Darvis Voice Assistant")
-
-        # Modern dark theme color palette
-        self.colors = {
-            'bg_primary': '#0f0f23',      # Deep dark blue-black
-            'bg_secondary': '#1a1a2e',    # Dark blue-gray
-            'bg_accent': '#16213e',       # Medium dark blue
-            'text_primary': '#e0e0e0',    # Light gray
-            'text_secondary': '#b0b0b0',  # Medium gray
-            'text_accent': '#00d4ff',     # Cyan accent
-            'border': '#2a2a4e',          # Subtle border
-            'success': '#00ff88',         # Green success
-            'warning': '#ffaa00',         # Orange warning
-            'error': '#ff4444',           # Red error
-            'glow_green': '#00ff88',      # Wake word glow
-            'glow_red': '#ff6b6b',        # AI processing glow
-        }
-
-        self.root.configure(bg=self.colors['bg_primary'])
-        self.root.option_add('*Font', ('JetBrains Mono', 10))  # Modern monospace font
-
-    def _setup_text_tags(self):
-        """Set up text tags for colored output in the console."""
-        # This will be called after text_info is created
-        pass
-
-    # Remove header section - going for cleaner look
-
-    def _create_input_section(self, parent):
-        """Create the input section with modern styling."""
-        input_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
-        input_frame.pack(fill=tk.X, pady=(0, 15))
-
-        # Input label
-        input_label = tk.Label(
-            input_frame,
-            text="💬 Command Input:",
-            font=('JetBrains Mono', 11, 'bold'),
-            fg=self.colors['text_primary'],
-            bg=self.colors['bg_primary']
-        )
-        input_label.pack(anchor=tk.W, padx=5, pady=(0, 5))
-
-        # Modern styled entry
-        self.manual_input_entry = tk.Entry(
-            input_frame,
-            font=('JetBrains Mono', 12),
-            bg=self.colors['bg_accent'],
-            fg=self.colors['text_primary'],
-            insertbackground=self.colors['text_accent'],
-            relief='flat',
-            bd=0,
-            highlightthickness=2,
-            highlightcolor=self.colors['border'],
-            highlightbackground=self.colors['border']
-        )
-        self.manual_input_entry.pack(fill=tk.X, padx=5, pady=(0, 5), ipady=8)
-        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
-
-    def _create_console_section(self, parent):
-        """Create the console/output section."""
-        console_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
-        console_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
-
-        # Console label
-        console_label = tk.Label(
-            console_frame,
-            text="📊 Console Output:",
-            font=('JetBrains Mono', 11, 'bold'),
-            fg=self.colors['text_primary'],
-            bg=self.colors['bg_primary']
-        )
-        console_label.pack(anchor=tk.W, padx=5, pady=(0, 5))
-
-        # Modern styled text widget
-        self.text_info = tk.Text(
-            console_frame,
-            height=12,
-            font=('JetBrains Mono', 10),
-            bg=self.colors['bg_secondary'],
-            fg=self.colors['text_primary'],
-            relief='flat',
-            bd=0,
-            highlightthickness=2,
-            highlightcolor=self.colors['border'],
-            highlightbackground=self.colors['border'],
-            wrap=tk.WORD,
-            padx=10,
-            pady=10
-        )
-        self.text_info.pack(fill=tk.BOTH, expand=True, padx=5, pady=(0, 5))
-
-        # Set up text tags for colored output
-        self._setup_text_tags()
-
-    def _create_status_section(self, parent):
-        """Create the status and visual feedback section."""
-        status_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
-        status_frame.pack(fill=tk.X)
-
-        # Timer display
-        self.timer_label = tk.Label(
-            status_frame,
-            text="",
-            font=('JetBrains Mono', 18, 'bold'),
-            fg=self.colors['text_accent'],
-            bg=self.colors['bg_primary']
-        )
-        self.timer_label.pack(side=tk.TOP, pady=(0, 10))
-
-        # Logo section
-        try:
-            self.load_logo_images()
-            if self.base_logo_image:
-                self.logo_label = tk.Label(
-                    status_frame, image=self.base_logo_image, bg=self.colors['bg_primary']
-                )
-                self.logo_label.pack(side=tk.BOTTOM, pady=5)
-            else:
-                raise Exception("Logo images failed to load")
-        except Exception:
-            # Modern fallback text logo
-            self.logo_label = tk.Label(
-                status_frame,
-                text="🤖\nDARVIS",
-                font=('JetBrains Mono', 24, 'bold'),
-                fg=self.colors['text_accent'],
-                bg=self.colors['bg_primary']
-            )
-            self.logo_label.pack(side=tk.BOTTOM, pady=5)
-
-    def _setup_text_tags(self):
-        """Set up text tags for colored output in the console."""
-        if self.text_info:
-            # Define color tags for different message types
-            self.text_info.tag_config("success", foreground=self.colors['success'])
-            self.text_info.tag_config("warning", foreground=self.colors['warning'])
-            self.text_info.tag_config("error", foreground=self.colors['error'])
-            self.text_info.tag_config("accent", foreground=self.colors['text_accent'])
-            self.text_info.tag_config("muted", foreground=self.colors['text_secondary'])
-            self.text_info.tag_config("header", foreground=self.colors['text_primary'], font=('JetBrains Mono', 10, 'bold'))
+        self.root.configure(bg="black")
 
         # Initialize variables
         self.msg_queue = queue.Queue()
@@ -219,28 +80,22 @@ class DarvisGUI:
 
     def setup_window_positioning(self):
         """Set up enhanced window positioning and behavior."""
-        # Modern window sizing
-        window_width = 700
-        window_height = 500
-
         # Center the window on the screen
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
+        window_width = 600
+        window_height = 400
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-
-        # Modern window appearance
-        self.root.resizable(True, True)
-        self.root.minsize(600, 400)
 
         # Make window visible and focused
         self.root.deiconify()
         self.root.lift()
         self.root.focus_force()
 
-        # Handle window close button (X) - quit application instead of minimize to tray
-        self.root.protocol("WM_DELETE_WINDOW", self.quit_app)
+        # Handle window close button (X) - minimize to tray instead of quit
+        self.root.protocol("WM_DELETE_WINDOW", self.minimize_to_tray)
 
         # Handle minimize events
         self.root.bind("<Unmap>", self.on_minimize)
@@ -261,27 +116,21 @@ class DarvisGUI:
 
     def show_about(self):
         """Show about dialog."""
-        about_text = """🤖 DARVIS VOICE ASSISTANT v2.0
+        about_text = """Darvis Voice Assistant
 
-A modern, cross-platform voice assistant with intelligent command processing and sleek UI design.
+A modern, cross-platform voice assistant
+with intelligent command processing.
 
-✨ Features:
-• 🎤 Voice wake word detection ("hey darvis")
-• 🧠 AI-powered responses via opencode
-• 🎨 Modern dark theme with visual effects
-• 📱 System tray integration
-• 📊 Waybar status support
-• 🚀 Smart app detection & launching
-• 🌐 21+ web services supported
-• 💻 30+ local applications
+Features:
+• Voice wake word detection
+• AI-powered responses
+• System tray integration
+• Waybar status support
+• Cross-platform compatibility
 
-🎯 Commands:
-• "open slack" → Opens Slack in browser
-• "open bluetooth manager" → Launches system settings
-• "what is the weather?" → AI response
-
-Built with ❤️ using Python & Tkinter"""
-        self.display_message(f"\n{about_text}\n", "header")
+Version: 1.0.0
+Built with ❤️"""
+        self.display_message(f"About Darvis:\n{about_text}\n")
 
     def start_countdown_timer(self, seconds=8, color="green"):
         """Start a countdown timer with specified color."""
@@ -484,97 +333,42 @@ Built with ❤️ using Python & Tkinter"""
         return eye_glow
 
     def setup_ui(self):
-        """Set up the modern UI components."""
-        # Modern color scheme
+        """Set up the main UI components with modern styling."""
+        # Modern dark theme colors
         self.colors = {
             'bg_primary': '#0f0f23',      # Deep dark blue
             'bg_secondary': '#1a1a2e',    # Dark blue-gray
-            'bg_accent': '#16213e',       # Medium dark blue
             'text_primary': '#e0e0e0',    # Light gray
             'text_accent': '#00d4ff',     # Cyan accent
-            'success': '#00ff88',         # Green
-            'warning': '#ffaa00',         # Orange
         }
 
         self.root.configure(bg=self.colors['bg_primary'])
 
-        # Header with title
+        # Header with modern styling
         header_frame = tk.Frame(self.root, bg=self.colors['bg_secondary'])
-        header_frame.pack(fill=tk.X, padx=20, pady=(20, 10))
+        header_frame.pack(fill=tk.X, padx=15, pady=(15, 5))
 
         title_label = tk.Label(
             header_frame,
-            text="🤖 DARVIS",
-            font=('JetBrains Mono', 18, 'bold'),
+            text="🤖 DARVIS Voice Assistant",
+            font=('JetBrains Mono', 14, 'bold'),
             fg=self.colors['text_accent'],
             bg=self.colors['bg_secondary']
         )
         title_label.pack(side=tk.LEFT)
 
-        # Main content area
-        content_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
-        content_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
-
-        # Large logo at top
-        try:
-            # Load and resize logo to 2x size
-            base_img = Image.open("assets/darvis-logo.png").convert("RGBA")
-            width, height = base_img.size
-            large_img = base_img.resize((width * 2, height * 2), Image.Resampling.LANCZOS)
-            self.logo_image = ImageTk.PhotoImage(large_img)
-
-            logo_label = tk.Label(content_frame, image=self.logo_image, bg=self.colors['bg_primary'])
-            logo_label.pack(pady=(0, 20))
-        except Exception:
-            # Emoji fallback
-            logo_label = tk.Label(
-                content_frame,
-                text="🤖",
-                font=('JetBrains Mono', 64),
-                fg=self.colors['text_accent'],
-                bg=self.colors['bg_primary']
-            )
-            logo_label.pack(pady=(0, 20))
-
-        # Speech bubble effect
-        bubble_frame = tk.Frame(content_frame, bg=self.colors['bg_primary'])
-        bubble_frame.pack(pady=(0, 20))
-
-        self.speech_label = tk.Label(
-            bubble_frame,
-            text="I'm listening...",
-            font=('JetBrains Mono', 14),
-            fg=self.colors['text_primary'],
-            bg=self.colors['bg_accent'],
-            relief='raised',
-            bd=2,
-            padx=20,
-            pady=15
-        )
-        self.speech_label.pack()
-
-        # Timer display
-        self.timer_label = tk.Label(
-            content_frame,
-            text="",
-            font=('JetBrains Mono', 20, 'bold'),
-            fg=self.colors['text_accent'],
-            bg=self.colors['bg_primary']
-        )
-        self.timer_label.pack(pady=(0, 20))
-
-        # Input section at bottom
+        # Manual input section with modern styling
         input_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
-        input_frame.pack(fill=tk.X, padx=20, pady=(0, 20))
+        input_frame.pack(fill=tk.X, padx=15, pady=5)
 
-        input_title = tk.Label(
+        input_label = tk.Label(
             input_frame,
             text="💬 Manual Input:",
-            font=('JetBrains Mono', 12, 'bold'),
+            font=('JetBrains Mono', 11, 'bold'),
             fg=self.colors['text_primary'],
             bg=self.colors['bg_primary']
         )
-        input_title.pack(anchor=tk.W, pady=(0, 5))
+        input_label.pack(anchor=tk.W, pady=(0, 3))
 
         self.manual_input_entry = tk.Entry(
             input_frame,
@@ -585,14 +379,27 @@ Built with ❤️ using Python & Tkinter"""
             relief='flat',
             bd=2
         )
-        self.manual_input_entry.pack(fill=tk.X, pady=(0, 5), ipady=8)
+        self.manual_input_entry.pack(fill=tk.X, pady=(0, 5), ipady=6)
         self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
 
-    def _create_darvis_image_section(self, parent):
-        """Create the large Darvis image section at the top."""
-        image_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
-        image_frame.pack(pady=(0, 20))
+        # Information panel with modern styling
+        info_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
+        info_frame.pack(fill=tk.BOTH, expand=True, padx=15, pady=5)
 
+        self.text_info = tk.Text(
+            info_frame,
+            height=12,
+            font=('JetBrains Mono', 10),
+            bg=self.colors['bg_secondary'],
+            fg=self.colors['text_primary'],
+            relief='flat',
+            bd=2,
+            padx=10,
+            pady=10
+        )
+        self.text_info.pack(fill=tk.BOTH, expand=True)
+
+        # Large logo at bottom with modern styling
         try:
             # Load and resize logo to 2x size
             base_img = Image.open("assets/darvis-logo.png").convert("RGBA")
@@ -601,138 +408,41 @@ Built with ❤️ using Python & Tkinter"""
             self.large_logo_image = ImageTk.PhotoImage(large_img)
 
             self.logo_label = tk.Label(
-                image_frame, image=self.large_logo_image, bg=self.colors['bg_primary']
+                self.root, image=self.large_logo_image, bg=self.colors['bg_primary']
             )
-        except Exception:
-            # Large emoji fallback
-            self.logo_label = tk.Label(
-                image_frame,
-                text="🤖",
-                font=('JetBrains Mono', 72),
+            self.logo_label.pack(side=tk.BOTTOM, pady=15)
+
+            # Add timer label above logo
+            self.timer_label = tk.Label(
+                self.root,
+                text="",
+                font=('JetBrains Mono', 18, 'bold'),
+                bg=self.colors['bg_primary'],
                 fg=self.colors['text_accent'],
-                bg=self.colors['bg_primary']
             )
-
-        self.logo_label.pack()
-
-    def _create_speech_bubble_section(self, parent):
-        """Create the speech bubble section in the middle."""
-        bubble_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
-        bubble_frame.pack(pady=(0, 20))
-
-        # Speech bubble container
-        self.speech_bubble = tk.Label(
-            bubble_frame,
-            text="",
-            font=('JetBrains Mono', 14),
-            fg=self.colors['text_primary'],
-            bg=self.colors['bg_accent'],
-            relief='raised',
-            bd=2,
-            padx=20,
-            pady=15,
-            wraplength=400
-        )
-        self.speech_bubble.pack()
-
-        # Add a pointer/tail to make it look like a speech bubble
-        pointer_label = tk.Label(
-            bubble_frame,
-            text="▼",
-            font=('JetBrains Mono', 16),
-            fg=self.colors['bg_accent'],
-            bg=self.colors['bg_primary']
-        )
-        pointer_label.pack(pady=(0, 10))
-
-    def _create_bottom_input_section(self, parent):
-        """Create the input section at the bottom."""
-        input_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
-        input_frame.pack(fill=tk.X, pady=(20, 0))
-
-        # Input label
-        input_label = tk.Label(
-            input_frame,
-            text="💬 Type your command:",
-            font=('JetBrains Mono', 11, 'bold'),
-            fg=self.colors['text_primary'],
-            bg=self.colors['bg_primary']
-        )
-        input_label.pack(anchor=tk.W, padx=5, pady=(0, 5))
-
-        # Modern styled entry
-        self.manual_input_entry = tk.Entry(
-            input_frame,
-            font=('JetBrains Mono', 12),
-            bg=self.colors['bg_accent'],
-            fg=self.colors['text_primary'],
-            insertbackground=self.colors['text_accent'],
-            relief='flat',
-            bd=0,
-            highlightthickness=2,
-            highlightcolor=self.colors['border'],
-            highlightbackground=self.colors['border']
-        )
-        self.manual_input_entry.pack(fill=tk.X, padx=5, pady=(0, 5), ipady=8)
-        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
-
-    def update_speech_bubble(self, text, state="normal"):
-        """Update the speech bubble with new text and styling."""
-        if self.speech_bubble:
-            self.speech_bubble_text = text
-            self.speech_bubble_state = state
-
-            # Color based on state
-            if state == "listening":
-                bg_color = self.colors['bg_secondary']
-                fg_color = self.colors['text_secondary']
-            elif state == "awake":
-                bg_color = self.colors['success']  # Green for awake
-                fg_color = self.colors['bg_primary']
-            elif state == "processing":
-                bg_color = self.colors['warning']  # Orange for processing
-                fg_color = self.colors['bg_primary']
-            elif state == "speaking":
-                bg_color = self.colors['text_accent']  # Cyan for speaking
-                fg_color = self.colors['bg_primary']
-            else:
-                bg_color = self.colors['bg_accent']
-                fg_color = self.colors['text_primary']
-
-            self.speech_bubble.config(text=text, bg=bg_color, fg=fg_color)
-
-        # Logo centered at bottom with enhanced visual effects
-        try:
-            self.load_logo_images()
-            if self.base_logo_image:
-                self.logo_label = tk.Label(
-                    self.root, image=self.base_logo_image, bg="black"
-                )
-                self.logo_label.pack(side=tk.BOTTOM, pady=10)
-
-                # Add timer label above logo (but still below text area)
-                self.timer_label = tk.Label(
-                    self.root,
-                    text="",
-                    font=("Arial", FONT_SIZE_LARGE, "bold"),
-                    bg="black",
-                    fg="white",
-                )
-                self.timer_label.pack(side=tk.BOTTOM, pady=5)
-            else:
-                raise Exception("Logo images failed to load")
+            self.timer_label.pack(side=tk.BOTTOM, pady=10)
         except Exception as e:
-            # Fallback if image fails to load
+            # Modern emoji fallback
             self.logo_label = tk.Label(
                 self.root,
-                text="DARVIS",
-                font=("Arial", FONT_SIZE_LARGE),
-                bg="black",
-                fg="white",
+                text="🤖",
+                font=('JetBrains Mono', 48),
+                bg=self.colors['bg_primary'],
+                fg=self.colors['text_accent'],
             )
-            self.logo_label.pack(side=tk.BOTTOM, pady=20)
+            self.logo_label.pack(side=tk.BOTTOM, pady=15)
 
-        # Speech bubble is already initialized to "I'm listening..."
+            self.timer_label = tk.Label(
+                self.root,
+                text="",
+                font=('JetBrains Mono', 18, 'bold'),
+                bg=self.colors['bg_primary'],
+                fg=self.colors['text_accent'],
+            )
+            self.timer_label.pack(side=tk.BOTTOM, pady=10)
+
+        # Initialize info text
+        self.text_info.insert(tk.END, "Darvis is Listening...\n")
 
     def start_voice_processing(self):
         """Start the voice recognition processing thread."""
@@ -766,9 +476,7 @@ Built with ❤️ using Python & Tkinter"""
 
                         if command:
                             # Wake word + command in one utterance
-                            import random
-                            help_msg = random.choice(self.help_messages)
-                            self.update_speech_bubble(help_msg, "awake")
+                            self.display_message("Activated!\n")
                             speak("Activated!")
                             self.start_countdown_timer(seconds=8, color="green")
                             self.process_command(command, "voice")
@@ -789,9 +497,7 @@ Built with ❤️ using Python & Tkinter"""
 
     def manual_activate(self):
         """Manually activate command listening mode."""
-        import random
-        help_msg = random.choice(self.help_messages)
-        self.update_speech_bubble(help_msg, "awake")
+        self.display_message("Activated!\n")
         speak("Activated!")
 
         # Start countdown timer for command input
@@ -802,9 +508,8 @@ Built with ❤️ using Python & Tkinter"""
         if command:
             self.process_command(command, "voice")
         else:
-            # No command heard, stop timer and return to listening
+            # No command heard, stop timer
             self.stop_timer()
-            self.update_speech_bubble("I'm listening...", "listening")
 
     def process_ai_command(self, command: str):
         """Process a command using AI assistance."""
@@ -849,36 +554,33 @@ Built with ❤️ using Python & Tkinter"""
         try:
             msg = self.msg_queue.get_nowait()
             if msg["type"] == "insert":
-                # Handle speech bubble updates instead of text output
-                text = msg["text"]
-
-                # Determine speech bubble state and content
-                if "Darvis heard:" in text:
-                    # Voice input detected - stay in current state
-                    pass
-                elif "Activated!" in text:
-                    # Wake word detected - switch to awake state with random help message
-                    import random
-                    help_msg = random.choice(self.help_messages)
-                    self.update_speech_bubble(help_msg, "awake")
-                elif "Using AI assistance" in text or "AI Query:" in text:
-                    # AI processing started
-                    self.update_speech_bubble("Thinking...", "processing")
-                elif "AI Response:" in text:
-                    # AI response ready
-                    response_text = text.replace("AI Response:", "").strip()
-                    self.update_speech_bubble(response_text, "speaking")
-                elif "Command:" in text:
-                    # Local command executed
-                    cmd_text = text.replace("Command:", "").strip()
-                    self.update_speech_bubble(f"Opening {cmd_text}...", "speaking")
-                elif "not installed" in text:
-                    # App not found
-                    self.update_speech_bubble("I couldn't find that application.", "error")
+                # Route all messages to the consolidated info panel with appropriate formatting
+                if msg["text"].startswith("Darvis heard:"):
+                    # Heard text - green with "HEARD:" prefix
+                    clean_text = msg["text"].replace("Darvis heard: ", "", 1)
+                    self._insert_colored_text(f"HEARD: {clean_text}\n", "green")
+                elif (
+                    "AI assistance not available" in msg["text"]
+                    or "AI error:" in msg["text"]
+                ):
+                    # Error messages - red with "LOG:" prefix
+                    self._insert_colored_text(f"LOG: {msg['text']}\n", "red")
+                elif (
+                    msg["text"].startswith("Command:")
+                    or msg["text"].startswith("AI Query:")
+                    or msg["text"].startswith("AI Response:")
+                ):
+                    # AI and command messages - yellow with "LOG:" prefix
+                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
+                elif "New AI session" in msg["text"] or "Activated!" in msg["text"]:
+                    # Status messages - yellow with "LOG:" prefix
+                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
+                elif "Using AI assistance" in msg["text"]:
+                    # AI initiation - yellow with "LOG:" prefix
+                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
                 else:
-                    # Other messages - use as speech bubble if it's a user-visible message
-                    if not text.startswith("LOG:") and text.strip():
-                        self.update_speech_bubble(text.strip(), "speaking")
+                    # General messages - white
+                    self._insert_colored_text(f"{msg['text']}\n", "white")
             elif msg["type"] == "wake_word_detected":
                 # Glow logo when wake word is detected
                 self.glow_logo(True)
@@ -889,27 +591,23 @@ Built with ❤️ using Python & Tkinter"""
         # Schedule next check
         self.root.after(100, self.update_gui)
 
-    def _insert_colored_text(self, text, tag=None):
-        """Insert colored text into the console."""
+    def _insert_colored_text(self, text, color):
+        """Insert colored text into the info panel."""
         if self.text_info:
-            # Insert text
+            # Insert with appropriate color tag
             start_pos = self.text_info.index(tk.END + "-1c")
             self.text_info.insert(tk.END, text)
             end_pos = self.text_info.index(tk.END + "-1c")
 
-            # Apply color tag if specified
-            if tag:
-                self.text_info.tag_add(tag, start_pos, end_pos)
+            # Apply color tag
+            self.text_info.tag_add(color, start_pos, end_pos)
+            self.text_info.tag_config(color, foreground=color)
 
             # Auto-scroll to bottom
             self.text_info.see(tk.END)
 
     def bind_events(self):
         """Bind UI events for interactive elements."""
-        # Keyboard shortcuts
-        self.root.bind('<Control-q>', lambda e: self.quit_app())
-        self.root.bind('<Control-w>', lambda e: self.quit_app())
-
         # Glow effects for manual input
         # No text box animations needed anymore
 
@@ -988,10 +686,10 @@ Built with ❤️ using Python & Tkinter"""
                 self.display_message(f"Using AI assistance...\nAI Query: {command}\n")
                 self.process_ai_command(command)
 
-    def display_message(self, message: str, tag: str = None):
+    def display_message(self, message: str):
         """Display a message by adding it to the message queue."""
         # Put the message in the queue for the GUI thread to handle
-        self.msg_queue.put({"type": "insert", "text": message, "tag": tag})
+        self.msg_queue.put({"type": "insert", "text": message})
 
     def run(self):
         """Start the GUI event loop."""
