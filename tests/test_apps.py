@@ -173,3 +173,15 @@ Type=Application
         result = open_app("badapp")
 
         assert "Error launching badapp" in result
+
+    def test_gaming_apps_detection(self):
+        """Test that gaming applications can be detected."""
+        from darvis.apps import find_app_command
+
+        # Test that gaming app detection doesn't crash
+        # (Even if not installed, should return empty string, not error)
+        gaming_apps = ['steam', 'lutris', 'heroic', 'wine', 'bottles']
+        for app in gaming_apps:
+            result = find_app_command(app)
+            # Should return either a command string or empty string, not crash
+            assert isinstance(result, str), f"find_app_command({app}) should return string"
