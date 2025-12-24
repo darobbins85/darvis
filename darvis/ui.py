@@ -575,17 +575,17 @@ Built with ❤️"""
                 if msg["text"].startswith("Darvis heard:"):
                     # Heard text - green with "HEARD:" prefix
                     clean_text = msg["text"].replace("Darvis heard: ", "", 1)
-                    self._insert_colored_text(f"HEARD: {clean_text}\n", "green")
+                    self._insert_colored_text(f"HEARD: {clean_text}\n", "success")
                 elif (
                     "AI assistance not available" in msg["text"]
                     or "AI error:" in msg["text"]
                 ):
                     # Error messages - red
-                    self._insert_colored_text(f"{msg['text']}\n", "red")
+                    self._insert_colored_text(f"{msg['text']}\n", "error")
                 elif msg["text"].startswith("AI Response:"):
                     # AI responses - red with "AI:" prefix
                     clean_text = msg["text"].replace("AI Response: ", "", 1)
-                    self._insert_colored_text(f"AI: {clean_text}\n", "red")
+                    self._insert_colored_text(f"AI: {clean_text}\n", "error")
                 elif (
                     msg["text"].startswith("Command:")
                     or msg["text"].startswith("AI Query:")
@@ -600,7 +600,7 @@ Built with ❤️"""
                     self._insert_colored_text(f"{msg['text']}\n", "warning")
                 else:
                     # General messages - white
-                    self._insert_colored_text(f"{msg['text']}\n", "white")
+                    self._insert_colored_text(f"{msg['text']}\n")  # Default color
             elif msg["type"] == "wake_word_detected":
                 # Glow logo when wake word is detected
                 self.glow_logo(True)
@@ -611,17 +611,17 @@ Built with ❤️"""
         # Schedule next check
         self.root.after(100, self.update_gui)
 
-    def _insert_colored_text(self, text, color):
-        """Insert colored text into the info panel."""
+    def _insert_colored_text(self, text, tag=None):
+        """Insert colored text into the console."""
         if self.text_info:
-            # Insert with appropriate color tag
+            # Insert text
             start_pos = self.text_info.index(tk.END + "-1c")
             self.text_info.insert(tk.END, text)
             end_pos = self.text_info.index(tk.END + "-1c")
 
-            # Apply color tag
-            self.text_info.tag_add(color, start_pos, end_pos)
-            self.text_info.tag_config(color, foreground=color)
+            # Apply color tag if specified (tags are pre-configured in _setup_text_tags)
+            if tag:
+                self.text_info.tag_add(tag, start_pos, end_pos)
 
             # Auto-scroll to bottom
             self.text_info.see(tk.END)
