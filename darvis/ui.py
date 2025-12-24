@@ -268,20 +268,20 @@ Built with ❤️"""
         width, height = image.size
         eye_glow = image.copy()
 
-        # Create eye glow regions (spaced further apart for 2x image)
+        # Create eye glow regions (widely spaced for 2x image)
         eye_regions = [
             (
-                width // 2 - 22,
+                width // 2 - 26,
                 height // 3 - 8,
-                width // 2 - 8,
+                width // 2 - 10,
                 height // 3 + 8,
-            ),  # Left eye - moved further left
+            ),  # Left eye - further apart
             (
-                width // 2 + 8,
+                width // 2 + 10,
                 height // 3 - 8,
-                width // 2 + 22,
+                width // 2 + 26,
                 height // 3 + 8,
-            ),  # Right eye - moved further right
+            ),  # Right eye - further apart
         ]
 
         # Create a more dramatic glow effect with brighter center
@@ -645,32 +645,68 @@ Built with ❤️"""
         # No text box animations needed anymore
 
     def glow_logo(self, enable_glow, ai_active=False):
-        """Add or remove sophisticated glow effect from logo."""
+        """Add or remove sophisticated glow effect from logo with pulsing animation."""
         try:
             if not hasattr(self, "logo_label") or not self.logo_label:
                 return
 
             if enable_glow:
+                # Initialize pulsing state if not exists
+                if not hasattr(self, 'pulse_state'):
+                    self.pulse_state = True
+                    self.pulse_callback = None
+
                 if ai_active and self.ai_glow_image:
-                    # Red eye glow for AI processing
-                    self.logo_label.config(image=self.ai_glow_image)
-                    self.logo_label.image = self.ai_glow_image  # Keep reference
+                    # Red eye glow for AI processing with pulsing
                     self.current_logo_state = "ai"
+                    self._start_pulsing(ai_active=True)
                 elif self.wake_glow_image:
-                    # Green eye glow for wake word
-                    self.logo_label.config(image=self.wake_glow_image)
-                    self.logo_label.image = self.wake_glow_image  # Keep reference
+                    # Green eye glow for wake word with pulsing
                     self.current_logo_state = "wake"
+                    self._start_pulsing(ai_active=False)
             else:
-                # Return to normal state
+                # Stop pulsing and return to normal state
+                self._stop_pulsing()
                 if self.base_logo_image:
                     self.logo_label.config(image=self.base_logo_image)
                     self.logo_label.image = self.base_logo_image  # Keep reference
                 self.current_logo_state = "normal"
-                # Stop any active timer when returning to normal state
-                self.stop_timer()
-        except AttributeError:
-            pass  # logo_label not available
+        except Exception as e:
+            print(f"Error in glow_logo: {e}")
+
+    def _start_pulsing(self, ai_active=False):
+        """Start the pulsing glow animation."""
+        self._stop_pulsing()  # Stop any existing pulsing
+
+        def pulse_step():
+            if self.current_logo_state in ["wake", "ai"]:
+                # Alternate between bright and dim glow
+                if self.pulse_state:
+                    # Bright glow
+                    if ai_active and self.ai_glow_image:
+                        self.logo_label.config(image=self.ai_glow_image)
+                        self.logo_label.image = self.ai_glow_image
+                    elif self.wake_glow_image:
+                        self.logo_label.config(image=self.wake_glow_image)
+                        self.logo_label.image = self.wake_glow_image
+                else:
+                    # Dim glow (use base image with slight tint)
+                    if self.base_logo_image:
+                        self.logo_label.config(image=self.base_logo_image)
+                        self.logo_label.image = self.base_logo_image
+
+                # Toggle pulse state and schedule next pulse
+                self.pulse_state = not self.pulse_state
+                self.pulse_callback = self.root.after(1000, pulse_step)  # 1 second interval
+
+        # Start pulsing
+        pulse_step()
+
+    def _stop_pulsing(self):
+        """Stop the pulsing animation."""
+        if hasattr(self, 'pulse_callback') and self.pulse_callback:
+            self.root.after_cancel(self.pulse_callback)
+            self.pulse_callback = None
 
     def submit_manual_input(self):
         """Process manual text input from the GUI input field."""
