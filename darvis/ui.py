@@ -399,6 +399,19 @@ Built with ❤️"""
         )
         self.text_info.pack(fill=tk.BOTH, expand=True)
 
+        # Set up text tags for console coloring
+        self._setup_text_tags()
+
+    def _setup_text_tags(self):
+        """Set up text tags for colored output in the console."""
+        if self.text_info:
+            # Define color tags for different message types
+            self.text_info.tag_config("success", foreground=self.colors.get('success', 'green'))
+            self.text_info.tag_config("warning", foreground=self.colors.get('warning', 'orange'))
+            self.text_info.tag_config("error", foreground=self.colors.get('error', 'red'))
+            self.text_info.tag_config("accent", foreground=self.colors.get('text_accent', 'cyan'))
+            self.text_info.tag_config("muted", foreground=self.colors.get('text_secondary', 'gray'))
+
         # Large logo at bottom with modern styling
         try:
             # Load and resize logo to 2x size
@@ -554,6 +567,10 @@ Built with ❤️"""
         try:
             msg = self.msg_queue.get_nowait()
             if msg["type"] == "insert":
+                # Add horizontal separator for new interactions
+                if "Activated!" in msg["text"]:
+                    self._insert_colored_text("─" * 60 + "\n", "muted")
+
                 # Route all messages to the consolidated info panel with appropriate formatting
                 if msg["text"].startswith("Darvis heard:"):
                     # Heard text - green with "HEARD:" prefix
@@ -563,21 +580,24 @@ Built with ❤️"""
                     "AI assistance not available" in msg["text"]
                     or "AI error:" in msg["text"]
                 ):
-                    # Error messages - red with "LOG:" prefix
-                    self._insert_colored_text(f"LOG: {msg['text']}\n", "red")
+                    # Error messages - red
+                    self._insert_colored_text(f"{msg['text']}\n", "red")
+                elif msg["text"].startswith("AI Response:"):
+                    # AI responses - red with "AI:" prefix
+                    clean_text = msg["text"].replace("AI Response: ", "", 1)
+                    self._insert_colored_text(f"AI: {clean_text}\n", "red")
                 elif (
                     msg["text"].startswith("Command:")
                     or msg["text"].startswith("AI Query:")
-                    or msg["text"].startswith("AI Response:")
                 ):
-                    # AI and command messages - yellow with "LOG:" prefix
-                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
+                    # AI and command messages - yellow (no LOG prefix)
+                    self._insert_colored_text(f"{msg['text']}\n", "warning")
                 elif "New AI session" in msg["text"] or "Activated!" in msg["text"]:
-                    # Status messages - yellow with "LOG:" prefix
-                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
+                    # Status messages - yellow (no LOG prefix)
+                    self._insert_colored_text(f"{msg['text']}\n", "warning")
                 elif "Using AI assistance" in msg["text"]:
-                    # AI initiation - yellow with "LOG:" prefix
-                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
+                    # AI initiation - yellow (no LOG prefix)
+                    self._insert_colored_text(f"{msg['text']}\n", "warning")
                 else:
                     # General messages - white
                     self._insert_colored_text(f"{msg['text']}\n", "white")
