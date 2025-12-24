@@ -268,20 +268,20 @@ Built with ❤️"""
         width, height = image.size
         eye_glow = image.copy()
 
-        # Create eye glow regions (closer together for perfect alignment)
+        # Create eye glow regions (spaced further apart for 2x image)
         eye_regions = [
             (
-                width // 2 - 17,
+                width // 2 - 22,
                 height // 3 - 8,
-                width // 2 - 2,
+                width // 2 - 8,
                 height // 3 + 8,
-            ),  # Left eye - even closer
+            ),  # Left eye - moved further left
             (
-                width // 2 + 2,
+                width // 2 + 8,
                 height // 3 - 8,
-                width // 2 + 17,
+                width // 2 + 22,
                 height // 3 + 8,
-            ),  # Right eye - even closer
+            ),  # Right eye - moved further right
         ]
 
         # Create a more dramatic glow effect with brighter center
