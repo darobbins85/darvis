@@ -134,6 +134,16 @@ Type=Application
         mock_popen.assert_called_once_with(["blueman-manager"])
 
     @patch('darvis.apps.find_app_command')
+    def test_open_app_not_found_error_message(self, mock_find):
+        """Test improved error message for not found apps."""
+        mock_find.return_value = ""
+
+        result = open_app("nonexistentapp")
+
+        assert "not installed or not found" in result
+        assert "pacman -S" in result
+
+    @patch('darvis.apps.find_app_command')
     @patch('subprocess.Popen')
     def test_open_app_local_app_success(self, mock_popen, mock_find):
         """Test opening local application successfully."""
@@ -151,7 +161,7 @@ Type=Application
 
         result = open_app("nonexistent")
 
-        assert result == "'nonexistent' is not installed or not found on this system"
+        assert result == "'nonexistent' is not installed or not found on this system. Try: pacman -S nonexistent (on Arch) or check if it's installed in a custom location"
 
     @patch('darvis.apps.find_app_command')
     @patch('subprocess.Popen')

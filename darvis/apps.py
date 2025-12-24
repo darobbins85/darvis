@@ -44,7 +44,13 @@ def find_app_command(app_name: str) -> str:
         "volume control": ["pavucontrol", "alsamixer"],
         "sound settings": ["pavucontrol"],
         "display settings": ["arandr", "gnome-display-panel"],
-        "steam": ["steam"],
+        "steam": ["steam", "steam-runtime", "/usr/bin/steam"],
+        "lutris": ["lutris"],
+        "heroic": ["heroic", "heroic-launcher"],
+        "proton": ["proton", "proton-ge"],
+        "wine": ["wine"],
+        "playonlinux": ["playonlinux"],
+        "bottles": ["bottles"],
         "signal": ["signal-desktop", "signal"],
         "discord": ["discord", "discord-canary"],
         "slack": ["slack"],
@@ -220,7 +226,7 @@ def open_app(app_name: str) -> str:
                     return f"Opening {app_name} in {browser}"
                 except FileNotFoundError:
                     continue
-            return f"Couldn't find a way to open {app_name}"
+            return f"Couldn't find a way to open {app_name}. Try installing it with your package manager or check if it's installed in a custom location."
         except Exception as e:
             return f"Error opening {app_name}: {str(e)}"
     else:
@@ -234,4 +240,4 @@ def open_app(app_name: str) -> str:
             except Exception as e:
                 return f"Error launching {app_name}: {str(e)}"
         else:
-            return f"'{app_name}' is not installed or not found on this system"
+            return f"'{app_name}' is not installed or not found on this system. Try: pacman -S {app_name} (on Arch) or check if it's installed in a custom location"
