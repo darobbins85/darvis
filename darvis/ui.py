@@ -34,7 +34,169 @@ class DarvisGUI:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Darvis Voice Assistant")
-        self.root.configure(bg="black")
+
+        # Modern dark theme color palette
+        self.colors = {
+            'bg_primary': '#0f0f23',      # Deep dark blue-black
+            'bg_secondary': '#1a1a2e',    # Dark blue-gray
+            'bg_accent': '#16213e',       # Medium dark blue
+            'text_primary': '#e0e0e0',    # Light gray
+            'text_secondary': '#b0b0b0',  # Medium gray
+            'text_accent': '#00d4ff',     # Cyan accent
+            'border': '#2a2a4e',          # Subtle border
+            'success': '#00ff88',         # Green success
+            'warning': '#ffaa00',         # Orange warning
+            'error': '#ff4444',           # Red error
+            'glow_green': '#00ff88',      # Wake word glow
+            'glow_red': '#ff6b6b',        # AI processing glow
+        }
+
+        self.root.configure(bg=self.colors['bg_primary'])
+        self.root.option_add('*Font', ('JetBrains Mono', 10))  # Modern monospace font
+
+    def _setup_text_tags(self):
+        """Set up text tags for colored output in the console."""
+        # This will be called after text_info is created
+        pass
+
+    def _create_header_section(self, parent):
+        """Create the header section with title and status."""
+        header_frame = tk.Frame(parent, bg=self.colors['bg_secondary'], relief='raised', bd=1)
+        header_frame.pack(fill=tk.X, pady=(0, 15))
+
+        # Title
+        title_label = tk.Label(
+            header_frame,
+            text="🎯 DARVIS",
+            font=('JetBrains Mono', 16, 'bold'),
+            fg=self.colors['text_accent'],
+            bg=self.colors['bg_secondary']
+        )
+        title_label.pack(side=tk.LEFT, padx=15, pady=10)
+
+        # Status indicator
+        self.status_label = tk.Label(
+            header_frame,
+            text="🎤 Listening...",
+            font=('JetBrains Mono', 10),
+            fg=self.colors['text_secondary'],
+            bg=self.colors['bg_secondary']
+        )
+        self.status_label.pack(side=tk.RIGHT, padx=15, pady=10)
+
+    def _create_input_section(self, parent):
+        """Create the input section with modern styling."""
+        input_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
+        input_frame.pack(fill=tk.X, pady=(0, 15))
+
+        # Input label
+        input_label = tk.Label(
+            input_frame,
+            text="💬 Command Input:",
+            font=('JetBrains Mono', 11, 'bold'),
+            fg=self.colors['text_primary'],
+            bg=self.colors['bg_primary']
+        )
+        input_label.pack(anchor=tk.W, padx=5, pady=(0, 5))
+
+        # Modern styled entry
+        self.manual_input_entry = tk.Entry(
+            input_frame,
+            font=('JetBrains Mono', 12),
+            bg=self.colors['bg_accent'],
+            fg=self.colors['text_primary'],
+            insertbackground=self.colors['text_accent'],
+            relief='flat',
+            bd=0,
+            highlightthickness=2,
+            highlightcolor=self.colors['border'],
+            highlightbackground=self.colors['border']
+        )
+        self.manual_input_entry.pack(fill=tk.X, padx=5, pady=(0, 5), ipady=8)
+        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
+
+    def _create_console_section(self, parent):
+        """Create the console/output section."""
+        console_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
+        console_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
+
+        # Console label
+        console_label = tk.Label(
+            console_frame,
+            text="📊 Console Output:",
+            font=('JetBrains Mono', 11, 'bold'),
+            fg=self.colors['text_primary'],
+            bg=self.colors['bg_primary']
+        )
+        console_label.pack(anchor=tk.W, padx=5, pady=(0, 5))
+
+        # Modern styled text widget
+        self.text_info = tk.Text(
+            console_frame,
+            height=12,
+            font=('JetBrains Mono', 10),
+            bg=self.colors['bg_secondary'],
+            fg=self.colors['text_primary'],
+            relief='flat',
+            bd=0,
+            highlightthickness=2,
+            highlightcolor=self.colors['border'],
+            highlightbackground=self.colors['border'],
+            wrap=tk.WORD,
+            padx=10,
+            pady=10
+        )
+        self.text_info.pack(fill=tk.BOTH, expand=True, padx=5, pady=(0, 5))
+
+        # Set up text tags for colored output
+        self._setup_text_tags()
+
+    def _create_status_section(self, parent):
+        """Create the status and visual feedback section."""
+        status_frame = tk.Frame(parent, bg=self.colors['bg_primary'])
+        status_frame.pack(fill=tk.X)
+
+        # Timer display
+        self.timer_label = tk.Label(
+            status_frame,
+            text="",
+            font=('JetBrains Mono', 18, 'bold'),
+            fg=self.colors['text_accent'],
+            bg=self.colors['bg_primary']
+        )
+        self.timer_label.pack(side=tk.TOP, pady=(0, 10))
+
+        # Logo section
+        try:
+            self.load_logo_images()
+            if self.base_logo_image:
+                self.logo_label = tk.Label(
+                    status_frame, image=self.base_logo_image, bg=self.colors['bg_primary']
+                )
+                self.logo_label.pack(side=tk.BOTTOM, pady=5)
+            else:
+                raise Exception("Logo images failed to load")
+        except Exception:
+            # Modern fallback text logo
+            self.logo_label = tk.Label(
+                status_frame,
+                text="🤖\nDARVIS",
+                font=('JetBrains Mono', 24, 'bold'),
+                fg=self.colors['text_accent'],
+                bg=self.colors['bg_primary']
+            )
+            self.logo_label.pack(side=tk.BOTTOM, pady=5)
+
+    def _setup_text_tags(self):
+        """Set up text tags for colored output in the console."""
+        if self.text_info:
+            # Define color tags for different message types
+            self.text_info.tag_config("success", foreground=self.colors['success'])
+            self.text_info.tag_config("warning", foreground=self.colors['warning'])
+            self.text_info.tag_config("error", foreground=self.colors['error'])
+            self.text_info.tag_config("accent", foreground=self.colors['text_accent'])
+            self.text_info.tag_config("muted", foreground=self.colors['text_secondary'])
+            self.text_info.tag_config("header", foreground=self.colors['text_primary'], font=('JetBrains Mono', 10, 'bold'))
 
         # Initialize variables
         self.msg_queue = queue.Queue()
@@ -80,14 +242,20 @@ class DarvisGUI:
 
     def setup_window_positioning(self):
         """Set up enhanced window positioning and behavior."""
+        # Modern window sizing
+        window_width = 700
+        window_height = 500
+
         # Center the window on the screen
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
-        window_width = 600
-        window_height = 400
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+        # Modern window appearance
+        self.root.resizable(True, True)
+        self.root.minsize(600, 400)
 
         # Make window visible and focused
         self.root.deiconify()
@@ -116,21 +284,27 @@ class DarvisGUI:
 
     def show_about(self):
         """Show about dialog."""
-        about_text = """Darvis Voice Assistant
+        about_text = """🤖 DARVIS VOICE ASSISTANT v2.0
 
-A modern, cross-platform voice assistant
-with intelligent command processing.
+A modern, cross-platform voice assistant with intelligent command processing and sleek UI design.
 
-Features:
-• Voice wake word detection
-• AI-powered responses
-• System tray integration
-• Waybar status support
-• Cross-platform compatibility
+✨ Features:
+• 🎤 Voice wake word detection ("hey darvis")
+• 🧠 AI-powered responses via opencode
+• 🎨 Modern dark theme with visual effects
+• 📱 System tray integration
+• 📊 Waybar status support
+• 🚀 Smart app detection & launching
+• 🌐 21+ web services supported
+• 💻 30+ local applications
 
-Version: 1.0.0
-Built with ❤️"""
-        self.display_message(f"About Darvis:\n{about_text}\n")
+🎯 Commands:
+• "open slack" → Opens Slack in browser
+• "open bluetooth manager" → Launches system settings
+• "what is the weather?" → AI response
+
+Built with ❤️ using Python & Tkinter"""
+        self.display_message(f"\n{about_text}\n", "header")
 
     def start_countdown_timer(self, seconds=8, color="green"):
         """Start a countdown timer with specified color."""
@@ -333,38 +507,25 @@ Built with ❤️"""
         return eye_glow
 
     def setup_ui(self):
-        """Set up the main UI components."""
-        # Top frame for header and buttons (now just input)
-        top_frame = tk.Frame(self.root, bg="black")
-        top_frame.pack(fill=tk.X, padx=10, pady=5)
+        """Set up the main UI components with modern design."""
+        # Configure text tags for colored output
+        self._setup_text_tags()
 
-        # Manual input section
-        input_frame = tk.Frame(self.root, bg="black")
-        input_frame.pack(fill=tk.X, padx=10, pady=5)
+        # Main container with padding
+        main_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
-        self.manual_input_entry = tk.Entry(
-            input_frame,
-            font=("Arial", FONT_SIZE_NORMAL),
-            bg="#333333",
-            fg="white",
-            insertbackground="white",
-        )
-        self.manual_input_entry.pack(fill=tk.X, pady=2)
-        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
+        # Header section with title and status
+        self._create_header_section(main_frame)
 
-        # Information panel (consolidated - replaces both heard and info sections)
-        info_frame = tk.Frame(self.root, bg="black")
-        info_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        # Input section with modern styling
+        self._create_input_section(main_frame)
 
-        self.text_info = tk.Text(
-            info_frame,
-            height=15,  # Much larger to reach above the image
-            width=60,
-            font=("Arial", FONT_SIZE_NORMAL),
-            bg="#1a1a1a",  # Slightly darker background
-            fg="white",
-        )
-        self.text_info.pack(fill=tk.BOTH, expand=True, pady=2)
+        # Console/output section
+        self._create_console_section(main_frame)
+
+        # Status and visual feedback section
+        self._create_status_section(main_frame)
 
         # Logo centered at bottom with enhanced visual effects
         try:
@@ -397,8 +558,10 @@ Built with ❤️"""
             )
             self.logo_label.pack(side=tk.BOTTOM, pady=20)
 
-        # Initialize info text
-        self.text_info.insert(tk.END, "Darvis is Listening...\n")
+        # Initialize console with welcome message
+        self.display_message("🤖 Darvis Voice Assistant initialized and ready!\n", "header")
+        self.display_message("🎤 Listening for wake words: \"hey darvis\"\n", "accent")
+        self.display_message("💡 Try: \"open slack\" or \"open bluetooth manager\"\n\n", "muted")
 
     def start_voice_processing(self):
         """Start the voice recognition processing thread."""
@@ -510,33 +673,24 @@ Built with ❤️"""
         try:
             msg = self.msg_queue.get_nowait()
             if msg["type"] == "insert":
-                # Route all messages to the consolidated info panel with appropriate formatting
-                if msg["text"].startswith("Darvis heard:"):
-                    # Heard text - green with "HEARD:" prefix
-                    clean_text = msg["text"].replace("Darvis heard: ", "", 1)
-                    self._insert_colored_text(f"HEARD: {clean_text}\n", "green")
-                elif (
-                    "AI assistance not available" in msg["text"]
-                    or "AI error:" in msg["text"]
-                ):
-                    # Error messages - red with "LOG:" prefix
-                    self._insert_colored_text(f"LOG: {msg['text']}\n", "red")
-                elif (
-                    msg["text"].startswith("Command:")
-                    or msg["text"].startswith("AI Query:")
-                    or msg["text"].startswith("AI Response:")
-                ):
-                    # AI and command messages - yellow with "LOG:" prefix
-                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
-                elif "New AI session" in msg["text"] or "Activated!" in msg["text"]:
-                    # Status messages - yellow with "LOG:" prefix
-                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
-                elif "Using AI assistance" in msg["text"]:
-                    # AI initiation - yellow with "LOG:" prefix
-                    self._insert_colored_text(f"LOG: {msg['text']}\n", "yellow")
-                else:
-                    # General messages - white
-                    self._insert_colored_text(f"{msg['text']}\n", "white")
+                # Use provided tag or auto-detect based on content
+                tag = msg.get("tag")
+                if not tag:
+                    # Auto-detect tag based on content for backward compatibility
+                    if msg["text"].startswith("Darvis heard:"):
+                        tag = "success"  # Green for voice input
+                    elif "AI assistance not available" in msg["text"] or "AI error:" in msg["text"]:
+                        tag = "error"  # Red for errors
+                    elif msg["text"].startswith("Command:") or msg["text"].startswith("AI Query:") or msg["text"].startswith("AI Response:"):
+                        tag = "accent"  # Cyan for AI interactions
+                    elif "New AI session" in msg["text"] or "Activated!" in msg["text"]:
+                        tag = "warning"  # Orange for status
+                    elif "Using AI assistance" in msg["text"]:
+                        tag = "accent"  # Cyan for AI initiation
+                    else:
+                        tag = None  # Default text color
+
+                self._insert_colored_text(f"{msg['text']}\n", tag)
             elif msg["type"] == "wake_word_detected":
                 # Glow logo when wake word is detected
                 self.glow_logo(True)
@@ -547,17 +701,17 @@ Built with ❤️"""
         # Schedule next check
         self.root.after(100, self.update_gui)
 
-    def _insert_colored_text(self, text, color):
-        """Insert colored text into the info panel."""
+    def _insert_colored_text(self, text, tag=None):
+        """Insert colored text into the console."""
         if self.text_info:
-            # Insert with appropriate color tag
+            # Insert text
             start_pos = self.text_info.index(tk.END + "-1c")
             self.text_info.insert(tk.END, text)
             end_pos = self.text_info.index(tk.END + "-1c")
 
-            # Apply color tag
-            self.text_info.tag_add(color, start_pos, end_pos)
-            self.text_info.tag_config(color, foreground=color)
+            # Apply color tag if specified
+            if tag:
+                self.text_info.tag_add(tag, start_pos, end_pos)
 
             # Auto-scroll to bottom
             self.text_info.see(tk.END)
@@ -646,10 +800,10 @@ Built with ❤️"""
                 self.display_message(f"Using AI assistance...\nAI Query: {command}\n")
                 self.process_ai_command(command)
 
-    def display_message(self, message: str):
+    def display_message(self, message: str, tag: str = None):
         """Display a message by adding it to the message queue."""
         # Put the message in the queue for the GUI thread to handle
-        self.msg_queue.put({"type": "insert", "text": message})
+        self.msg_queue.put({"type": "insert", "text": message, "tag": tag})
 
     def run(self):
         """Start the GUI event loop."""
