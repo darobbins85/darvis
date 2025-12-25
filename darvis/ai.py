@@ -35,25 +35,23 @@ def process_ai_query(query: str) -> Tuple[str, str]:
     try:
         if current_session_id is None:
             # First query: start new session with darvis agent
-            result = subprocess.run(
-                ["opencode", "run", "--agent", "darvis", query], capture_output=True, text=True, timeout=60
-            )
+            command = ["opencode", "run", "--agent", "darvis", query]
+            print(f"DEBUG: Executing command: {' '.join(command)}")
+            result = subprocess.run(command, capture_output=True, text=True, timeout=60)
             response = (result.stdout or "").strip() or "No response"
 
             # Get the session ID (this would need proper implementation)
             current_session_id = get_latest_session_id()
+            print(f"DEBUG: New session ID: {current_session_id}")
 
             return response, current_session_id or ""
         else:
             # Subsequent queries: use existing session with @darvis prefix
             # This ensures the Build agent invokes the darvis agent
             darvis_query = f"@darvis {query}"
-            result = subprocess.run(
-                ["opencode", "run", "--session", current_session_id, darvis_query],
-                capture_output=True,
-                text=True,
-                timeout=60,
-            )
+            command = ["opencode", "run", "--session", current_session_id, darvis_query]
+            print(f"DEBUG: Executing command: {' '.join(command)}")
+            result = subprocess.run(command, capture_output=True, text=True, timeout=60)
             response = (result.stdout or "").strip() or "No response"
             return response, current_session_id
 
