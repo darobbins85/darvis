@@ -2,178 +2,193 @@
 
 ## Overview
 
-Darvis is a modern, interactive voice assistant with both voice and manual input capabilities. It features a sleek dark-themed interface with real-time visual feedback and intelligent command processing that automatically switches between local and AI-powered responses.
+Darvis is a modern, interactive voice assistant featuring a sophisticated speech-bubble interface, advanced AI integration via a specialized darvis agent, and comprehensive visual feedback system. The assistant provides seamless voice and text input with intelligent command processing that automatically switches between local application launching and AI-powered responses.
 
 ## 🎯 Core Features
 
-### 1. Voice Recognition & Wake Word Detection
+### 1. Advanced Voice Recognition & Wake Word Detection
 
-- **Description**: Continuous listening for wake words to activate voice commands
+- **Description**: Continuous listening for wake words with sophisticated speech processing
 - **Supported Wake Words**: "hey darvis", "hey jarvis", "play darvis", "play jarvis", "hi darvis", "hi jarvis"
-- **Technology**: Google Speech Recognition API
+- **Technology**: Google Speech Recognition API with noise filtering
 - **Visual Feedback**:
   - Logo glows green when wake word detected
-  - Logo eyes glow red when AI processing is active
+  - Logo eyes glow red during AI processing
+  - 8-second voice input timeout with countdown timer
 
-### 2. Manual Text Input
+### 2. Speech Bubble Interface
 
-- **Description**: Always-available text input field for commands
-- **Activation**: Press Enter to submit commands
-- **Visual Feedback**: Input field glows white while typing, blinking cursor until selected
-- **Processing**: Same command processing as voice input
+- **Description**: Modern chat-like interface replacing traditional console output
+- **Message Types**: Color-coded speech bubbles for different content types
+- **Color Scheme**:
+  - 🟢 **Green Bubbles**: User voice input ("HEARD: open calculator")
+  - 🔵 **Blue Bubbles**: AI responses from darvis agent
+  - 🟡 **Yellow Bubbles**: System status messages
+  - 🔴 **Red Bubbles**: Error messages and warnings
+- **Layout**: Bubbles appear in chronological order with proper spacing
 
-### 3. Intelligent Command Processing
+### 3. Darvis Agent AI Integration
 
-- **Description**: Automatic switching between local and AI-powered responses
-- **Default Behavior**: Local command processing for known applications and web services
-- **AI Fallback**: Automatically invokes AI when local processing fails
-- **User Feedback**: Info messages indicate when AI is being used
-- **AI Integration**: Uses opencode CLI for intelligent responses
+- **Description**: Specialized AI agent with conversation context and session management
+- **Session Continuity**: Use "@darvis" prefix for follow-up queries in ongoing conversations
+- **Smart Timeouts**: 5-minute protection for AI operations with manual cancel option
+- **Context Awareness**: Maintains conversation history within sessions
+- **Fallback Processing**: Automatic AI invocation for unrecognized commands
 
-### 4. Smart Command Processing
+### 4. Intelligent Command Processing
 
-- **Web Services**: Open YouTube, Google, GitHub, Gmail, Netflix, Spotify
-- **System Apps**: Launch calculator, terminal, text editor, browser
-- **Fallback**: Direct command execution or AI assistance for unrecognized commands
+- **Local Commands**: Auto-detection and launching of 20+ web services and local applications
+- **Web Services**: YouTube, Google, GitHub, Gmail, Slack, Notion, Jira, and more
+- **System Apps**: Calculator, terminal, text editor, browser with intelligent detection
+- **Smart Detection**: Automatic fallback from specific apps to generic categories
+- **Error Handling**: Graceful degradation with clear user feedback
 
 ## 🎨 User Interface
 
-### Layout Structure
+### Speech Bubble Layout Structure
 
 ```
 ┌─────────────────────────────────────┐
-│ [Manual Input Field]                │ ← White glow when typing
+│ [Manual Input Field]                │ ← Always visible text input
 ├─────────────────────────────────────┤
-│ [Consolidated Info Panel]           │ ← Color-coded messages:
-│ HEARD: [voice input] (green)        │   • HEARD: voice input (green)
-│ LOG: [system messages] (yellow/red) │   • LOG: system/status (yellow/red)
+│ 🟢 HEARD: open calculator            │ ← Green bubble: voice input
+│ 🟡 Opening calculator...             │ ← Yellow bubble: status
+│ 🔵 Calculator launched successfully  │ ← Blue bubble: AI response
 ├─────────────────────────────────────┤
-│              [TIMER]                │ ← Green countdown / Red count-up
+│              [TIMER]                │ ← Dynamic timer display
 ├─────────────────────────────────────┤
-│                        [DARVIS LOGO]│ ← Green glow on wake, red eyes for AI
+│           [CANCEL BUTTON]           │ ← Red button during AI ops
+├─────────────────────────────────────┤
+│                        [DARVIS LOGO]│ ← Animated with glow effects
 └─────────────────────────────────────┘
 ```
 
 ### Visual Elements
 
-- **Theme**: Dark background (#000000) with styled components
-- **Text Areas**: Dark grey backgrounds (#333333) with colored text
-- **Message Types**: Color-coded text in consolidated info panel
-  - Green: HEARD messages (voice input recognition)
-  - Yellow: LOG messages (system status, commands)
-  - Red: LOG messages (errors, warnings)
-- **Timer Display**: Large bold countdown/count-up above logo
-- **Glow Effects**: Dynamic highlights (2-3px border) for active elements
-- **Typography**: Arial 16pt for inputs, Arial 24pt for branding and timers
-- **Cursor**: Blinking cursor in manual input field until selected
+- **Theme**: Modern dark theme (#0f0f23 primary, #1a1a2e secondary)
+- **Speech Bubbles**: Rounded rectangles with color-coded backgrounds
+- **Message Types**:
+  - 🟢 **Green Bubbles**: Voice input recognition ("HEARD: [text]")
+  - 🔵 **Blue Bubbles**: AI responses from darvis agent
+  - 🟡 **Yellow Bubbles**: System status and command execution
+  - 🔴 **Red Bubbles**: Errors, warnings, and cancel notifications
+- **Timer Display**: Large, prominent countdown/count-up above logo
+- **Cancel Button**: Red button appears during AI operations (5+ minute timeout)
+- **Logo Animation**: Glowing effects with pulsing brightness variations
 
 ### Interactive Feedback
 
-- **Typing**: Manual input field glows white during text entry
-- **Speech Recognition**: "HEARD: [text]" appears in green when voice input recognized
-- **System Messages**: "LOG: [message]" appears in yellow for status, red for errors
-- **Voice Timer**: Green countdown (8 seconds) shows remaining time for voice input
-- **AI Timer**: Red count-up shows elapsed time during AI processing
-- **Wake Word**: Logo glows green when activation phrases detected
-- **AI Processing**: Logo eyes glow red when AI (opencode) is being invoked
+- **Typing**: Manual input field with blinking cursor and focus highlighting
+- **Speech Recognition**: Green speech bubble appears when voice input is recognized
+- **System Messages**: Yellow bubbles for status updates, red bubbles for errors
+- **AI Responses**: Blue speech bubbles contain darvis agent responses
+- **Voice Timer**: Green countdown (8 seconds) during voice input activation
+- **AI Timer**: Red count-up during darvis agent processing (5-minute timeout)
+- **Cancel Button**: Appears during AI operations for manual interruption
+- **Logo Effects**:
+  - Green glow on wake word detection
+  - Red glowing eyes during AI processing
+  - Pulsing animation (1-second intervals) when active
 
 ## 🔧 Technical Specifications
 
 ### Dependencies
 
 - **Python 3.13+**
-- **speech_recognition**: Voice input processing
-- **pyttsx3**: Text-to-speech (optional, silenced on errors)
-- **Pillow**: Image processing for logo transparency
-- **tkinter**: GUI framework (built-in)
+- **speech_recognition**: Google Speech Recognition API integration
+- **pyttsx3**: Text-to-speech synthesis (gracefully handles failures)
+- **Pillow**: Image processing for logo transparency and animations
+- **tkinter**: Cross-platform GUI framework with custom theming
+- **opencode**: CLI integration for darvis agent AI functionality
 
-### File Structure
+### Architecture Overview
 
 ```
-darvis/
-├── assets/                 # Visual assets
-│   ├── darvis-logo.png        # UI logo (150x150)
-│   ├── darvis-logo-hires.png  # High-res transparent
-│   └── darvis-black.png       # Original high-res logo
-├── darvis/                 # Main package
-│   ├── ui.py              # GUI and system tray
-│   ├── speech.py          # Voice recognition & TTS
-│   ├── apps.py            # App detection & launching
-│   ├── ai.py              # AI integration
-│   ├── config.py          # Configuration constants
-│   └── waybar_status.py   # Waybar IPC
-├── docs/                  # Documentation
-├── scripts/               # Utility scripts
-├── tests/                 # Unit tests
-├── archive/               # Legacy code
-├── AGENTS.md             # Development guidelines
-├── LICENSE               # MIT License
-├── requirements.txt      # Core dependencies
-├── requirements-dev.txt  # Development dependencies
-├── darvis.desktop        # Desktop integration
-├── install-desktop.sh    # Desktop installer
-└── launch-darvis.sh      # Application launcher
+User Input (Voice/Text)
+    ↓
+Speech Recognition / Text Processing
+    ↓
+Command Classification:
+├── Local Apps → App Detection → Launch
+├── Web Services → URL Mapping → Browser Launch
+└── AI Queries → Darvis Agent → Response
+    ↓
+Speech Bubble Display (Color-coded)
+    ↓
+Visual Feedback (Glows, Timers, Animations)
 ```
 
-### Audio Requirements
+### Audio & System Requirements
 
-- **Microphone**: Required for voice input
-- **Audio System**: ALSA (Linux) - warnings are normal
+- **Microphone**: Required for voice input (auto-detection with fallback)
+- **Audio System**: ALSA/PulseAudio on Linux (warnings are normal)
 - **Speech API**: Internet connection for Google Speech Recognition
+- **Display**: X11/Wayland support with proper window management
+- **System Tray**: GTK integration for Linux desktop environments
 
 ## 🚀 Usage Workflow
 
 ### Voice Commands
 
-1. Start application: `./run.sh` or `python darvis.py`
-2. Say wake word: "hey darvis"
-3. Speak command: "open youtube"
-4. Assistant responds and executes (uses AI automatically if needed)
+1. **Launch**: `./launch-darvis.sh` or `python -m darvis.ui`
+2. **Wake**: Say "hey darvis" (logo glows green)
+3. **Command**: Speak clearly "open calculator" or "what is recursion?"
+4. **Response**: Speech bubble appears with result or AI processing begins
+5. **AI Continuation**: Use "@darvis explain this further" for follow-up questions
 
-### Manual Input
+### Manual Text Input
 
-1. Start application
-2. Type command in input field: "open youtube"
-3. Press Enter
-4. Assistant processes and executes (uses AI automatically if needed)
+1. **Launch**: Start the application
+2. **Type**: Enter command in text field (always visible)
+3. **Submit**: Press Enter to process
+4. **Response**: Speech bubble displays result immediately
 
-### Intelligent Processing
+### Darvis Agent Conversations
 
-- **Local Commands**: Web services and apps are handled locally by default
-- **AI Fallback**: When local processing fails, AI is automatically invoked
-- **User Feedback**: Info messages indicate when AI processing is active
-- **Seamless Experience**: No manual mode switching required
+- **Session Continuity**: AI conversations maintain context within 5-minute windows
+- **Follow-up Queries**: Prefix with "@darvis" to continue previous conversations
+- **Smart Timeouts**: 5-minute protection prevents runaway AI operations
+- **Manual Cancel**: Red cancel button appears for long-running queries
+- **Visual Feedback**: Red glowing eyes and count-up timer during AI processing
 
 ## 📝 Command Examples
 
-### Local Commands (Processed Locally)
+### Local Commands (Instant Processing)
 
-- "open youtube" → Opens YouTube in browser
-- "open google" → Opens Google search
-- "open github" → Opens GitHub
-- "open calculator" → Launches calculator
-- "open terminal" → Opens terminal window
-- "open editor" → Launches text editor
+- **"open youtube"** → Green bubble: "Opening YouTube..." → Browser launches
+- **"open calculator"** → Yellow bubble: "Launching calculator..." → App opens
+- **"open github"** → Blue bubble: "Opening GitHub..." → Browser navigates
+- **"open terminal"** → System detects and launches appropriate terminal emulator
 
-### AI Commands (Processed by AI)
+### Darvis Agent AI Commands
 
-- "what is the weather today?" → AI provides weather information
-- "explain quantum computing" → AI explains the concept
-- "write a hello world program" → AI generates code
-- Any unrecognized commands → Automatically sent to AI for processing
+- **"what is recursion?"** → Blue bubble with detailed explanation from darvis agent
+- **"@darvis can you give a code example?"** → Continued conversation with context
+- **"explain quantum computing in simple terms"** → Comprehensive AI response
+- **"help me debug this python code: [paste code]"** → AI analysis and suggestions
+
+### Web Services (20+ Supported)
+
+- **Communication**: "open slack", "open gmail", "open discord"
+- **Development**: "open github", "open gitlab", "open jira"
+- **Productivity**: "open notion", "open trello", "open calendar"
+- **Entertainment**: "open netflix", "open spotify", "open youtube"
 
 ## 🔍 Troubleshooting
 
 ### Common Issues
 
-- **No microphone detected**: Check audio devices with `list_microphones()`
-- **Speech not recognized**: Ensure internet connection for Google API
-- **Logo not loading**: Check file permissions and PIL installation
-- **Glow effects not working**: Requires tkinter with proper theme support
+- **Microphone Issues**: Run `python3 -c "import darvis.speech; darvis.speech.list_microphones()"`
+- **Speech Recognition**: Requires internet for Google Speech API
+- **Logo Display**: Check PIL/Pillow installation and asset file permissions
+- **Glow Effects**: May not work on all tkinter themes or window managers
+- **AI Timeouts**: 5-minute limit prevents runaway operations (use cancel button)
+- **Session Continuity**: Use "@darvis" prefix for continued conversations
 
-### Debug Mode
+### Debug Information
 
-- Run with `python darvis.py` to see console output
-- Check microphone list with `list_microphones()` function
-- Manual input bypasses voice recognition entirely
+- **Console Output**: Run `python3 -m darvis.ui` for detailed logging
+- **Microphone Test**: Use the built-in microphone listing function
+- **Manual Input**: Always available as fallback to voice recognition
+- **AI Testing**: Test darvis agent with simple queries first
 

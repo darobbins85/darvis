@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide provides comprehensive end-to-end testing procedures for all Darvis voice assistant features. Tests should be conducted in a Linux environment with microphone access and internet connectivity.
+This guide provides comprehensive end-to-end testing procedures for the Darvis voice assistant, featuring speech-bubble interface, darvis agent AI integration, and advanced visual feedback. All tests should be conducted in a Linux environment with microphone access and internet connectivity.
 
 ## 🧪 Test Environment Setup
 
@@ -33,57 +33,60 @@ python3 darvis.py  # Should start GUI without errors
 ### 1. Application Launch & UI Elements
 
 #### Test Case: UI-001 - Application Startup
-**Objective**: Verify application launches correctly with all UI elements
+**Objective**: Verify application launches correctly with speech-bubble interface
 
 **Steps**:
-1. Run `python3 darvis.py`
+1. Run `python3 -m darvis.ui`
 2. Verify window appears with title "Darvis Voice Assistant"
 3. Confirm presence of:
-    - Manual input text field (top)
-    - Consolidated info panel (middle) with color-coded messages
-    - Timer display (above logo)
-    - Darvis logo (bottom-center) with glow effects
+    - Manual input text field (top, always visible)
+    - Speech bubble area (middle) initially empty
+    - Timer display area (above logo, initially hidden)
+    - Darvis logo (bottom-center) with animation capabilities
+    - System tray icon (minimize to tray functionality)
 
 **Expected Results**:
-- ✅ Window opens with dark theme
-- ✅ All UI elements visible and properly positioned
-- ✅ "Darvis is Listening..." message appears in info panel
-- ✅ Timer area is empty initially
-- ✅ Logo loads with glow capabilities
-- ✅ No console errors
+- ✅ Window opens with modern dark theme (#0f0f23)
+- ✅ Speech bubble interface ready for messages
+- ✅ Manual input field has blinking cursor
+- ✅ Logo displays with glow effect capabilities
+- ✅ System tray integration functional
+- ✅ No console errors or warnings
 
 ### 2. Manual Input Functionality
 
 #### Test Case: INPUT-001 - Manual Text Commands
-**Objective**: Verify manual input processes commands correctly
+**Objective**: Verify manual input processes commands with speech bubble feedback
 
 **Steps**:
 1. Start application
-2. Click in manual input field
+2. Click in manual input field (blinking cursor appears)
 3. Type "open youtube" and press Enter
-4. Observe visual feedback and browser launch
+4. Observe speech bubble response and browser launch
 
 **Expected Results**:
-- ✅ Input field glows green while typing
-- ✅ Green flash when Enter pressed
+- ✅ Manual input field accepts text input
+- ✅ Enter key submission triggers processing
 - ✅ Input field clears after submission
-- ✅ Browser opens YouTube
-- ✅ "LOG: Command: open youtube" appears in yellow
-- ✅ "LOG: Opening youtube" appears in yellow
+- ✅ Yellow speech bubble: "Opening YouTube..."
+- ✅ Browser opens YouTube successfully
+- ✅ Green speech bubble: "YouTube opened successfully"
 
-#### Test Case: INPUT-002 - AI Mode Manual Input
-**Objective**: Test manual input with AI mode enabled
+#### Test Case: INPUT-002 - Darvis Agent Manual Input
+**Objective**: Test manual input with darvis agent AI processing
 
 **Steps**:
-1. Click "AI Mode" button (turns green)
-2. Type "what is the capital of France?" and press Enter
-3. Observe AI response
+1. Type "@darvis what is the capital of France?" and press Enter
+2. Observe darvis agent processing with visual feedback
+3. Wait for AI response in speech bubble
 
 **Expected Results**:
-- ✅ AI Mode button shows "AI Mode: ON"
-- ✅ Query appears in system messages
-- ✅ AI response appears after processing
-- ✅ No errors in processing
+- ✅ Red glowing eyes appear on logo during processing
+- ✅ Red count-up timer starts (0:00, increments)
+- ✅ Blue speech bubble appears with AI response
+- ✅ Response contains accurate information
+- ✅ Timer stops when response received
+- ✅ No timeout errors within 5-minute limit
 
 ### 3. Voice Recognition & Wake Words
 
@@ -101,55 +104,58 @@ python3 darvis.py  # Should start GUI without errors
 - ✅ No false positives from similar words
 
 #### Test Case: VOICE-002 - Voice Command Processing
-**Objective**: Test complete voice command workflow
+**Objective**: Test complete voice command workflow with speech bubbles
 
 **Steps**:
-1. Say "hey darvis"
-2. Wait for activation (logo glow)
-3. Say "open calculator"
-4. Observe application launch
+1. Say "hey darvis" (logo glows green)
+2. Wait for activation (green countdown timer appears)
+3. Say "open calculator" clearly
+4. Observe speech bubble feedback and application launch
 
 **Expected Results**:
-- ✅ Wake word triggers activation with green logo glow
-- ✅ Green countdown timer appears (8 seconds)
-- ✅ Voice command appears as "HEARD: open calculator" in green
+- ✅ Wake word triggers green logo glow
+- ✅ Green countdown timer appears (8 seconds, decreasing)
+- ✅ Green speech bubble: "HEARD: open calculator"
+- ✅ Yellow speech bubble: "Launching calculator..."
+- ✅ Calculator application opens successfully
 - ✅ Timer stops when command processed
-- ✅ Calculator application opens
-- ✅ "LOG: Command: open calculator" appears in yellow
+- ✅ Success confirmation in speech bubble
 
 ### 4. AI Mode Functionality
 
-#### Test Case: AI-001 - AI Mode Toggle
-**Objective**: Verify AI mode switching works correctly
+#### Test Case: AI-001 - Darvis Agent Basic Query
+**Objective**: Test basic darvis agent functionality
 
 **Steps**:
-1. Click AI Mode button
-2. Verify button changes to "AI Mode: ON" (green)
-3. Click again to disable
-4. Verify button changes to "AI Mode: OFF" (red)
+1. Say "hey darvis" then "what is 2 + 2?"
+2. Observe AI processing indicators
+3. Wait for response in speech bubble
 
 **Expected Results**:
-- ✅ Button toggles between ON/OFF states
-- ✅ Visual feedback (color changes) works
-- ✅ State persists during session
+- ✅ Wake word activates voice input
+- ✅ Red glowing eyes during AI processing
+- ✅ Red count-up timer during processing
+- ✅ Blue speech bubble with correct answer (4)
+- ✅ Processing completes within reasonable time
+- ✅ No errors or timeouts
 
-#### Test Case: AI-002 - AI Query Processing
-**Objective**: Test AI-powered responses
+#### Test Case: AI-002 - Darvis Agent Complex Query
+**Objective**: Test complex darvis agent responses with speech bubbles
 
 **Steps**:
-1. Enable AI Mode
-2. Say "hey darvis" then "explain recursion in programming"
-3. Wait for AI response
+1. Say "hey darvis" then "explain recursion in programming"
+2. Observe processing indicators and speech bubble response
+3. Follow up with "@darvis can you give a python example?"
 
 **Expected Results**:
-- ✅ Logo eyes glow red during AI processing
-- ✅ Red count-up timer appears and increments
-- ✅ "LOG: Using AI assistance..." appears in yellow
-- ✅ "LOG: AI Query: explain recursion in programming" appears in yellow
-- ✅ AI response appears as "LOG: AI Response: [response]" in yellow
-- ✅ Timer stops when response received
-- ✅ No timeout errors
-- ✅ Response is relevant to query
+- ✅ Red glowing eyes during AI processing
+- ✅ Red count-up timer increments during processing
+- ✅ Blue speech bubble with comprehensive explanation
+- ✅ Follow-up query maintains conversation context
+- ✅ Second blue speech bubble with code example
+- ✅ 5-minute timeout protection active
+- ✅ Cancel button appears for long queries
+- ✅ Responses are accurate and helpful
 
 ### 5. Web Service Integration
 
@@ -204,51 +210,74 @@ python3 darvis.py  # Should start GUI without errors
 
 ### 7. Visual Feedback & Effects
 
-#### Test Case: GFX-001 - Glow Effects
-**Objective**: Verify all glow effects work correctly
+#### Test Case: AI-003 - Cancel Button Functionality
+**Objective**: Test manual cancellation of AI operations
 
 **Steps**:
-1. Type in manual input field → observe green glow
-2. Say "hey darvis" → observe logo glow
-3. Submit command → observe text area glows
-4. Receive response → observe info area glow
+1. Submit a complex AI query that will take time
+2. Observe cancel button appears (red)
+3. Click cancel button during processing
+4. Verify operation stops gracefully
 
 **Expected Results**:
-- ✅ All glow effects trigger appropriately
-- ✅ Green borders appear (2-3px)
-- ✅ Effects last 1 second then disappear
-- ✅ No performance impact from effects
+- ✅ Cancel button appears during AI operations
+- ✅ Red button is clearly visible and clickable
+- ✅ Clicking cancel stops AI processing
+- ✅ Red speech bubble: "Operation cancelled by user"
+- ✅ Timer stops and resets
+- ✅ Logo eyes stop glowing
+- ✅ No hanging processes or errors
+
+#### Test Case: GFX-001 - Visual Effects & Animations
+**Objective**: Verify glow effects, animations, and visual feedback
+
+**Steps**:
+1. Type in manual input field → observe cursor and focus
+2. Say "hey darvis" → observe green logo glow
+3. Submit AI query → observe red glowing eyes and pulsing
+4. Receive response → observe speech bubble appearance
+
+**Expected Results**:
+- ✅ Logo glows green on wake word detection
+- ✅ Logo eyes glow red during AI processing
+- ✅ Pulsing animation (1-second intervals) when active
+- ✅ Speech bubbles appear with smooth transitions
+- ✅ Timer displays correctly (countdown/count-up)
+- ✅ Visual effects don't impact performance
 
 #### Test Case: GFX-002 - Timer System
-**Objective**: Verify countdown and count-up timers work correctly
+**Objective**: Verify countdown and count-up timers with timeout protection
 
 **Steps**:
 1. Say "hey darvis" → observe green countdown timer (8 seconds)
-2. Wait for timer to count down or speak command to stop it
-3. Say "hey darvis" then ask AI question → observe red count-up timer
-4. Wait for AI response and timer to stop
+2. Speak command before timeout → timer stops
+3. Say "hey darvis" then ask complex AI question → observe red count-up
+4. Wait for AI response or test 5-minute timeout behavior
 
 **Expected Results**:
-- ✅ Green countdown starts at 8 and decreases by 1 each second
-- ✅ Timer stops when voice command is processed
-- ✅ Red count-up starts at 0 and increases during AI processing
-- ✅ Timer stops when AI response is received
-- ✅ Timer displays above logo with appropriate colors
+- ✅ Green countdown: 8 seconds decreasing by 1 each second
+- ✅ Timer stops when voice command processed
+- ✅ Red count-up: starts at 0:00, increments during AI processing
+- ✅ 5-minute timeout protection prevents runaway operations
+- ✅ Cancel button appears for operations over 5 seconds
+- ✅ Timer displays prominently above logo
 
-#### Test Case: GFX-003 - Color-Coded Messages
-**Objective**: Verify message routing and color coding in consolidated info panel
+#### Test Case: GFX-003 - Speech Bubble System
+**Objective**: Verify speech bubble creation, color coding, and message routing
 
 **Steps**:
-1. Say "hey darvis open youtube" → check for green "HEARD:" message
-2. Submit manual command → check for yellow "LOG:" messages
-3. Trigger AI query → check for yellow "LOG:" status messages
-4. Cause an error (e.g., AI unavailable) → check for red "LOG:" messages
+1. Say "hey darvis open youtube" → check green bubble
+2. Submit manual command → check yellow status bubbles
+3. Trigger AI query → check blue AI response bubbles
+4. Cause error (invalid command) → check red error bubbles
 
 **Expected Results**:
-- ✅ Voice input appears as "HEARD: [text]" in green
-- ✅ System status appears as "LOG: [message]" in yellow
-- ✅ Errors appear as "LOG: [error]" in red
-- ✅ Messages auto-scroll and display in consolidated panel
+- ✅ Green bubbles: Voice input ("HEARD: [text]")
+- ✅ Yellow bubbles: System status and command execution
+- ✅ Blue bubbles: Darvis agent AI responses
+- ✅ Red bubbles: Errors and cancellation messages
+- ✅ Bubbles appear in chronological order
+- ✅ Proper spacing and visual hierarchy
 
 ### 8. Error Handling
 
@@ -316,10 +345,12 @@ Screenshots: [If applicable]
 
 ## 🚨 Known Issues & Limitations
 
-- TTS may fail on some systems (silently ignored)
-- Speech recognition requires internet connection
-- Some system applications may not be available on all distributions
-- Glow effects may not work on all tkinter themes
+- TTS may fail on some systems (gracefully handled)
+- Speech recognition requires internet connection for Google API
+- Some system applications may not be available on all Linux distributions
+- Visual effects may vary across different window managers/themes
+- AI operations limited to 5-minute timeout for safety
+- Cancel button may not appear instantly for very quick operations
 
 ## 📞 Support
 

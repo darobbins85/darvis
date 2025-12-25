@@ -53,6 +53,7 @@ class DarvisGUI:
             "hi jarvis",
         ]
         self.ai_mode = tk.BooleanVar()
+        self.listening_mode = tk.BooleanVar(value=False)  # Default to OFF
         self.conversation_history = []
         self.current_session_id = None
         self.is_speaking = False
@@ -113,6 +114,13 @@ class DarvisGUI:
         """Handle window minimize events."""
         # On some systems, this could trigger tray minimization
         pass
+
+    def toggle_listening_mode(self):
+        """Toggle listening mode on/off and update display."""
+        if self.listening_mode.get():
+            self.display_message("Darvis is Listening...\n")
+        else:
+            self.display_message("Darvis is not listening\n")
 
     def show_about(self):
         """Show about dialog."""
@@ -352,52 +360,16 @@ Built with ❤️"""
 
         self.root.configure(bg=self.colors['bg_primary'])
 
-        # Header with modern styling
-        header_frame = tk.Frame(self.root, bg=self.colors['bg_secondary'])
-        header_frame.pack(fill=tk.X, padx=15, pady=(15, 5))
+        # No header - title removed as requested
 
-        title_label = tk.Label(
-            header_frame,
-            text="DARVIS Voice Assistant",
-            font=('JetBrains Mono', 14, 'bold'),
-            fg=self.colors['text_accent'],
-            bg=self.colors['bg_secondary']
-        )
-        title_label.pack(side=tk.LEFT)
-
-        # Manual input section with modern styling
-        input_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
-        input_frame.pack(fill=tk.X, padx=15, pady=5)
-
-        input_label = tk.Label(
-            input_frame,
-            text="💬 Manual Input:",
-            font=('JetBrains Mono', 11, 'bold'),
-            fg=self.colors['text_primary'],
-            bg=self.colors['bg_primary']
-        )
-        input_label.pack(anchor=tk.W, pady=(0, 3))
-
-        self.manual_input_entry = tk.Entry(
-            input_frame,
-            font=('JetBrains Mono', 12),
-            bg=self.colors['bg_secondary'],
-            fg=self.colors['text_primary'],
-            insertbackground=self.colors['text_accent'],
-            relief='flat',
-            bd=2
-        )
-        self.manual_input_entry.pack(fill=tk.X, pady=(0, 5), ipady=6)
-        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
-
-        # Information panel with modern styling
+        # Information panel with modern styling (moved to top)
         info_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
-        info_frame.pack(fill=tk.BOTH, expand=True, padx=15, pady=5)
+        info_frame.pack(fill=tk.BOTH, expand=True, padx=15, pady=(15, 5))
 
         self.text_info = tk.Text(
             info_frame,
             height=12,
-            font=('JetBrains Mono', 10),
+            font=('JetBrains Mono', 14),
             bg=self.colors['bg_secondary'],
             fg=self.colors['text_primary'],
             relief='flat',
@@ -406,6 +378,12 @@ Built with ❤️"""
             pady=10
         )
         self.text_info.pack(fill=tk.BOTH, expand=True)
+
+        # Prevent navigation and editing in the text area
+        self.text_info.bind('<Key>', lambda e: 'break')  # Block all keyboard input
+        self.text_info.bind('<Button-1>', lambda e: 'break')  # Block mouse clicks
+        self.text_info.bind('<Button-3>', lambda e: 'break')  # Block right clicks
+        self.text_info.bind('<FocusIn>', lambda e: 'break')  # Prevent focus
 
         # Set up text tags for console coloring
         self._setup_text_tags()
@@ -419,6 +397,77 @@ Built with ❤️"""
             self.text_info.tag_config("error", foreground=self.colors.get('error', 'red'))
             self.text_info.tag_config("accent", foreground=self.colors.get('text_accent', 'cyan'))
             self.text_info.tag_config("muted", foreground=self.colors.get('text_secondary', 'gray'))
+            # User bubble background color (matches input field)
+            self.text_info.tag_config("user_bubble", background=self.colors.get('bg_accent', '#16213e'))
+
+        # Manual input section with modern styling (moved below text field)
+        input_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
+        input_frame.pack(fill=tk.X, padx=15, pady=5)
+
+        self.manual_input_entry = tk.Entry(
+            input_frame,
+            font=('JetBrains Mono', 16),
+            bg=self.colors['bg_accent'],  # Different color from text field
+            fg=self.colors['text_primary'],
+            insertbackground=self.colors['text_accent'],
+            relief='flat',
+            bd=2
+        )
+        self.manual_input_entry.pack(fill=tk.X, pady=(0, 5), ipady=6)
+        self.manual_input_entry.bind("<Return>", lambda e: self.submit_manual_input())
+
+        # Control buttons frame (below input field)
+        control_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
+        control_frame.pack(fill=tk.X, padx=15, pady=(0, 5))
+
+        # Listening mode toggle button
+        self.listening_toggle = tk.Checkbutton(
+            control_frame,
+            text="🎤 Listening Mode",
+            variable=self.listening_mode,
+            command=self.toggle_listening_mode,
+            font=('JetBrains Mono', 10),
+            fg=self.colors['text_primary'],
+            bg=self.colors['bg_primary'],
+            selectcolor=self.colors['bg_accent'],
+            activeforeground=self.colors['text_accent'],
+            activebackground=self.colors['bg_primary']
+        )
+        self.listening_toggle.pack(side=tk.LEFT)
+
+        # Copy chat button
+        copy_button = tk.Button(
+            control_frame,
+            text="📋 Copy Chat",
+            command=self.copy_chat_history,
+            font=('JetBrains Mono', 10),
+            fg=self.colors['text_primary'],
+            bg=self.colors['bg_accent'],
+            activeforeground=self.colors['text_accent'],
+            activebackground=self.colors['bg_primary'],
+            relief='flat',
+            bd=2,
+            padx=10
+        )
+        copy_button.pack(side=tk.RIGHT)
+
+    def copy_chat_history(self):
+        """Copy the entire chat history to clipboard."""
+        if self.text_info:
+            try:
+                # Get all text from the chat area
+                chat_text = self.text_info.get("1.0", tk.END).strip()
+
+                # Copy to clipboard
+                self.root.clipboard_clear()
+                self.root.clipboard_append(chat_text)
+                self.root.update()  # Required for some systems
+
+                # Show confirmation
+                self.display_message("Chat history copied to clipboard!\n")
+
+            except Exception as e:
+                self.display_message(f"Failed to copy chat: {str(e)}\n")
 
         # Large logo at bottom with modern styling
         try:
@@ -437,11 +486,11 @@ Built with ❤️"""
             ai_glow_full = self.create_eye_glow(large_img, (255, 20, 20, 255))  # Red eyes
             self.ai_glow_image = ImageTk.PhotoImage(ai_glow_full)
 
-            # Dim glow for pulsing (much lower intensity for better effect)
-            wake_glow_dim = self.create_eye_glow(large_img, (0, 80, 0, 80))  # Very dim green
+            # Semi-bright glow for pulsing (lower intensity but still visible)
+            wake_glow_dim = self.create_eye_glow(large_img, (0, 150, 0, 150))  # Semi-bright green
             self.wake_glow_dim_image = ImageTk.PhotoImage(wake_glow_dim)
 
-            ai_glow_dim = self.create_eye_glow(large_img, (80, 5, 5, 80))  # Very dim red
+            ai_glow_dim = self.create_eye_glow(large_img, (150, 20, 20, 150))  # Semi-bright red
             self.ai_glow_dim_image = ImageTk.PhotoImage(ai_glow_dim)
 
             # Success - create the UI elements
@@ -471,7 +520,7 @@ Built with ❤️"""
                 text="Cancel AI Request",
                 font=('JetBrains Mono', 10),
                 bg=self.colors['error'],
-                fg='white',
+                fg='black',  # Dark text for better contrast on red button
                 relief='raised',
                 bd=2,
                 padx=10,
@@ -567,8 +616,7 @@ Built with ❤️"""
             )
             self.timer_label.pack(side=tk.BOTTOM, pady=10)
 
-        # Initialize info text
-        self.text_info.insert(tk.END, "Darvis is Listening...\n")
+        # Initialize info text (no default message - controlled by listening toggle)
 
     def start_voice_processing(self):
         """Start the voice recognition processing thread."""
@@ -578,10 +626,15 @@ Built with ❤️"""
         voice_thread.start()
 
     def listen_loop(self):
-        """Main voice processing loop - continuously listen for speech."""
-        listening_for_command = False
+        """Main voice processing loop - continuously listen for speech when enabled."""
         while True:
             try:
+                # Only listen if listening mode is enabled
+                if not self.listening_mode.get():
+                    import time
+                    time.sleep(0.1)  # Small delay to prevent busy waiting
+                    continue
+
                 text = listen()
                 if text:
                     text_lower = text.lower()
@@ -602,8 +655,8 @@ Built with ❤️"""
 
                         if command:
                             # Wake word + command in one utterance
-                            self.display_message("Activated!\n")
-                            speak("Activated!")
+                            self.display_message("Darvis heard you - What's up?\n")
+                            speak("Darvis heard you - What's up?")
                             self.start_countdown_timer(seconds=8, color="green")
                             self.process_command(command, "voice")
                             self.msg_queue.put({"type": "wake_word_end"})
@@ -623,8 +676,11 @@ Built with ❤️"""
 
     def manual_activate(self):
         """Manually activate command listening mode."""
-        self.display_message("Activated!\n")
-        speak("Activated!")
+        self.display_message("Darvis heard you - What's up?\n")
+        # Speak in background thread to avoid blocking
+        import threading
+        speak_thread = threading.Thread(target=lambda: speak("Darvis heard you - What's up?"), daemon=True)
+        speak_thread.start()
 
         # Start countdown timer for command input
         self.start_countdown_timer(seconds=8, color="green")
@@ -638,7 +694,8 @@ Built with ❤️"""
             self.stop_timer()
 
     def process_ai_command(self, command: str):
-        """Process a command using AI assistance."""
+        """Process a command using AI assistance asynchronously."""
+        # Start visual indicators immediately
         self.glow_logo(True, True)  # Red glow for AI
         update_waybar_status("thinking", f"Thinking about: {command[:30]}...")
 
@@ -649,28 +706,42 @@ Built with ❤️"""
         # Start count-up timer for AI processing
         self.start_countup_timer(color="red")
 
-        try:
-            response, session_id = process_ai_query(command)
-            if session_id:
-                self.display_message(f"New AI session started (ID: {session_id})\n")
-            update_waybar_status("speaking", "Speaking response...")
-            self.display_message(f"AI Response: {response}\n")
-            speak(response)  # Speak the actual response
-            update_waybar_status("success", "Response delivered")
-        except Exception as e:
-            error_msg = str(e)
-            if "opencode" in error_msg.lower():
-                self.display_message("AI assistance not available (opencode not found)\n")
-                update_waybar_status("error", "AI not available")
-            else:
-                self.display_message(f"AI error: {error_msg}\n")
-                update_waybar_status("error", f"AI error: {error_msg[:50]}")
-        finally:
-            # Disable cancel button and stop timer/glow
-            if hasattr(self, 'cancel_button'):
-                self.cancel_button.config(state='disabled')
-            self.stop_timer()
-            self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
+        def ai_processing_thread():
+            try:
+                response, session_id = process_ai_query(command)
+                update_waybar_status("speaking", "Speaking response...")
+
+                # Schedule UI updates back to main thread
+                self.root.after(0, lambda: self.display_message(f"AI Response: {response}\n"))
+
+                # Speak in background thread
+                import threading
+                speak_thread = threading.Thread(target=lambda: speak(response), daemon=True)
+                speak_thread.start()
+                update_waybar_status("success", "Response delivered")
+            except Exception as e:
+                error_msg = str(e)
+                if "opencode" in error_msg.lower():
+                    self.root.after(0, lambda: self.display_message("AI assistance not available (opencode not found)\n"))
+                    update_waybar_status("error", "AI not available")
+                else:
+                    self.root.after(0, lambda: self.display_message(f"AI error: {error_msg}\n"))
+                    update_waybar_status("error", f"AI error: {error_msg[:50]}")
+            finally:
+                # Stop indicators back on main thread
+                self.root.after(0, lambda: self._cleanup_ai_indicators())
+
+        # Start AI processing in background thread
+        import threading
+        ai_thread = threading.Thread(target=ai_processing_thread, daemon=True)
+        ai_thread.start()
+
+    def _cleanup_ai_indicators(self):
+        """Clean up AI processing indicators."""
+        if hasattr(self, 'cancel_button'):
+            self.cancel_button.config(state='disabled')
+        self.stop_timer()
+        self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
 
     def start_message_processing(self):
         """Start processing messages from the queue."""
@@ -684,63 +755,178 @@ Built with ❤️"""
         try:
             msg = self.msg_queue.get_nowait()
             if msg["type"] == "insert":
-                # Add horizontal separator for new interactions
-                if "Activated!" in msg["text"]:
-                    self._insert_colored_text("─" * 60 + "\n", "muted")
+                # Add spacing for new interactions
+                if "Darvis heard you - What's up?" in msg["text"]:
+                    self._insert_colored_text("\n" + "─" * 60 + "\n\n", "muted")
 
-                # Route all messages to the consolidated info panel with appropriate formatting
+                # Route all messages to create proper chat bubbles
                 if msg["text"].startswith("Darvis heard:"):
-                    # Heard text - green with "HEARD:" prefix
+                    # Voice input - right-aligned green bubble
                     clean_text = msg["text"].replace("Darvis heard: ", "", 1)
-                    self._insert_colored_text(f"HEARD: {clean_text}\n", "success")
+                    self._insert_chat_bubble(clean_text, "success", "right")
                 elif (
                     "AI assistance not available" in msg["text"]
                     or "AI error:" in msg["text"]
                 ):
-                    # Error messages - red
-                    self._insert_colored_text(f"{msg['text']}\n", "error")
+                    # Error messages - center-aligned red bubble
+                    self._insert_chat_bubble(msg["text"], "error", "center")
                 elif msg["text"].startswith("AI Response:"):
-                    # AI responses - red with "AI:" prefix
+                    # AI responses - left-aligned blue bubble
                     clean_text = msg["text"].replace("AI Response: ", "", 1)
-                    self._insert_colored_text(f"AI: {clean_text}\n", "error")
-                elif (
-                    msg["text"].startswith("Command:")
-                    or msg["text"].startswith("AI Query:")
-                ):
-                    # AI and command messages - yellow (no LOG prefix)
-                    self._insert_colored_text(f"{msg['text']}\n", "warning")
-                elif "New AI session" in msg["text"] or "Activated!" in msg["text"]:
-                    # Status messages - yellow (no LOG prefix)
-                    self._insert_colored_text(f"{msg['text']}\n", "warning")
-                elif "Using AI assistance" in msg["text"]:
-                    # AI initiation - yellow (no LOG prefix)
-                    self._insert_colored_text(f"{msg['text']}\n", "warning")
+                    self._insert_chat_bubble(clean_text, "accent", "left")
+                elif len(msg["text"].strip()) > 0 and not any(prefix in msg["text"] for prefix in ["Darvis heard:", "AI Response:", "Darvis is", "AI assistance not available", "AI error:"]):
+                    # User input (messages without special prefixes) - right-aligned bubble with input field color
+                    clean_text = msg["text"].strip()
+                    self._insert_chat_bubble(clean_text, "user_bubble", "right")
+                elif "Darvis heard you - What's up?" in msg["text"]:
+                    # Activation message - center-aligned
+                    self._insert_chat_bubble(msg["text"], "warning", "center")
+                elif "Darvis is Listening" in msg["text"] or "Darvis is not listening" in msg["text"]:
+                    # Listening status - center-aligned
+                    self._insert_chat_bubble(msg["text"], "muted", "center")
                 else:
-                    # General messages - white
-                    self._insert_colored_text(f"{msg['text']}\n")  # Default color
+                    # Other messages - left-aligned default
+                    self._insert_colored_text(f"{msg['text']}\n")
             elif msg["type"] == "wake_word_detected":
                 # Glow logo when wake word is detected
                 self.glow_logo(True)
             elif msg["type"] == "wake_word_end":
-                self.root.after(1000, lambda: self.glow_logo(False))
+                self.root.after(1000, lambda: self.glow_logo(False, False))
         except queue.Empty:
             pass
+        except Exception as e:
+            # Log any errors but don't crash the message processing loop
+            print(f"Error processing message: {e}")
+            import traceback
+            traceback.print_exc()
         # Schedule next check
         self.root.after(100, self.update_gui)
 
-    def _insert_colored_text(self, text, tag=None):
-        """Insert colored text into the console."""
+    def _insert_chat_bubble(self, text, tag=None, align="left"):
+        """Insert a proper chat bubble with rounded borders and background colors."""
         if self.text_info:
-            # Insert text
+            # Enable text widget for insertion
+            self.text_info.config(state='normal')
+
+            # Initialize bubble background tags if not already done
+            if not hasattr(self, '_bubble_tags_created'):
+                # User bubbles (right side) - lighter background
+                self.text_info.tag_config("user_bubble_bg", background="#007AFF", foreground="white")
+                # AI bubbles (left side) - darker background
+                self.text_info.tag_config("ai_bubble_bg", background="#E5E5EA", foreground="#1C1C1E")
+                # System bubbles (center) - neutral background
+                self.text_info.tag_config("system_bubble_bg", background="#F2F2F7", foreground="#3C3C43")
+                self._bubble_tags_created = True
+
+            lines = text.split('\n')
+            max_len = max(len(line) for line in lines) if lines else 0
+
+            # Create bubble styling based on alignment
+            if align == "right":
+                # Right-aligned user bubble (like iOS Messages - blue)
+                padding = max(0, 30 - max_len)
+
+                # Top of bubble
+                top_line = f"{' ' * (padding - 1)}╭{'─' * (max_len + 2)}╮\n"
+                self.text_info.insert(tk.END, top_line)
+
+                # Content lines
+                for line in lines:
+                    if line.strip():
+                        content_line = f"{' ' * (padding - 1)}│ {line} │\n"
+                        start_pos = self.text_info.index(tk.END + "-1c")
+                        self.text_info.insert(tk.END, content_line)
+                        end_pos = self.text_info.index(tk.END + "-1c")
+
+                        # Apply user bubble styling
+                        self.text_info.tag_add("user_bubble_bg", start_pos, end_pos)
+                        if tag:
+                            self.text_info.tag_add(tag, start_pos, end_pos)
+
+                # Bottom of bubble
+                bottom_line = f"{' ' * (padding - 1)}╰{'─' * (max_len + 2)}╯\n"
+                self.text_info.insert(tk.END, bottom_line)
+
+            elif align == "center":
+                # Center-aligned system bubble
+                center_padding = max(0, 20 - max_len // 2)
+
+                # Top of bubble
+                top_line = f"{' ' * center_padding}╭{'─' * (max_len + 2)}╮\n"
+                self.text_info.insert(tk.END, top_line)
+
+                # Content lines
+                for line in lines:
+                    if line.strip():
+                        content_line = f"{' ' * center_padding}│ {line} │\n"
+                        start_pos = self.text_info.index(tk.END + "-1c")
+                        self.text_info.insert(tk.END, content_line)
+                        end_pos = self.text_info.index(tk.END + "-1c")
+
+                        # Apply system bubble styling
+                        self.text_info.tag_add("system_bubble_bg", start_pos, end_pos)
+                        if tag:
+                            self.text_info.tag_add(tag, start_pos, end_pos)
+
+                # Bottom of bubble
+                bottom_line = f"{' ' * center_padding}╰{'─' * (max_len + 2)}╯\n"
+                self.text_info.insert(tk.END, bottom_line)
+
+            else:  # left
+                # Left-aligned AI bubble (like ChatGPT - light gray)
+                # Top of bubble
+                top_line = f"╭{'─' * (max_len + 2)}╮\n"
+                self.text_info.insert(tk.END, top_line)
+
+                # Content lines
+                for line in lines:
+                    if line.strip():
+                        content_line = f"│ {line} │\n"
+                        start_pos = self.text_info.index(tk.END + "-1c")
+                        self.text_info.insert(tk.END, content_line)
+                        end_pos = self.text_info.index(tk.END + "-1c")
+
+                        # Apply AI bubble styling
+                        self.text_info.tag_add("ai_bubble_bg", start_pos, end_pos)
+                        if tag:
+                            self.text_info.tag_add(tag, start_pos, end_pos)
+
+                # Bottom of bubble
+                bottom_line = f"╰{'─' * (max_len + 2)}╯\n"
+                self.text_info.insert(tk.END, bottom_line)
+
+            # Add spacing between bubbles
+            self.text_info.insert(tk.END, "\n")
+
+            # Disable text widget again
+            self.text_info.config(state='disabled')
+
+            # Scroll to bottom
+            self.text_info.see(tk.END)
+
+    def _insert_colored_text(self, text, tag=None):
+        """Insert colored text into the console with chronological flow."""
+        if self.text_info:
+            # Enable text widget for insertion
+            self.text_info.config(state='normal')
+
+            # Insert at end for chronological order (oldest to newest)
             start_pos = self.text_info.index(tk.END + "-1c")
             self.text_info.insert(tk.END, text)
             end_pos = self.text_info.index(tk.END + "-1c")
 
-            # Apply color tag if specified (tags are pre-configured in _setup_text_tags)
+            # Apply color tag if specified
             if tag:
                 self.text_info.tag_add(tag, start_pos, end_pos)
 
-            # Auto-scroll to bottom
+            # Apply user bubble background if this is a user message with bubble
+            if "user_bubble" in (tag or ""):
+                self.text_info.tag_add("user_bubble", start_pos, end_pos)
+
+            # Disable text widget again to make it read-only
+            self.text_info.config(state='disabled')
+
+            # Scroll to bottom to show latest messages
             self.text_info.see(tk.END)
 
     def bind_events(self):
@@ -808,7 +994,7 @@ Built with ❤️"""
 
                 # Toggle pulse state and schedule next pulse
                 self.pulse_state = not self.pulse_state
-                self.pulse_callback = self.root.after(1000, pulse_step)  # 1 second interval
+                self.pulse_callback = self.root.after(500, pulse_step)  # 0.5 second interval
 
         # Start pulsing
         pulse_step()
@@ -836,13 +1022,18 @@ Built with ❤️"""
         """Process manual text input from the GUI input field."""
         input_text = self.manual_input_entry.get().strip()
         if input_text:
-            # Change text color to green when submitted
+            # Show immediate feedback that input was received
+            self.display_message(f"{input_text}\n")
+
+            # Clear the input field immediately
+            self.manual_input_entry.delete(0, tk.END)
+
+            # Change text color to green briefly to show submission
             self.manual_input_entry.config(fg="green")
-            self.root.after(1000, lambda: self.manual_input_entry.config(fg="white"))
+            self.root.after(500, lambda: self.manual_input_entry.config(fg="white"))
 
             # Intelligent command processing
             self.process_command(input_text, "manual")
-            self.manual_input_entry.delete(0, tk.END)  # Clear the input field
 
     def process_command(self, command: str, source: str):
         """Process a command with intelligent AI fallback."""
@@ -856,8 +1047,11 @@ Built with ❤️"""
             # Handle open commands locally
             app = command_lower.split("open")[-1].strip()
             response = open_app(app)
-            self.display_message(f"Command: {command}\n{response}\n")
-            speak(response)
+            self.display_message(f"Response: {response}\n")
+            # Speak in background thread to avoid blocking GUI
+            import threading
+            speak_thread = threading.Thread(target=lambda: speak(response), daemon=True)
+            speak_thread.start()
         else:
             # Check if it looks like a command we can handle locally
             local_commands = ["calculator", "terminal", "editor", "browser"]
@@ -867,16 +1061,15 @@ Built with ❤️"""
                 response = open_app(app)
                 if "not installed" in response or "not found" in response:
                     # Fall back to AI
-                    self.display_message(
-                        f"Local command failed, using AI assistance...\nAI Query: {command}\n"
-                    )
                     self.process_ai_command(command)
                 else:
-                    self.display_message(f"Command: {command}\n{response}\n")
-                    speak(response)
+                    self.display_message(f"Response: {response}\n")
+                    # Speak in background thread to avoid blocking GUI
+                    import threading
+                    speak_thread = threading.Thread(target=lambda: speak(response), daemon=True)
+                    speak_thread.start()
             else:
                 # Default to AI for unrecognized inputs
-                self.display_message(f"Using AI assistance...\nAI Query: {command}\n")
                 self.process_ai_command(command)
 
     def display_message(self, message: str):

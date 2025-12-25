@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darvis - Modern Voice Assistant</title>
+    <meta name="description" content="A modern, cross-platform voice assistant with intelligent command processing, featuring system tray integration and AI-powered responses.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header class="header" role="banner">
+        <nav class="nav" role="navigation" aria-label="Main navigation">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <a href="#home" class="brand-link">
+                        <img src="../assets/darvis-logo.png" alt="Darvis Logo" class="brand-logo">
+                        <span class="brand-text">Darvis</span>
+                    </a>
+                </div>
+                
+                <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                    <span class="hamburger"></span>
+                </button>
+                
+                <ul class="nav-menu" role="menubar">
+                    <li class="nav-item" role="none">
+                        <a href="#home" class="nav-link" role="menuitem">Home</a>
+                    </li>
+                    <li class="nav-item" role="none">
+                        <a href="#features" class="nav-link" role="menuitem">Features</a>
+                    </li>
+                    <li class="nav-item" role="none">
+                        <a href="#installation" class="nav-link" role="menuitem">Installation</a>
+                    </li>
+                    <li class="nav-item" role="none">
+                        <a href="#documentation" class="nav-link" role="menuitem">Docs</a>
+                    </li>
+                    <li class="nav-item" role="none">
+                        <a href="https://github.com/darobbins85/darvis" class="nav-link" role="menuitem" target="_blank">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main id="content">
+        <!-- Hero Section -->
+        <section id="home" class="hero" role="banner">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fas fa-microphone"></i>
+                        <span>Voice-Powered Assistant</span>
+                    </div>
+                    <h1 class="hero-title">Meet <span class="gradient-text">Darvis</span></h1>
+                    <p class="hero-subtitle">
+                        A modern, cross-platform voice assistant with intelligent command processing, 
+                        AI integration, and seamless system tray functionality.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#installation" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Get Started
+                        </a>
+                        <a href="https://github.com/darobbins85/darvis" class="btn btn-secondary" target="_blank">
+                            <i class="fab fa-github"></i> View on GitHub
+                        </a>
+                    </div>
+                    <div class="hero-tech">
+                        <span class="tech-badge">Python</span>
+                        <span class="tech-badge">Cross-Platform</span>
+                        <span class="tech-badge">Open Source</span>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="terminal-demo">
+                        <div class="terminal-header">
+                            <div class="terminal-buttons">
+                                <span class="terminal-btn terminal-btn-close"></span>
+                                <span class="terminal-btn terminal-btn-minimize"></span>
+                                <span class="terminal-btn terminal-btn-maximize"></span>
+                            </div>
+                            <div class="terminal-title">darvis@voice-assistant: ~</div>
+                        </div>
+                        <div class="terminal-content">
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command">hey darvis</span>
+                            </div>
+                            <div class="terminal-line terminal-output">
+                                <i class="fas fa-robot"></i> Hello! How can I help you today?
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command">open calculator</span>
+                            </div>
+                            <div class="terminal-line terminal-output terminal-success">
+                                <i class="fas fa-check-circle"></i> Launching calculator...
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-cursor">_</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Powerful Features</h2>
+                    <p class="section-subtitle">Everything you need in a modern voice assistant</p>
+                </div>
+                
+                <div class="features-grid">
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <h3 class="feature-title">Voice Recognition</h3>
+                        <p class="feature-description">
+                            Wake word detection ("hey darvis") and advanced speech-to-text processing 
+                            with high accuracy and noise cancellation.
+                        </p>
+                        <div class="feature-tech">
+                            <span>SpeechRecognition</span>
+                            <span>Wake Word Detection</span>
+                        </div>
+                    </article>
+                    
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="feature-title">AI Integration</h3>
+                        <p class="feature-description">
+                            Powered by opencode CLI for intelligent responses and smart command processing 
+                            with contextual understanding.
+                        </p>
+                        <div class="feature-tech">
+                            <span>OpenCode CLI</span>
+                            <span>Smart Processing</span>
+                        </div>
+                    </article>
+                    
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <h3 class="feature-title">Cross-Platform</h3>
+                        <p class="feature-description">
+                            Works seamlessly on Linux, macOS, and Windows with native system tray integration 
+                            and platform-specific optimizations.
+                        </p>
+                        <div class="feature-tech">
+                            <span>Linux</span>
+                            <span>macOS</span>
+                            <span>Windows</span>
+                        </div>
+                    </article>
+                    
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-window-restore"></i>
+                        </div>
+                        <h3 class="feature-title">Modern UI</h3>
+                        <p class="feature-description">
+                            Dark-themed tkinter interface with visual feedback, smooth animations, 
+                            and intuitive user experience design.
+                        </p>
+                        <div class="feature-tech">
+                            <span>tkinter</span>
+                            <span>Dark Theme</span>
+                        </div>
+                    </article>
+                    
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="feature-title">Waybar Integration</h3>
+                        <p class="feature-description">
+                            Real-time status display for Linux/Hyprland users with custom waybar module 
+                            and styled state indicators.
+                        </p>
+                        <div class="feature-tech">
+                            <span>Waybar IPC</span>
+                            <span>Linux</span>
+                        </div>
+                    </article>
+                    
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3 class="feature-title">Smart Commands</h3>
+                        <p class="feature-description">
+                            Automatic local app detection with AI fallback for intelligent command execution 
+                            and application launching.
+                        </p>
+                        <div class="feature-tech">
+                            <span>App Detection</span>
+                            <span>AI Fallback</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="installation" class="installation">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Quick Installation</h2>
+                    <p class="section-subtitle">Get Darvis up and running in minutes</p>
+                </div>
+                
+                <div class="install-grid">
+                    <div class="install-steps">
+                        <div class="install-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Clone Repository</h3>
+                                <div class="code-block">
+                                    <button class="copy-btn" data-copy="git clone https://github.com/darobbins85/darvis.git && cd darvis">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <pre><code>git clone https://github.com/darobbins85/darvis.git
+cd darvis</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="install-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Setup Environment</h3>
+                                <div class="code-block">
+                                    <button class="copy-btn" data-copy="python3 -m venv venv && source venv/bin/activate">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <pre><code>python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="install-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Install Dependencies</h3>
+                                <div class="code-block">
+                                    <button class="copy-btn" data-copy="pip install -r requirements.txt && pip install -r requirements-dev.txt">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <pre><code>pip install -r requirements.txt
+pip install -r requirements-dev.txt</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="install-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Launch Darvis</h3>
+                                <div class="code-block">
+                                    <button class="copy-btn" data-copy="./launch-darvis.sh">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <pre><code>./launch-darvis.sh</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="install-info">
+                        <div class="info-card">
+                            <h3>Platform Requirements</h3>
+                            <ul class="requirements-list">
+                                <li><i class="fab fa-python"></i> Python 3.7+</li>
+                                <li><i class="fas fa-microphone"></i> Microphone access</li>
+                                <li><i class="fas fa-volume-up"></i> Speakers/audio output</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h3>Optional Extras</h3>
+                            <ul class="requirements-list">
+                                <li><i class="fab fa-linux"></i> Linux: PyGObject for system tray</li>
+                                <li><i class="fas fa-desktop"></i> Desktop integration support</li>
+                                <li><i class="fas fa-chart-bar"></i> Waybar for Linux status display</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="info-card highlight">
+                            <h3><i class="fas fa-magic"></i> Pro Tip</h3>
+                            <p>For desktop integration on Linux, run <code>./install-desktop.sh</code> to add Darvis to your application menu with system icon.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Usage Section -->
+        <section id="usage" class="usage">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Voice Commands</h2>
+                    <p class="section-subtitle">Simple, natural voice interactions</p>
+                </div>
+                
+                <div class="commands-grid">
+                    <div class="command-category">
+                        <h3><i class="fas fa-play-circle"></i> Application Control</h3>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <code>"hey darvis, open calculator"</code>
+                                <span>Launches system calculator</span>
+                            </div>
+                            <div class="command-item">
+                                <code>"hey darvis, open firefox"</code>
+                                <span>Opens Firefox browser</span>
+                            </div>
+                            <div class="command-item">
+                                <code>"hey darvis, launch terminal"</code>
+                                <span>Opens terminal application</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="command-category">
+                        <h3><i class="fas fa-question-circle"></i> AI Queries</h3>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <code>"what is 2 + 2"</code>
+                                <span>Mathematical calculations</span>
+                            </div>
+                            <div class="command-item">
+                                <code>"what time is it"</code>
+                                <span>Current time and date</span>
+                            </div>
+                            <div class="command-item">
+                                <code>"tell me a joke"</code>
+                                <span>Entertainment and fun</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="command-category">
+                        <h3><i class="fas fa-cog"></i> System Control</h3>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <code>"hey darvis, volume up"</code>
+                                <span>Increase system volume</span>
+                            </div>
+                            <div class="command-item">
+                                <code>"hey darvis, mute"</code>
+                                <span>Mute/unmute audio</span>
+                            </div>
+                            <div class="command-item">
+                                <code>"hey darvis, shutdown"</code>
+                                <span>System shutdown (with confirmation)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation Section -->
+        <section id="documentation" class="documentation">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Documentation & Resources</h2>
+                    <p class="section-subtitle">Everything you need to master Darvis</p>
+                </div>
+                
+                <div class="docs-grid">
+                    <article class="doc-card">
+                        <div class="doc-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="doc-title">Complete Guide</h3>
+                        <p class="doc-description">
+                            Comprehensive documentation covering installation, configuration, and advanced usage.
+                        </p>
+                        <a href="https://github.com/darobbins85/darvis/blob/main/README.md" class="doc-link" target="_blank">
+                            Read Full Docs <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </article>
+                    
+                    <article class="doc-card">
+                        <div class="doc-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="doc-title">API Reference</h3>
+                        <p class="doc-description">
+                            Detailed API documentation for developers looking to extend or integrate Darvis.
+                        </p>
+                        <a href="https://github.com/darobbins85/darvis/tree/main/docs" class="doc-link" target="_blank">
+                            View API Docs <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </article>
+                    
+                    <article class="doc-card">
+                        <div class="doc-icon">
+                            <i class="fas fa-bug"></i>
+                        </div>
+                        <h3 class="doc-title">Troubleshooting</h3>
+                        <p class="doc-description">
+                            Common issues and solutions for microphone problems, platform-specific bugs, and more.
+                        </p>
+                        <a href="https://github.com/darobbins85/darvis/issues" class="doc-link" target="_blank">
+                            Get Help <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </article>
+                    
+                    <article class="doc-card">
+                        <div class="doc-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="doc-title">Community</h3>
+                        <p class="doc-description">
+                            Join the community, contribute to development, and connect with other Darvis users.
+                        </p>
+                        <a href="https://github.com/darobbins85/darvis/discussions" class="doc-link" target="_blank">
+                            Join Discussion <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats" class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">Open Source</span>
+                            <span class="stat-label">MIT License</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">3</span>
+                            <span class="stat-label">Platforms Supported</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-microphone-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">Voice</span>
+                            <span class="stat-label">First Interface</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">AI</span>
+                            <span class="stat-label">Powered</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Get In Touch</h2>
+                    <p class="section-subtitle">Have questions or feedback? We'd love to hear from you</p>
+                </div>
+                
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h3 class="contact-title">Connect With Us</h3>
+                        <p class="contact-text">
+                            Darvis is an open-source project built by the community. 
+                            Whether you have questions, want to contribute, or need support, 
+                            we're here to help.
+                        </p>
+                        
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <i class="fab fa-github"></i>
+                                <div>
+                                    <strong>GitHub Repository</strong><br>
+                                    <a href="https://github.com/darobbins85/darvis" target="_blank">github.com/darobbins85/darvis</a>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <i class="fas fa-bug"></i>
+                                <div>
+                                    <strong>Report Issues</strong><br>
+                                    <a href="https://github.com/darobbins85/darvis/issues" target="_blank">GitHub Issues</a>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <i class="fas fa-comments"></i>
+                                <div>
+                                    <strong>Community Discussion</strong><br>
+                                    <a href="https://github.com/darobbins85/darvis/discussions" target="_blank">GitHub Discussions</a>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>Email</strong><br>
+                                    <a href="mailto:darvis@example.com">darvis@example.com</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="social-links">
+                            <a href="https://github.com/darobbins85/darvis" class="social-link" aria-label="GitHub" target="_blank">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://github.com/darobbins85/darvis/issues" class="social-link" aria-label="Issues" target="_blank">
+                                <i class="fas fa-bug"></i>
+                            </a>
+                            <a href="https://github.com/darobbins85/darvis/discussions" class="social-link" aria-label="Discussions" target="_blank">
+                                <i class="fas fa-comments"></i>
+                            </a>
+                            <a href="mailto:darvis@example.com" class="social-link" aria-label="Email">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form-wrapper">
+                        <form class="form" id="contactForm">
+                            <h3 class="contact-title">Send Message</h3>
+                            
+                            <div class="form-group">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" id="name" name="name" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" id="email" name="email" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" id="subject" name="subject" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message" class="form-label">Message *</label>
+                                <textarea id="message" name="message" class="form-textarea" required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-full">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="../assets/darvis-logo.png" alt="Darvis Logo" class="footer-logo">
+                    <h3 class="footer-title">Darvis Voice Assistant</h3>
+                    <p class="footer-text">
+                        A modern, open-source voice assistant powered by AI and built for cross-platform compatibility.
+                    </p>
+                    <div class="footer-social">
+                        <a href="https://github.com/darobbins85/darvis" class="social-link" aria-label="GitHub" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://github.com/darobbins85/darvis/issues" class="social-link" aria-label="Issues" target="_blank">
+                            <i class="fas fa-bug"></i>
+                        </a>
+                        <a href="https://github.com/darobbins85/darvis/discussions" class="social-link" aria-label="Discussions" target="_blank">
+                            <i class="fas fa-comments"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Quick Links</h4>
+                        <ul class="footer-list">
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#installation">Installation</a></li>
+                            <li><a href="#usage">Usage</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Resources</h4>
+                        <ul class="footer-list">
+                            <li><a href="https://github.com/darobbins85/darvis/blob/main/README.md" target="_blank">Documentation</a></li>
+                            <li><a href="https://github.com/darobbins85/darvis/blob/main/LICENSE" target="_blank">License</a></li>
+                            <li><a href="https://github.com/darobbins85/darvis/issues" target="_blank">Support</a></li>
+                            <li><a href="https://github.com/darobbins85/darvis/blob/main/AGENTS.md" target="_blank">Contributing</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Technical</h4>
+                        <ul class="footer-list">
+                            <li><a href="https://github.com/darobbins85/darvis/tree/main/darvis" target="_blank">Source Code</a></li>
+                            <li><a href="https://github.com/darobbins85/darvis/tree/main/tests" target="_blank">Tests</a></li>
+                            <li><a href="https://github.com/darobbins85/darvis/releases" target="_blank">Releases</a></li>
+                            <li><a href="https://github.com/darobbins85/darvis/commits/main" target="_blank">Changelog</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">
+                    &copy; 2024 Darvis Voice Assistant. All rights reserved. | 
+                    <a href="https://github.com/darobbins85/darvis/blob/main/LICENSE" class="footer-link" target="_blank">MIT License</a> | 
+                    Built with <i class="fas fa-heart" style="color: #e74c3c;"></i> by the open-source community
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
