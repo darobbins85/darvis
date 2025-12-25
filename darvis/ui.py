@@ -451,6 +451,22 @@ Built with ❤️"""
                 fg=self.colors['text_accent'],
             )
             self.timer_label.pack(side=tk.BOTTOM, pady=10)
+
+            # Cancel AI button
+            self.cancel_button = tk.Button(
+                self.root,
+                text="Cancel AI Request",
+                font=('JetBrains Mono', 10),
+                bg=self.colors['error'],
+                fg='white',
+                relief='raised',
+                bd=2,
+                padx=10,
+                pady=5,
+                state='disabled',  # Initially disabled
+                command=self.cancel_ai_request
+            )
+            self.cancel_button.pack(side=tk.BOTTOM, pady=5)
         except Exception as e:
             # Modern emoji fallback
             self.logo_label = tk.Label(
@@ -546,6 +562,10 @@ Built with ❤️"""
         self.glow_logo(True, True)  # Red glow for AI
         update_waybar_status("thinking", f"Thinking about: {command[:30]}...")
 
+        # Enable cancel button
+        if hasattr(self, 'cancel_button'):
+            self.cancel_button.config(state='normal')
+
         # Start count-up timer for AI processing
         self.start_countup_timer(color="red")
 
@@ -560,15 +580,15 @@ Built with ❤️"""
         except Exception as e:
             error_msg = str(e)
             if "opencode" in error_msg.lower():
-                self.display_message(
-                    "AI assistance not available (opencode not found)\n"
-                )
+                self.display_message("AI assistance not available (opencode not found)\n")
                 update_waybar_status("error", "AI not available")
             else:
                 self.display_message(f"AI error: {error_msg}\n")
                 update_waybar_status("error", f"AI error: {error_msg[:50]}")
         finally:
-            # Stop timer and glow after processing
+            # Disable cancel button and stop timer/glow
+            if hasattr(self, 'cancel_button'):
+                self.cancel_button.config(state='disabled')
             self.stop_timer()
             self.root.after(1000, lambda: self.glow_logo(False, False))  # Stop red glow
 
@@ -718,6 +738,19 @@ Built with ❤️"""
         if hasattr(self, 'pulse_callback') and self.pulse_callback:
             self.root.after_cancel(self.pulse_callback)
             self.pulse_callback = None
+
+    def cancel_ai_request(self):
+        """Cancel the current AI request."""
+        from .ai import cancel_ai_request
+        if cancel_ai_request():
+            self.display_message("AI request cancelled by user.\n")
+            # Reset UI state
+            self.stop_timer()
+            self.glow_logo(False)
+            if hasattr(self, 'cancel_button'):
+                self.cancel_button.config(state='disabled')
+        else:
+            self.display_message("No active AI request to cancel.\n")
 
     def submit_manual_input(self):
         """Process manual text input from the GUI input field."""

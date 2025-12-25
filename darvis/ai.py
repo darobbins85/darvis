@@ -8,6 +8,7 @@ from typing import Tuple
 # Global conversation state
 conversation_history = []
 current_session_id = None
+current_ai_process = None  # Track the current AI subprocess for cancellation
 
 
 def get_latest_session_id() -> str:
@@ -48,14 +49,19 @@ def process_ai_query(query: str) -> Tuple[str, str]:
     Returns:
         Tuple of (response_text, session_id)
     """
-    global current_session_id
+    global current_session_id, current_ai_process
 
     try:
         if current_session_id is None:
             # First query: start new session with darvis agent
             command = ["opencode", "run", "--agent", "darvis", query]
             print(f"DEBUG: Executing command: {' '.join(command)}")
-            result = subprocess.run(command, capture_output=True, text=True, timeout=60)
+            current_ai_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            try:
+                stdout, stderr = current_ai_process.communicate(timeout=300)
+                result = subprocess.CompletedProcess(command, current_ai_process.returncode, stdout, stderr)
+            finally:
+                current_ai_process = None
             response = (result.stdout or "").strip() or "No response"
 
             # Get the session ID (this would need proper implementation)
@@ -69,7 +75,12 @@ def process_ai_query(query: str) -> Tuple[str, str]:
             darvis_query = f"@darvis {query}"
             command = ["opencode", "run", "--continue", darvis_query]
             print(f"DEBUG: Executing command: {' '.join(command)}")
-            result = subprocess.run(command, capture_output=True, text=True, timeout=60)
+            current_ai_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            try:
+                stdout, stderr = current_ai_process.communicate(timeout=300)
+                result = subprocess.CompletedProcess(command, current_ai_process.returncode, stdout, stderr)
+            finally:
+                current_ai_process = None
             response = (result.stdout or "").strip() or "No response"
             return response, current_session_id
 
@@ -81,11 +92,37 @@ def process_ai_query(query: str) -> Tuple[str, str]:
         return f"AI error: {str(e)}", ""
 
 
+def cancel_ai_request() -> bool:
+    """Cancel the current AI request if one is running.
+
+    Returns:
+        True if a request was cancelled, False if no request was running
+    """
+    global current_ai_process
+    if current_ai_process and current_ai_process.poll() is None:
+        try:
+            current_ai_process.terminate()
+            # Wait a bit for graceful termination
+            try:
+                current_ai_process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                # Force kill if it doesn't terminate gracefully
+                current_ai_process.kill()
+                current_ai_process.wait()
+            current_ai_process = None
+            return True
+        except Exception:
+            current_ai_process = None
+            return False
+    return False
+
 def reset_ai_session() -> None:
     """Reset the AI conversation session."""
-    global current_session_id, conversation_history
+    global current_session_id, conversation_history, current_ai_process
     current_session_id = None
     conversation_history = []
+    if current_ai_process:
+        cancel_ai_request()
 
 
 def is_ai_command(query: str) -> bool:
