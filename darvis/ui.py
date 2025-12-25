@@ -435,40 +435,6 @@ Built with ❤️"""
         )
         self.listening_toggle.pack(side=tk.LEFT)
 
-        # Copy chat button
-        copy_button = tk.Button(
-            control_frame,
-            text="📋 Copy Chat",
-            command=self.copy_chat_history,
-            font=('JetBrains Mono', 10),
-            fg=self.colors['text_primary'],
-            bg=self.colors['bg_accent'],
-            activeforeground=self.colors['text_accent'],
-            activebackground=self.colors['bg_primary'],
-            relief='flat',
-            bd=2,
-            padx=10
-        )
-        copy_button.pack(side=tk.RIGHT)
-
-    def copy_chat_history(self):
-        """Copy the entire chat history to clipboard."""
-        if self.text_info:
-            try:
-                # Get all text from the chat area
-                chat_text = self.text_info.get("1.0", tk.END).strip()
-
-                # Copy to clipboard
-                self.root.clipboard_clear()
-                self.root.clipboard_append(chat_text)
-                self.root.update()  # Required for some systems
-
-                # Show confirmation
-                self.display_message("Chat history copied to clipboard!\n")
-
-            except Exception as e:
-                self.display_message(f"Failed to copy chat: {str(e)}\n")
-
         # Large logo at bottom with modern styling
         try:
             # Load and resize logo to 2x size
@@ -536,12 +502,25 @@ Built with ❤️"""
             bottom_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
             bottom_frame.pack(side=tk.BOTTOM, pady=10)
 
+            # Create ASCII art logo as fallback
+            darvis_logo = """\
+╔══════════════════════════════════╗
+║              DARVIS              ║
+║          Voice Assistant         ║
+║                                  ║
+║           [●]  [●]              ║
+║            \\____/               ║
+║                                  ║
+║  🤖 Advanced AI • Voice Control  ║
+╚══════════════════════════════════╝"""
+
             self.logo_label = tk.Label(
                 bottom_frame,
-                text="🤖",
-                font=('JetBrains Mono', 48),
+                text=darvis_logo,
+                font=('JetBrains Mono', 8),
                 bg=self.colors['bg_primary'],
                 fg=self.colors['text_accent'],
+                justify=tk.CENTER,
             )
             self.logo_label.pack(pady=(0, 10))
 
