@@ -338,8 +338,16 @@ Built with ❤️"""
         self.colors = {
             'bg_primary': '#0f0f23',      # Deep dark blue
             'bg_secondary': '#1a1a2e',    # Dark blue-gray
+            'bg_accent': '#16213e',       # Medium dark blue
             'text_primary': '#e0e0e0',    # Light gray
+            'text_secondary': '#b0b0b0',  # Medium gray
             'text_accent': '#00d4ff',     # Cyan accent
+            'border': '#2a2a4e',          # Subtle border
+            'success': '#00ff88',         # Green success
+            'warning': '#ffaa00',         # Orange warning
+            'error': '#ff4444',           # Red error
+            'glow_green': '#00ff88',      # Wake word glow
+            'glow_red': '#ff6b6b',        # AI processing glow
         }
 
         self.root.configure(bg=self.colors['bg_primary'])
@@ -350,7 +358,7 @@ Built with ❤️"""
 
         title_label = tk.Label(
             header_frame,
-            text="🤖 DARVIS Voice Assistant",
+            text="DARVIS Voice Assistant",
             font=('JetBrains Mono', 14, 'bold'),
             fg=self.colors['text_accent'],
             bg=self.colors['bg_secondary']
@@ -422,8 +430,7 @@ Built with ❤️"""
             # Create base image
             self.base_logo_image = ImageTk.PhotoImage(large_img)
 
-            # Create multiple glow effects for pulsing animation
-            # Full brightness glow
+            # Create glow effects for the resized image
             wake_glow_full = self.create_eye_glow(large_img, (0, 255, 0, 255))  # Green eyes
             self.wake_glow_image = ImageTk.PhotoImage(wake_glow_full)
 
@@ -437,10 +444,83 @@ Built with ❤️"""
             ai_glow_dim = self.create_eye_glow(large_img, (80, 5, 5, 80))  # Very dim red
             self.ai_glow_dim_image = ImageTk.PhotoImage(ai_glow_dim)
 
+            # Success - create the UI elements
+            # Create a bottom section frame for logo, timer, and cancel button
+            bottom_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
+            bottom_frame.pack(side=tk.BOTTOM, pady=10)
+
+            # Logo in the bottom frame
             self.logo_label = tk.Label(
-                self.root, image=self.base_logo_image, bg=self.colors['bg_primary']
+                bottom_frame, image=self.base_logo_image, bg=self.colors['bg_primary']
             )
-            self.logo_label.pack(side=tk.BOTTOM, pady=15)
+            self.logo_label.pack(pady=(0, 10))
+
+            # Timer below logo
+            self.timer_label = tk.Label(
+                bottom_frame,
+                text="",
+                font=('JetBrains Mono', 18, 'bold'),
+                bg=self.colors['bg_primary'],
+                fg=self.colors['text_accent'],
+            )
+            self.timer_label.pack(pady=(0, 10))
+
+            # Cancel button below timer
+            self.cancel_button = tk.Button(
+                bottom_frame,
+                text="Cancel AI Request",
+                font=('JetBrains Mono', 10),
+                bg=self.colors['error'],
+                fg='white',
+                relief='raised',
+                bd=2,
+                padx=10,
+                pady=5,
+                state='disabled',  # Initially disabled
+                command=self.cancel_ai_request
+            )
+            self.cancel_button.pack()
+
+        except Exception as e:
+            print(f"Image loading failed: {e}")
+            # Modern emoji fallback with proper layout
+            bottom_frame = tk.Frame(self.root, bg=self.colors['bg_primary'])
+            bottom_frame.pack(side=tk.BOTTOM, pady=10)
+
+            self.logo_label = tk.Label(
+                bottom_frame,
+                text="🤖",
+                font=('JetBrains Mono', 48),
+                bg=self.colors['bg_primary'],
+                fg=self.colors['text_accent'],
+            )
+            self.logo_label.pack(pady=(0, 10))
+
+            # Timer below logo
+            self.timer_label = tk.Label(
+                bottom_frame,
+                text="",
+                font=('JetBrains Mono', 18, 'bold'),
+                bg=self.colors['bg_primary'],
+                fg=self.colors['text_accent'],
+            )
+            self.timer_label.pack(pady=(0, 10))
+
+            # Cancel button below timer
+            self.cancel_button = tk.Button(
+                bottom_frame,
+                text="Cancel AI Request",
+                font=('JetBrains Mono', 10),
+                bg=self.colors['error'],
+                fg='white',
+                relief='raised',
+                bd=2,
+                padx=10,
+                pady=5,
+                state='disabled',
+                command=self.cancel_ai_request
+            )
+            self.cancel_button.pack()
 
             # Add timer label above logo
             self.timer_label = tk.Label(
