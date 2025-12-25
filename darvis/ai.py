@@ -23,10 +23,11 @@ def get_latest_session_id() -> str:
         if result.returncode == 0 and result.stdout:
             # Parse the session list output
             lines = result.stdout.strip().split('\n')
-            if len(lines) >= 2:  # Skip header line
-                # Get the first session ID (most recent)
-                first_data_line = lines[1].strip()
-                if first_data_line:
+            # Skip header (line 0) and separator (line 1), get first data line
+            if len(lines) >= 3:  # Need header, separator, and at least one data line
+                # Get the first data line (most recent session)
+                first_data_line = lines[2].strip()
+                if first_data_line and not first_data_line.startswith('─'):
                     session_id = first_data_line.split()[0]
                     print(f"DEBUG: Extracted session ID: {session_id}")
                     return session_id
