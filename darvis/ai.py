@@ -11,12 +11,29 @@ current_session_id = None
 
 
 def get_latest_session_id() -> str:
-    """Extract the latest session ID from opencode output."""
+    """Extract the latest session ID from opencode session list."""
     try:
-        # This would need to be implemented based on opencode's output format
-        # For now, return a placeholder
+        result = subprocess.run(
+            ["opencode", "session", "list"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+
+        if result.returncode == 0 and result.stdout:
+            # Parse the session list output
+            lines = result.stdout.strip().split('\n')
+            if len(lines) >= 2:  # Skip header line
+                # Get the first session ID (most recent)
+                first_data_line = lines[1].strip()
+                if first_data_line:
+                    session_id = first_data_line.split()[0]
+                    print(f"DEBUG: Extracted session ID: {session_id}")
+                    return session_id
+
         return ""
-    except Exception:
+    except Exception as e:
+        print(f"DEBUG: Error getting session ID: {e}")
         return ""
 
 
@@ -46,10 +63,10 @@ def process_ai_query(query: str) -> Tuple[str, str]:
 
             return response, current_session_id or ""
         else:
-            # Subsequent queries: use existing session with @darvis prefix
-            # This ensures the Build agent invokes the darvis agent
+            # Subsequent queries: continue the last session with @darvis prefix
+            # This ensures the session continues with the darvis agent
             darvis_query = f"@darvis {query}"
-            command = ["opencode", "run", "--session", current_session_id, darvis_query]
+            command = ["opencode", "run", "--continue", darvis_query]
             print(f"DEBUG: Executing command: {' '.join(command)}")
             result = subprocess.run(command, capture_output=True, text=True, timeout=60)
             response = (result.stdout or "").strip() or "No response"
