@@ -102,7 +102,9 @@
             overflow-y: auto;
             padding: 1rem 0;
             scroll-behavior: smooth;
-            /* Allow natural height, will be constrained by parent */
+            /* Constrain height to enable proper scrolling */
+            max-height: calc(100vh - 200px); /* Leave room for header + input */
+            min-height: 200px; /* Minimum usable height */
         }
 
         .message {
@@ -776,22 +778,35 @@
             const processingIndicator = document.getElementById('ai-processing-indicator');
             chatMessages.insertBefore(messageDiv, processingIndicator);
 
-            // Auto-scroll to bottom after DOM updates with multiple attempts
+            // Auto-scroll to bottom with aggressive, reliable approach
+            // Use multiple techniques to ensure scrolling works
             setTimeout(() => {
-                // First scroll attempt
+                // Force layout recalculation
+                chatMessages.offsetHeight;
+
+                // Primary scroll method
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                // Second scroll after DOM updates
-                setTimeout(() => {
+                // Backup scroll method
+                chatMessages.scrollTo({
+                    top: chatMessages.scrollHeight,
+                    behavior: 'auto'
+                });
+
+                // Additional scroll after layout updates
+                requestAnimationFrame(() => {
                     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                    // Third scroll for extra reliability
+                    // Final scroll to be absolutely sure
                     setTimeout(() => {
                         chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                        // Use requestAnimationFrame for better timing
-                        requestAnimationFrame(() => {
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        // Try scrollIntoView on the message as final fallback
+                        try {
+                            messageDiv.scrollIntoView({ behavior: 'auto', block: 'end' });
+                        } catch (e) {
+                            messageDiv.scrollIntoView(false);
+                        }
+                    }, 50);
 
                             // Also try scrollIntoView on the message for absolute reliability
                             try {
