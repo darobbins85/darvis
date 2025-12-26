@@ -25,8 +25,7 @@ message_queue = queue.Queue()
 response_queue = queue.Queue()
 
 app = Flask(__name__,
-            template_folder='web_templates',
-            static_folder='web_static')
+            template_folder='web_templates')
 app.config['SECRET_KEY'] = 'darvis_secret_key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
