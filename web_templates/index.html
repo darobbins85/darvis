@@ -18,6 +18,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            padding-bottom: 80px; /* Space for fixed input */
         }
 
         .header {
@@ -85,13 +86,15 @@
         }
 
         .chat-container {
-            flex: 1;
             display: flex;
             flex-direction: column;
             max-width: 800px;
             margin: 0 auto;
             width: 100%;
             padding: 1rem;
+            /* Leave room for fixed input at bottom */
+            margin-bottom: 80px; /* Space for input container */
+            box-sizing: border-box;
         }
 
         .chat-messages {
@@ -99,6 +102,7 @@
             overflow-y: auto;
             padding: 1rem 0;
             scroll-behavior: smooth;
+            /* Allow natural height, will be constrained by parent */
         }
 
         .message {
@@ -155,11 +159,15 @@
         }
 
         .input-container {
-            background: rgba(15, 15, 35, 0.9);
+            background: rgba(15, 15, 35, 0.95);
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(42, 42, 78, 0.5);
             padding: 1rem 2rem;
-            /* Removed sticky positioning to allow proper scrolling */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
         .input-form {
@@ -420,15 +428,16 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="input-container">
-            <form id="message-form" class="input-form">
-                <input type="text" id="message-input" class="message-input" placeholder="Type your message..." autocomplete="off">
-                <button type="submit" class="send-button">
-                    Send ✉️
-                </button>
-            </form>
-        </div>
+    <!-- Input container positioned fixed at bottom, outside chat flow -->
+    <div class="input-container">
+        <form id="message-form" class="input-form">
+            <input type="text" id="message-input" class="message-input" placeholder="Type your message..." autocomplete="off">
+            <button type="submit" class="send-button">
+                Send ✉️
+            </button>
+        </form>
     </div>
 
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
