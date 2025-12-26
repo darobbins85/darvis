@@ -77,3 +77,8 @@ WAYBAR_MODULE_CONFIG = {
         "tooltip-format": "{tooltip}",
     }
 }
+
+# Web app integration settings
+WEB_APP_HOST = "localhost"
+WEB_APP_PORT = 5000
+WEB_APP_URL = f"http://{WEB_APP_HOST}:{WEB_APP_PORT}"

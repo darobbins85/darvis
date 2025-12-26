@@ -8,5 +8,8 @@ Pillow>=10.0.0
 tkinter  # Usually comes with Python
 pystray>=0.19.0
 
+# Web-desktop synchronization (optional)
+# python-socketio>=5.0.0  # Uncomment for web-desktop sync feature
+
 # Optional: GTK support for system tray (Linux)
 # PyGObject>=3.42.0  # Uncomment if needed for GTK system tray
