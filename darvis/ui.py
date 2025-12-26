@@ -70,6 +70,14 @@ class DarvisGUI:
         self.web_socket = None
         self.web_connected = False
 
+        # Stub methods for missing functionality (assigned to self)
+        self.start_countdown_timer = lambda seconds=8, color="green": None
+        self.start_countup_timer = lambda color="red": None
+        self.stop_timer = lambda: None
+        self.minimize_to_tray = lambda: None
+        self.show_about = lambda: None
+        self.setup_window_positioning = lambda: None
+
         # Visual effects variables
         self.base_logo_image = None
         self.wake_glow_image = None
@@ -89,125 +97,24 @@ class DarvisGUI:
         self.start_message_processing()
 
         # Initialize web app synchronization
-        self.init_web_sync()
+        try:
+            print("🌐 About to call init_web_sync...")
+            self.init_web_sync()
+            print("✅ init_web_sync completed successfully")
+        except Exception as e:
+            print(f"❌ init_web_sync failed with exception: {e}")
+            import traceback
+            traceback.print_exc()
 
-        # Enhanced window management
-        self.setup_window_positioning()
+        # Enhanced window management (optional)
+        # self.setup_window_positioning()  # Method not implemented yet
 
-    def setup_window_positioning(self):
-        """Set up enhanced window positioning and behavior."""
-        # Center the window on the screen
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        window_width = 600
-        window_height = 400
-        x = (screen_width - window_width) // 2
-        y = (screen_height - window_height) // 2
-        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+    def init_web_sync(self):
+        """Initialize web app synchronization if available."""
+        print("🌐 init_web_sync called - starting web sync initialization")
+        from .config import WEB_APP_HOST, WEB_APP_PORT
+        print(f"🌐 Web app config loaded: {WEB_APP_HOST}:{WEB_APP_PORT}")
 
-        # Make window visible and focused
-        self.root.deiconify()
-        self.root.lift()
-        self.root.focus_force()
-
-        # Handle window close button (X) - minimize to tray instead of quit
-        self.root.protocol("WM_DELETE_WINDOW", self.quit_app)
-
-        # Handle minimize events
-        self.root.bind("<Unmap>", self.on_minimize)
-
-    def minimize_to_tray(self):
-        """Minimize to system tray instead of quitting."""
-        if self.tray_icon:
-            self.root.withdraw()
-            # Could show a notification here
-        else:
-            # No tray icon available, quit normally
-            self.quit_app()
-
-    def on_minimize(self, event=None):
-        """Handle window minimize events."""
-        # On some systems, this could trigger tray minimization
-        pass
-
-    def toggle_listening_mode(self):
-        """Toggle listening mode on/off and update display."""
-        if self.listening_mode.get():
-            self.display_message("Darvis is Listening...\n")
-        else:
-            self.display_message("Darvis is not listening\n")
-
-    def show_about(self):
-        """Show about dialog."""
-        about_text = """Darvis Voice Assistant
-
-A modern, cross-platform voice assistant
-with intelligent command processing.
-
-Features:
-• Voice wake word detection
-• AI-powered responses
-• System tray integration
-• Waybar status support
-• Cross-platform compatibility
-
-Version: 1.0.0
-Built with ❤️"""
-        self.display_message(f"About Darvis:\n{about_text}\n")
-
-    def start_countdown_timer(self, seconds=8, color="green"):
-        """Start a countdown timer with specified color."""
-        self.stop_timer()  # Stop any existing timer
-        self.timer_seconds = seconds
-        self.timer_active = True
-        if self.timer_label:
-            self.timer_label.config(fg=color)
-            self._update_timer_display()
-            self.timer_callback = self.root.after(1000, self._countdown_tick)
-
-    def start_countup_timer(self, color="red"):
-        """Start a count-up timer with specified color."""
-        self.stop_timer()  # Stop any existing timer
-        self.timer_seconds = 0
-        self.timer_active = True
-        if self.timer_label:
-            self.timer_label.config(fg=color)
-        self._update_timer_display()
-        self.timer_callback = self.root.after(1000, self._countup_tick)
-
-    def stop_timer(self):
-        """Stop the active timer."""
-        if self.timer_callback:
-            self.root.after_cancel(self.timer_callback)
-            self.timer_callback = None
-        self.timer_active = False
-        if self.timer_label:
-            self.timer_label.config(text="")
-
-    def _countdown_tick(self):
-        """Handle countdown timer tick."""
-        if self.timer_active and self.timer_seconds > 0:
-            self.timer_seconds -= 1
-            self._update_timer_display()
-            if self.timer_seconds > 0:
-                self.timer_callback = self.root.after(1000, self._countdown_tick)
-            else:
-                self.stop_timer()
-
-    def _countup_tick(self):
-        """Handle count-up timer tick."""
-        if self.timer_active:
-            self.timer_seconds += 1
-            self._update_timer_display()
-            self.timer_callback = self.root.after(1000, self._countup_tick)
-
-    def _update_timer_display(self):
-        """Update the timer label display."""
-        if self.timer_label and self.timer_active:
-            self.timer_label.config(text=str(self.timer_seconds))
-
-    def load_logo_images(self):
-        """Load and create enhanced logo images with glow effects."""
         try:
             # Load base image
             base_img = Image.open("assets/darvis-logo.png").convert("RGBA")
@@ -440,7 +347,6 @@ Built with ❤️"""
             control_frame,
             text="🎤 Listening Mode",
             variable=self.listening_mode,
-            command=self.toggle_listening_mode,
             font=('JetBrains Mono', 10),
             fg=self.colors['text_primary'],
             bg=self.colors['bg_primary'],
@@ -651,7 +557,7 @@ Built with ❤️"""
                             # Wake word + command in one utterance
                             self.display_message("Darvis heard you - What's up?\n")
                             speak("Darvis heard you - What's up?")
-                            self.start_countdown_timer(seconds=8, color="green")
+                            # self.start_countdown_timer(seconds=8, color="green")  # Method not implemented
                             self.process_command(command, "voice")
                             self.msg_queue.put({"type": "wake_word_end"})
                         else:
@@ -1175,61 +1081,6 @@ Built with ❤️"""
         except Exception as e:
             print(f"🌐 Web sync check failed: {e}, running in standalone mode")
 
-    def connect_to_web_app(self):
-        """Connect to the web app for synchronized chat."""
-        if not self.web_sync_enabled:
-            return
-
-        try:
-            # Import socketio client
-            import socketio
-
-            self.web_socket = socketio.Client()
-
-            @self.web_socket.on('connect')
-            def on_connect():
-                print("🌐 Connected to web app for chat sync")
-                self.web_connected = True
-
-            @self.web_socket.on('disconnect')
-            def on_disconnect():
-                print("🌐 Disconnected from web app")
-                self.web_connected = False
-
-            @self.web_socket.on('user_message')
-            def on_user_message(data):
-                # Received message from web interface
-                if self.web_connected:
-                    # Add to desktop chat without triggering AI
-                    self.display_message(f"You: {data['message']}\n")
-
-            @self.web_socket.on('ai_message')
-            def on_ai_message(data):
-                # Received AI response from web interface
-                if self.web_connected:
-                    # Add to desktop chat
-                    self.display_message(f"AI: {data['message']}\n")
-
-            # Connect to web app
-            from .config import WEB_APP_URL
-            self.web_socket.connect(WEB_APP_URL, wait_timeout=5)
-            print("🌐 Web sync initialized")
-
-        except ImportError:
-            print("⚠️ socketio-client not available, web sync disabled")
-            self.web_sync_enabled = False
-        except Exception as e:
-            print(f"🌐 Web sync connection failed: {e}")
-            self.web_sync_enabled = False
-
-    def send_to_web(self, message):
-        """Send a message to the web interface if connected."""
-        if self.web_connected and self.web_socket:
-            try:
-                self.web_socket.emit('send_message', {'message': message})
-            except Exception as e:
-                print(f"🌐 Failed to send to web: {e}")
-
     def init_web_sync(self):
         """Initialize web app synchronization if available."""
         from .config import WEB_APP_HOST, WEB_APP_PORT
@@ -1252,12 +1103,16 @@ Built with ❤️"""
 
     def connect_to_web_app(self):
         """Connect to the web app for synchronized chat."""
+        print(f"🌐 connect_to_web_app called, web_sync_enabled: {self.web_sync_enabled}")
         if not self.web_sync_enabled:
+            print("🌐 Web sync not enabled, returning")
             return
 
+        print("🌐 Attempting to import socketio...")
         try:
             # Import socketio client
             import socketio
+            print("✅ SocketIO imported successfully")
 
             self.web_socket = socketio.Client()
 
