@@ -15,20 +15,17 @@ def get_latest_session_id() -> str:
     """Extract the latest session ID from opencode session list."""
     try:
         result = subprocess.run(
-            ["opencode", "session", "list"],
-            capture_output=True,
-            text=True,
-            timeout=10
+            ["opencode", "session", "list"], capture_output=True, text=True, timeout=10
         )
 
         if result.returncode == 0 and result.stdout:
             # Parse the session list output
-            lines = result.stdout.strip().split('\n')
+            lines = result.stdout.strip().split("\n")
             # Skip header (line 0) and separator (line 1), get first data line
             if len(lines) >= 3:  # Need header, separator, and at least one data line
                 # Get the first data line (most recent session)
                 first_data_line = lines[2].strip()
-                if first_data_line and not first_data_line.startswith('─'):
+                if first_data_line and not first_data_line.startswith("─"):
                     session_id = first_data_line.split()[0]
                     print(f"DEBUG: Extracted session ID: {session_id}")
                     return session_id
@@ -56,10 +53,14 @@ def process_ai_query(query: str) -> Tuple[str, str]:
             # First query: start new session with darvis agent
             command = ["opencode", "run", "--agent", "darvis", query]
             print(f"DEBUG: Executing command: {' '.join(command)}")
-            current_ai_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            current_ai_process = subprocess.Popen(
+                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
             try:
                 stdout, stderr = current_ai_process.communicate(timeout=300)
-                result = subprocess.CompletedProcess(command, current_ai_process.returncode, stdout, stderr)
+                result = subprocess.CompletedProcess(
+                    command, current_ai_process.returncode, stdout, stderr
+                )
             finally:
                 current_ai_process = None
             response = (result.stdout or "").strip() or "No response"
@@ -75,10 +76,14 @@ def process_ai_query(query: str) -> Tuple[str, str]:
             darvis_query = f"@darvis {query}"
             command = ["opencode", "run", "--continue", darvis_query]
             print(f"DEBUG: Executing command: {' '.join(command)}")
-            current_ai_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            current_ai_process = subprocess.Popen(
+                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
             try:
                 stdout, stderr = current_ai_process.communicate(timeout=300)
-                result = subprocess.CompletedProcess(command, current_ai_process.returncode, stdout, stderr)
+                result = subprocess.CompletedProcess(
+                    command, current_ai_process.returncode, stdout, stderr
+                )
             finally:
                 current_ai_process = None
             response = (result.stdout or "").strip() or "No response"
@@ -116,9 +121,10 @@ def cancel_ai_request() -> bool:
             return False
     return False
 
+
 def reset_ai_session() -> None:
     """Reset the AI conversation session."""
-    global current_session_id, conversation_history, current_ai_process
+    global current_session_id, conversation_history
     current_session_id = None
     conversation_history = []
     if current_ai_process:

@@ -5,7 +5,8 @@ Application detection and launching functionality.
 import glob
 import os
 import subprocess
-from typing import List, Optional
+
+
 from .config import DESKTOP_DIRS
 
 
@@ -30,7 +31,16 @@ def find_app_command(app_name: str) -> str:
         "firefox": ["firefox"],
         "chromium": ["chromium"],
         "terminal": ["xterm", "gnome-terminal", "konsole", "terminator", "alacritty"],
-        "editor": ["gedit", "kate", "mousepad", "leafpad", "nano", "vim", "code", "vscode"],
+        "editor": [
+            "gedit",
+            "kate",
+            "mousepad",
+            "leafpad",
+            "nano",
+            "vim",
+            "code",
+            "vscode",
+        ],
         "gedit": ["gedit"],
         "calculator": ["galculator", "gnome-calculator", "kcalc", "speedcrunch"],
         "galculator": ["galculator"],
@@ -60,11 +70,11 @@ def find_app_command(app_name: str) -> str:
         "sublime": ["subl", "sublime-text"],
         "atom": ["atom"],
         "thunderbird": ["thunderbird"],
-        "libreoffice": ["libreoffice", "lowriter"],
+        "libreoffice": ["libreoffice", "lowriter", "libreoffice"],
         "gimp": ["gimp"],
         "inkscape": ["inkscape"],
         "blender": ["blender"],
-        "krita": ["krita"],
+        "krita": ["krita", "krita"],
         # Productivity apps
         "obsidian": ["obsidian"],
         "notion": ["notion", "notion-app"],
@@ -81,7 +91,6 @@ def find_app_command(app_name: str) -> str:
         "dbeaver": ["dbeaver"],
         "mysql-workbench": ["mysql-workbench"],
         # Graphics and media
-        "krita": ["krita"],
         "scribus": ["scribus"],
         "audacity": ["audacity"],
         "kdenlive": ["kdenlive"],
@@ -89,7 +98,6 @@ def find_app_command(app_name: str) -> str:
         # Office and documents
         "onlyoffice": ["onlyoffice", "onlyoffice-desktopeditors"],
         "wps": ["wps", "wps-office"],
-        "libreoffice": ["libreoffice"],
     }
 
     # Check if we have a direct mapping
@@ -105,8 +113,8 @@ def find_app_command(app_name: str) -> str:
             # Try multiple variations: original, spaces replaced with hyphens, underscores
             search_patterns = [
                 f"*{app_name_lower}*.desktop",
-                f"*{app_name_lower.replace(' ', '-') }*.desktop",
-                f"*{app_name_lower.replace(' ', '_') }*.desktop",
+                f"*{app_name_lower.replace(' ', '-')}.desktop",
+                f"*{app_name_lower.replace(' ', '_')}.desktop",
             ]
 
             for pattern in search_patterns:
@@ -115,7 +123,7 @@ def find_app_command(app_name: str) -> str:
                         exec_cmd = parse_desktop_file(desktop_file)
                         if exec_cmd and is_command_available(exec_cmd.split()[0]):
                             return exec_cmd
-                    except:
+                    except (OSError, IOError, ValueError):
                         continue
 
             # Also check for exact matches with various naming patterns
@@ -132,7 +140,7 @@ def find_app_command(app_name: str) -> str:
                         exec_cmd = parse_desktop_file(exact_desktop)
                         if exec_cmd and is_command_available(exec_cmd.split()[0]):
                             return exec_cmd
-                    except:
+                    except (OSError, IOError, ValueError):
                         continue
 
     # Check if the app name itself is a valid command
@@ -173,15 +181,13 @@ def parse_desktop_file(desktop_file: str) -> str:
     try:
         with open(desktop_file, "r", encoding="utf-8") as f:
             content = f.read()
-
-        # Look for the Exec line
         for line in content.split("\n"):
             if line.startswith("Exec="):
                 exec_cmd = line.split("=", 1)[1].strip()
                 # Remove field codes like %f, %F, %u, %U, etc.
                 exec_cmd = exec_cmd.split()[0]  # Take just the command, not args
                 return exec_cmd
-    except:
+    except (OSError, IOError, UnicodeDecodeError):
         pass
     return ""
 
@@ -226,7 +232,10 @@ def open_app(app_name: str) -> str:
                     return f"Opening {app_name} in {browser}"
                 except FileNotFoundError:
                     continue
-            return f"Couldn't find a way to open {app_name}. Try installing it with your package manager or check if it's installed in a custom location."
+            return (
+                f"Couldn't find a way to open {app_name}. Try installing it with your package "
+                "manager or check if it's installed in a custom location."
+            )
         except Exception as e:
             return f"Error opening {app_name}: {str(e)}"
     else:
@@ -240,4 +249,7 @@ def open_app(app_name: str) -> str:
             except Exception as e:
                 return f"Error launching {app_name}: {str(e)}"
         else:
-            return f"'{app_name}' is not installed or not found on this system. Try: pacman -S {app_name} (on Arch) or check if it's installed in a custom location"
+            return (
+                f"'{app_name}' is not installed or not found on this system. Try: pacman -S "
+                f"{app_name} (on Arch) or check if it's installed in a custom location"
+            )

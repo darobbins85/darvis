@@ -3,12 +3,12 @@ Waybar IPC communication for Darvis status updates.
 Provides real-time status updates to waybar custom modules via FIFO pipe.
 """
 
-import os
-import json
-import platform
 import atexit
-from typing import Optional
+import json
+import os
+import platform
 from pathlib import Path
+from typing import Optional
 
 
 class WaybarStatusManager:
@@ -75,7 +75,7 @@ class WaybarStatusManager:
             "speaking": {"text": "🔊", "class": "speaking"},
             "success": {"text": "✅", "class": "success"},
             "error": {"text": "❌", "class": "error"},
-            "warning": {"text": "⚠️", "class": "warning"}
+            "warning": {"text": "⚠️", "class": "warning"},
         }
 
         if status in status_map:

@@ -2,8 +2,10 @@
 Speech recognition and text-to-speech functionality.
 """
 
-import speech_recognition as sr
 from typing import Optional
+
+import speech_recognition as sr
+
 from .config import ENERGY_THRESHOLD, LISTEN_TIMEOUT, PHRASE_TIME_LIMIT
 
 
@@ -81,7 +83,6 @@ def list_microphones() -> None:
         Index 1: Another Microphone Name
         ...
     """
-    r = sr.Recognizer()
     microphones = sr.Microphone.list_microphone_names()
     print("Available microphones:")
     for i, name in enumerate(microphones):

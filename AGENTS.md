@@ -30,10 +30,12 @@
 - `black darvis/` - Auto-format all modules
 - `isort darvis/` - Sort import statements across modules
 
-**Testing (manual testing recommended):**
-- Run `python3 -m darvis.ui` and test voice commands manually
-- Test microphone detection with `python3 -c "import darvis.speech; darvis.speech.list_microphones()"`
-- For automated tests: `pytest` (run existing test suite)
+**Testing (automated test suite):**
+- `source venv/bin/activate && python -m pytest tests/` - Run complete test suite (29 tests, 40% coverage)
+- `source venv/bin/activate && python -m pytest tests/ --cov=darvis --cov-report=html` - Run with coverage report
+- `source venv/bin/activate && python -m pytest tests/test_gui.py` - Run GUI-specific tests
+- Manual testing: Run `python3 -m darvis.ui` and test voice commands
+- Microphone test: `python3 -c "import darvis.speech; darvis.speech.list_microphones()"`
 
 ## Code Style Guidelines
 
