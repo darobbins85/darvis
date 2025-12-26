@@ -767,7 +767,25 @@
             // Insert before the AI processing indicator
             const processingIndicator = document.getElementById('ai-processing-indicator');
             chatMessages.insertBefore(messageDiv, processingIndicator);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Auto-scroll to bottom after DOM updates
+            setTimeout(() => {
+                // Multiple approaches for reliable scrolling
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Also scroll the message into view for extra reliability
+                try {
+                    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+                } catch (e) {
+                    // Fallback for browsers that don't support scrollIntoView options
+                    messageDiv.scrollIntoView(false);
+                }
+
+                // Force another scroll after a brief delay to ensure it's at the bottom
+                setTimeout(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 50);
+            }, 10);
         }
 
         // Show status message
