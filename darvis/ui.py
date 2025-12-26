@@ -65,6 +65,11 @@ class DarvisGUI:
         self.web_socket = None
         self.web_connected = False
 
+        # Web sync variables
+        self.web_sync_enabled = False
+        self.web_socket = None
+        self.web_connected = False
+
         # Visual effects variables
         self.base_logo_image = None
         self.wake_glow_image = None
@@ -1149,6 +1154,81 @@ Built with ❤️"""
             self.root.deiconify()
         else:
             self.root.withdraw()
+
+    def init_web_sync(self):
+        """Initialize web app synchronization if available."""
+        from .config import WEB_APP_HOST, WEB_APP_PORT
+
+        try:
+            # Check if web app is running
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex((WEB_APP_HOST, WEB_APP_PORT))
+            sock.close()
+
+            if result == 0:
+                print(f"🌐 Web app detected at {WEB_APP_HOST}:{WEB_APP_PORT}, enabling sync...")
+                self.web_sync_enabled = True
+                self.connect_to_web_app()
+            else:
+                print("🌐 Web app not detected, running in standalone mode")
+        except Exception as e:
+            print(f"🌐 Web sync check failed: {e}, running in standalone mode")
+
+    def connect_to_web_app(self):
+        """Connect to the web app for synchronized chat."""
+        if not self.web_sync_enabled:
+            return
+
+        try:
+            # Import socketio client
+            import socketio
+
+            self.web_socket = socketio.Client()
+
+            @self.web_socket.on('connect')
+            def on_connect():
+                print("🌐 Connected to web app for chat sync")
+                self.web_connected = True
+
+            @self.web_socket.on('disconnect')
+            def on_disconnect():
+                print("🌐 Disconnected from web app")
+                self.web_connected = False
+
+            @self.web_socket.on('user_message')
+            def on_user_message(data):
+                # Received message from web interface
+                if self.web_connected:
+                    # Add to desktop chat without triggering AI
+                    self.display_message(f"You: {data['message']}\n")
+
+            @self.web_socket.on('ai_message')
+            def on_ai_message(data):
+                # Received AI response from web interface
+                if self.web_connected:
+                    # Add to desktop chat
+                    self.display_message(f"AI: {data['message']}\n")
+
+            # Connect to web app
+            from .config import WEB_APP_URL
+            self.web_socket.connect(WEB_APP_URL, wait_timeout=5)
+            print("🌐 Web sync initialized")
+
+        except ImportError:
+            print("⚠️ socketio-client not available, web sync disabled")
+            self.web_sync_enabled = False
+        except Exception as e:
+            print(f"🌐 Web sync connection failed: {e}")
+            self.web_sync_enabled = False
+
+    def send_to_web(self, message):
+        """Send a message to the web interface if connected."""
+        if self.web_connected and self.web_socket:
+            try:
+                self.web_socket.emit('send_message', {'message': message})
+            except Exception as e:
+                print(f"🌐 Failed to send to web: {e}")
 
     def init_web_sync(self):
         """Initialize web app synchronization if available."""
