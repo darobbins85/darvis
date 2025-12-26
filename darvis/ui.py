@@ -230,8 +230,11 @@ class DarvisGUI:
         if self.text_info:
             self.text_info.config(state=tk.NORMAL)
             self.text_info.insert(tk.END, message)
-            self.text_info.see(tk.END)  # Auto-scroll to the end
             self.text_info.config(state=tk.DISABLED)
+
+            # Ensure auto-scroll happens after widget updates
+            if self.text_info:
+                self.root.after(10, lambda: self.text_info.see(tk.END))
             self.text_info.see(tk.END)
 
 

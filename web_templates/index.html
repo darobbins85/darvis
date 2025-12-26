@@ -768,24 +768,42 @@
             const processingIndicator = document.getElementById('ai-processing-indicator');
             chatMessages.insertBefore(messageDiv, processingIndicator);
 
-            // Auto-scroll to bottom after DOM updates
+            // Auto-scroll to bottom after DOM updates with multiple attempts
             setTimeout(() => {
-                // Multiple approaches for reliable scrolling
+                // First scroll attempt
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                // Also scroll the message into view for extra reliability
-                try {
-                    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-                } catch (e) {
-                    // Fallback for browsers that don't support scrollIntoView options
-                    messageDiv.scrollIntoView(false);
-                }
-
-                // Force another scroll after a brief delay to ensure it's at the bottom
+                // Second scroll after DOM updates
                 setTimeout(() => {
                     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    // Third scroll for extra reliability
+                    setTimeout(() => {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                        // Use requestAnimationFrame for better timing
+                        requestAnimationFrame(() => {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                            // Also try scrollIntoView on the message for absolute reliability
+                            try {
+                                messageDiv.scrollIntoView({ behavior: 'auto', block: 'end' });
+                            } catch (e) {
+                                messageDiv.scrollIntoView(false);
+                            }
+
+                            // Final aggressive scroll after all animations
+                            setTimeout(() => {
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                                // One more time for good measure
+                                requestAnimationFrame(() => {
+                                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                                });
+                            }, 300);
+                        });
+                    }, 100);
                 }, 50);
-            }, 10);
+            }, 20);
         }
 
         // Show status message
