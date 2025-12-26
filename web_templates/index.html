@@ -779,7 +779,6 @@
             chatMessages.insertBefore(messageDiv, processingIndicator);
 
             // Auto-scroll to bottom with aggressive, reliable approach
-            // Use multiple techniques to ensure scrolling works
             setTimeout(() => {
                 // Force layout recalculation
                 chatMessages.offsetHeight;
@@ -797,35 +796,16 @@
                 requestAnimationFrame(() => {
                     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                    // Final scroll to be absolutely sure
+                    // Final scroll with scrollIntoView fallback
                     setTimeout(() => {
                         chatMessages.scrollTop = chatMessages.scrollHeight;
-                        // Try scrollIntoView on the message as final fallback
                         try {
                             messageDiv.scrollIntoView({ behavior: 'auto', block: 'end' });
                         } catch (e) {
                             messageDiv.scrollIntoView(false);
                         }
                     }, 50);
-
-                            // Also try scrollIntoView on the message for absolute reliability
-                            try {
-                                messageDiv.scrollIntoView({ behavior: 'auto', block: 'end' });
-                            } catch (e) {
-                                messageDiv.scrollIntoView(false);
-                            }
-
-                            // Final aggressive scroll after all animations
-                            setTimeout(() => {
-                                chatMessages.scrollTop = chatMessages.scrollHeight;
-                                // One more time for good measure
-                                requestAnimationFrame(() => {
-                                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                                });
-                            }, 300);
-                        });
-                    }, 100);
-                }, 50);
+                });
             }, 20);
         }
 
