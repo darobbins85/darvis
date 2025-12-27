@@ -360,8 +360,9 @@ class DarvisGUI:
         if self.manual_input_entry:
             input_text = self.manual_input_entry.get().strip()
             if input_text:
-                # Display the message
-                self.display_message(f"You: {input_text}\n")
+                # Display the message (skip if web sync enabled to avoid duplicates)
+                if not getattr(self, 'web_sync_enabled', False):
+                    self.display_message(f"You: {input_text}\n")
 
                 # Clear the input
                 self.manual_input_entry.delete(0, tk.END)
@@ -370,7 +371,8 @@ class DarvisGUI:
                 self.send_to_web(input_text)
 
                 # Start AI processing with visual feedback
-                self.display_message("AI: Processing...\n")
+                if not getattr(self, 'web_sync_enabled', False):
+                    self.display_message("AI: Processing...\n")
                 print("🚀 Starting AI processing with glow")
                 self.glow_logo(True, True)  # Red glow for AI processing
 
@@ -398,7 +400,8 @@ class DarvisGUI:
         print(f"🤖 AI response received: {response[:50]}...")
         # Replace the "Processing..." message with the actual response
         # This is a simple approach - in a real app you'd track the processing message
-        self.display_message(f"AI: {response}\n")
+        if not getattr(self, 'web_sync_enabled', False):
+            self.display_message(f"AI: {response}\n")
 
         # Stop the glow after a longer delay to ensure it's visible
         print("⏰ Scheduling glow stop in 3 seconds")
@@ -521,11 +524,13 @@ class DarvisGUI:
             response, session_id = process_ai_query(query)
 
             # Display the AI response
-            self.display_message(f"AI: {response}\n")
+            if not getattr(self, 'web_sync_enabled', False):
+                self.display_message(f"AI: {response}\n")
 
         except Exception as e:
             print(f"❌ AI processing failed: {e}")
-            self.display_message(f"AI: Error processing query: {e}\n")
+            if not getattr(self, 'web_sync_enabled', False):
+                self.display_message(f"AI: Error processing query: {e}\n")
 
     def quit_app(self):
         """Quit the application."""
