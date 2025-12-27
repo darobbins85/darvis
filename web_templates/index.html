@@ -102,9 +102,9 @@
             width: 100%;
             padding: 1rem;
             /* Leave space for fixed input at bottom */
-            margin-bottom: 80px;
+            margin-bottom: 120px;
             /* Dynamic height that fills available space */
-            min-height: calc(100vh - 280px);
+            min-height: calc(100vh - 320px);
             /* Minimum space accounting for header + input + margins */
             box-sizing: border-box;
         }
@@ -120,6 +120,8 @@
       border: 1px solid rgba(42, 42, 78, 0.3);
       border-radius: 8px;
       background: rgba(26, 26, 46, 0.3);
+      /* Ensure space at bottom when scrolled */
+      padding-bottom: 20px;
     }
 
     .message {
@@ -145,6 +147,7 @@
     .message-bubble {
       max-width: 65%;
       padding: 0.75rem 1rem;
+      margin: 20px;
       border-radius: 18px;
       position: relative;
       word-wrap: break-word;
@@ -172,6 +175,7 @@
       border-radius: 12px;
       font-size: 0.9rem;
       padding: 0.5rem 0.75rem;
+      margin: 20px;
       max-width: 60%;
       text-align: center;
     }
@@ -403,7 +407,7 @@
     /* Mobile responsiveness */
     @media (max-width: 768px) {
       .chat-container {
-        margin-bottom: 90px;
+        margin-bottom: 130px;
         padding-top: 10px;
         padding-bottom: 40px;
         padding-left: 10px;
@@ -824,35 +828,14 @@
       const processingIndicator = document.getElementById('ai-processing-indicator');
       chatMessages.insertBefore(messageDiv, processingIndicator);
 
-      // Auto-scroll to bottom with aggressive, reliable approach
+      // Auto-scroll to show the new message at the bottom
       setTimeout(() => {
-        // Force layout recalculation
-        chatMessages.offsetHeight;
-
-        // Primary scroll method
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        // Backup scroll method
-        chatMessages.scrollTo({
-          top: chatMessages.scrollHeight,
-          behavior: 'auto'
-        });
-
-        // Additional scroll after layout updates
-        requestAnimationFrame(() => {
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-
-          // Final scroll with scrollIntoView fallback
-          setTimeout(() => {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            try {
-              messageDiv.scrollIntoView({behavior: 'auto', block: 'end'});
-            } catch (e) {
-              messageDiv.scrollIntoView(false);
-            }
-          }, 50);
-        });
-      }, 20);
+        try {
+          messageDiv.scrollIntoView({behavior: 'smooth', block: 'end'});
+        } catch (e) {
+          messageDiv.scrollIntoView(false);
+        }
+      }, 100);
     }
 
     // Show status message

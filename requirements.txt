@@ -7,8 +7,10 @@ Pillow>=10.0.0
 # GUI and system tray
 pystray>=0.19.0
 
-# Web-desktop synchronization (optional)
-# python-socketio>=5.0.0  # Uncomment for web-desktop sync feature
+# Web interface and synchronization
+flask>=2.0.0
+flask-socketio>=5.0.0
+python-socketio[client]>=5.0.0
 
 # Optional: GTK support for system tray (Linux)
 # PyGObject>=3.42.0  # Uncomment if needed for GTK system tray
