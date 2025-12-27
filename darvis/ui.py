@@ -172,9 +172,10 @@ class DarvisGUI:
             self.text_info.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
             print("✅ Text area created")
 
-            # Configure text tags for colored prefixes
+            # Configure text tags for colored messages
             self.text_info.tag_config("you", foreground="green")
             self.text_info.tag_config("ai", foreground="red")
+            self.text_info.tag_config("web_user", foreground="yellow")
 
             # Create controls frame
             controls_frame = tk.Frame(self.root, bg="black")
@@ -403,16 +404,16 @@ class DarvisGUI:
                 self.send_to_web(input_text)
 
                 # Start AI processing with visual feedback
-                self.display_message("AI: Processing...\n")
                 print("🚀 Starting AI processing with glow")
                 self.glow_logo(True, True)  # Red glow for AI processing
 
-                # Process AI query in background thread
-                threading.Thread(
-                    target=self._process_ai_query_threaded,
-                    args=(input_text,),
-                    daemon=True
-                ).start()
+                # Process AI query locally only if web sync is not enabled
+                if not getattr(self, 'web_sync_enabled', False):
+                    threading.Thread(
+                        target=self._process_ai_query_threaded,
+                        args=(input_text,),
+                        daemon=True
+                    ).start()
 
     def _process_ai_query_threaded(self, query):
         """Process AI query in background thread."""
@@ -512,10 +513,13 @@ class DarvisGUI:
                 self.web_connected = False
 
             def on_user_message(data):
-                # Received message from web interface
+                # Received user message from web interface
                 if self.web_connected:
-                    # Add to desktop chat without triggering AI
-                    self.display_message(f"You: {data['message']}\n")
+                    # Add to desktop chat with yellow color
+                    self.text_info.config(state=tk.NORMAL)
+                    self.text_info.insert(tk.END, f"You: {data['message']}\n", "web_user")
+                    self.text_info.config(state=tk.DISABLED)
+                    self.text_info.see(tk.END)
 
             def on_ai_message(data):
                 # Received AI response from web interface
