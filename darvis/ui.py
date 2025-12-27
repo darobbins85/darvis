@@ -376,12 +376,13 @@ class DarvisGUI:
                 print("🚀 Starting AI processing with glow")
                 self.glow_logo(True, True)  # Red glow for AI processing
 
-                # Process AI query in background thread
-                threading.Thread(
-                    target=self._process_ai_query_threaded,
-                    args=(input_text,),
-                    daemon=True
-                ).start()
+                # Process AI query locally only if web sync is not enabled
+                if not getattr(self, 'web_sync_enabled', False):
+                    threading.Thread(
+                        target=self._process_ai_query_threaded,
+                        args=(input_text,),
+                        daemon=True
+                    ).start()
 
     def _process_ai_query_threaded(self, query):
         """Process AI query in background thread."""
