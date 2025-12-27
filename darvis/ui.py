@@ -172,6 +172,10 @@ class DarvisGUI:
             self.text_info.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
             print("✅ Text area created")
 
+            # Configure text tags for colored prefixes
+            self.text_info.tag_config("you", foreground="green")
+            self.text_info.tag_config("ai", foreground="red")
+
             # Create input frame
             input_frame = tk.Frame(self.root, bg="black")
             input_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
@@ -229,7 +233,17 @@ class DarvisGUI:
         """Display a message in the GUI."""
         if self.text_info:
             self.text_info.config(state=tk.NORMAL)
-            self.text_info.insert(tk.END, message)
+
+            # Apply color tags for You: and AI: prefixes
+            if message.startswith("You:"):
+                self.text_info.insert(tk.END, "You:", "you")
+                self.text_info.insert(tk.END, message[4:])  # Insert the rest without tag
+            elif message.startswith("AI:"):
+                self.text_info.insert(tk.END, "AI:", "ai")
+                self.text_info.insert(tk.END, message[3:])  # Insert the rest without tag
+            else:
+                self.text_info.insert(tk.END, message)
+
             self.text_info.config(state=tk.DISABLED)
 
             # Ensure auto-scroll happens after widget updates
