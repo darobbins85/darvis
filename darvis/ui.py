@@ -479,12 +479,6 @@ class DarvisGUI:
                 print("🌐 Disconnected from web app")
                 self.web_connected = False
 
-            def on_user_message(data):
-                # Received message from web interface
-                if self.web_connected:
-                    # Add to desktop chat without triggering AI
-                    self.display_message(f"You: {data['message']}\n")
-
             def on_ai_message(data):
                 # Received AI response from web interface
                 if self.web_connected:
@@ -493,7 +487,6 @@ class DarvisGUI:
 
             self.web_socket.on("connect", on_connect)
             self.web_socket.on("disconnect", on_disconnect)
-            self.web_socket.on("user_message", on_user_message)
             self.web_socket.on("ai_message", on_ai_message)
 
             # Connect to web app
