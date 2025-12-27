@@ -176,6 +176,22 @@ class DarvisGUI:
             self.text_info.tag_config("you", foreground="green")
             self.text_info.tag_config("ai", foreground="red")
 
+            # Create controls frame
+            controls_frame = tk.Frame(self.root, bg="black")
+            controls_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
+
+            # Copy chat button
+            copy_button = tk.Button(
+                controls_frame,
+                text="📋 Copy Chat",
+                bg="#333",
+                fg="white",
+                font=("JetBrains Mono", 10),
+                command=self.copy_chat
+            )
+            copy_button.pack(side=tk.RIGHT)
+            print("✅ Copy button created")
+
             # Create input frame
             input_frame = tk.Frame(self.root, bg="black")
             input_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
@@ -248,6 +264,14 @@ class DarvisGUI:
             if self.text_info:
                 self.root.after(10, lambda: self.text_info.see(tk.END))
             self.text_info.see(tk.END)
+
+    def copy_chat(self):
+        """Copy the entire chat content to clipboard."""
+        if self.text_info:
+            chat_content = self.text_info.get("1.0", tk.END).strip()
+            self.root.clipboard_clear()
+            self.root.clipboard_append(chat_content)
+            print("📋 Chat content copied to clipboard")
 
 
 
@@ -491,6 +515,7 @@ class DarvisGUI:
                 if self.web_connected:
                     # Add to desktop chat
                     self.display_message(f"AI: {data['message']}\n")
+                    self.display_message("─" * 50 + "\n")
 
             self.web_socket.on("connect", on_connect)
             self.web_socket.on("disconnect", on_disconnect)
