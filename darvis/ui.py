@@ -402,6 +402,7 @@ class DarvisGUI:
         # This is a simple approach - in a real app you'd track the processing message
         if not getattr(self, 'web_sync_enabled', False):
             self.display_message(f"AI: {response}\n")
+            self.display_message("─" * 50 + "\n")
 
         # Stop the glow after a longer delay to ensure it's visible
         print("⏰ Scheduling glow stop in 3 seconds")
@@ -529,6 +530,7 @@ class DarvisGUI:
 
             # Display the AI response
             self.display_message(f"AI: {response}\n")
+            self.display_message("─" * 50 + "\n")
 
         except Exception as e:
             print(f"❌ AI processing failed: {e}")
