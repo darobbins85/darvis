@@ -370,18 +370,18 @@ class DarvisGUI:
                 # Send to web sync
                 self.send_to_web(input_text)
 
-                # Start AI processing with visual feedback
+                # Start AI processing with visual feedback (skip if web sync enabled)
                 if not getattr(self, 'web_sync_enabled', False):
                     self.display_message("AI: Processing...\n")
-                print("🚀 Starting AI processing with glow")
-                self.glow_logo(True, True)  # Red glow for AI processing
+                    print("🚀 Starting AI processing with glow")
+                    self.glow_logo(True, True)  # Red glow for AI processing
 
-                # Process AI query in background thread
-                threading.Thread(
-                    target=self._process_ai_query_threaded,
-                    args=(input_text,),
-                    daemon=True
-                ).start()
+                    # Process AI query in background thread
+                    threading.Thread(
+                        target=self._process_ai_query_threaded,
+                        args=(input_text,),
+                        daemon=True
+                    ).start()
 
     def _process_ai_query_threaded(self, query):
         """Process AI query in background thread."""
@@ -519,18 +519,20 @@ class DarvisGUI:
 
     def _process_and_display_ai_query(self, query):
         """Process an AI query and display the response."""
+        if getattr(self, 'web_sync_enabled', False):
+            # Skip processing if web sync enabled (let web handle it)
+            return
+
         try:
             # Process the query using AI module
             response, session_id = process_ai_query(query)
 
             # Display the AI response
-            if not getattr(self, 'web_sync_enabled', False):
-                self.display_message(f"AI: {response}\n")
+            self.display_message(f"AI: {response}\n")
 
         except Exception as e:
             print(f"❌ AI processing failed: {e}")
-            if not getattr(self, 'web_sync_enabled', False):
-                self.display_message(f"AI: Error processing query: {e}\n")
+            self.display_message(f"AI: Error processing query: {e}\n")
 
     def quit_app(self):
         """Quit the application."""
