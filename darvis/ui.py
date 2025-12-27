@@ -234,13 +234,11 @@ class DarvisGUI:
         if self.text_info:
             self.text_info.config(state=tk.NORMAL)
 
-            # Apply color tags for You: and AI: prefixes
+            # Apply color tags for entire You: and AI: messages
             if message.startswith("You:"):
-                self.text_info.insert(tk.END, "You:", "you")
-                self.text_info.insert(tk.END, message[4:])  # Insert the rest without tag
+                self.text_info.insert(tk.END, message, "you")
             elif message.startswith("AI:"):
-                self.text_info.insert(tk.END, "AI:", "ai")
-                self.text_info.insert(tk.END, message[3:])  # Insert the rest without tag
+                self.text_info.insert(tk.END, message, "ai")
             else:
                 self.text_info.insert(tk.END, message)
 
