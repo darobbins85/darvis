@@ -172,9 +172,10 @@ class DarvisGUI:
             self.text_info.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
             print("✅ Text area created")
 
-            # Configure text tags for colored prefixes
+            # Configure text tags for colored messages
             self.text_info.tag_config("you", foreground="green")
             self.text_info.tag_config("ai", foreground="red")
+            self.text_info.tag_config("web_user", foreground="yellow")
 
             # Create input frame
             input_frame = tk.Frame(self.root, bg="black")
@@ -478,6 +479,15 @@ class DarvisGUI:
                 print("🌐 Disconnected from web app")
                 self.web_connected = False
 
+            def on_user_message(data):
+                # Received user message from web interface
+                if self.web_connected:
+                    # Add to desktop chat with yellow color
+                    self.text_info.config(state=tk.NORMAL)
+                    self.text_info.insert(tk.END, f"You: {data['message']}\n", "web_user")
+                    self.text_info.config(state=tk.DISABLED)
+                    self.text_info.see(tk.END)
+
             def on_ai_message(data):
                 # Received AI response from web interface
                 if self.web_connected:
@@ -486,6 +496,7 @@ class DarvisGUI:
 
             self.web_socket.on("connect", on_connect)
             self.web_socket.on("disconnect", on_disconnect)
+            self.web_socket.on("user_message", on_user_message)
             self.web_socket.on("ai_message", on_ai_message)
 
             # Connect to web app
