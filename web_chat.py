@@ -49,7 +49,7 @@ def handle_disconnect():
     """Handle client disconnection."""
     print("Client disconnected")
 
-@socketio.on('send_message')
+@socketio.on('chat_message')
 def handle_message(data):
     """Handle incoming messages from the web interface."""
     message = data.get('message', '').strip()

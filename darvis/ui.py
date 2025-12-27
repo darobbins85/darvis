@@ -277,7 +277,7 @@ class DarvisGUI:
         """Send a message to the web interface if connected."""
         if self.web_connected and self.web_socket:
             try:
-                self.web_socket.emit("send_message", {"message": message})
+                self.web_socket.emit("chat_message", {"message": message})
             except Exception as e:
                 print(f"🌐 Failed to send to web: {e}")
 

@@ -677,9 +677,9 @@
           waitingForCommand = false;
           console.log('📝 Manual message sent, stopping command wait');
         }
-        socket.emit('send_message', {message: message});
-        messageInput.value = '';
-        startAiProcessing();
+         socket.emit('chat_message', {message: message});
+         messageInput.value = '';
+         startAiProcessing();
       }
     });
 
@@ -788,7 +788,7 @@
         clearTimeout(commandTimeout);
         waitingForCommand = false;
         setEyeState('idle');
-        socket.emit('send_message', {message: text});
+        socket.emit('chat_message', {message: text});
       } else if (waitingForCommand && isWakeWord) {
         // Another wake word while waiting - reset timeout
         console.log('🎯 Another wake word detected, resetting command timeout');
