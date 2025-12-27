@@ -392,9 +392,8 @@ class DarvisGUI:
         if self.manual_input_entry:
             input_text = self.manual_input_entry.get().strip()
             if input_text:
-                # Display the message (skip if web sync enabled to avoid duplicates)
-                if not getattr(self, 'web_sync_enabled', False):
-                    self.display_message(f"You: {input_text}\n")
+                # Display the message
+                self.display_message(f"You: {input_text}\n")
 
                 # Clear the input
                 self.manual_input_entry.delete(0, tk.END)
@@ -402,18 +401,17 @@ class DarvisGUI:
                 # Send to web sync
                 self.send_to_web(input_text)
 
-                # Start AI processing with visual feedback (skip if web sync enabled)
-                if not getattr(self, 'web_sync_enabled', False):
-                    self.display_message("AI: Processing...\n")
-                    print("🚀 Starting AI processing with glow")
-                    self.glow_logo(True, True)  # Red glow for AI processing
+                # Start AI processing with visual feedback
+                self.display_message("AI: Processing...\n")
+                print("🚀 Starting AI processing with glow")
+                self.glow_logo(True, True)  # Red glow for AI processing
 
-                    # Process AI query in background thread
-                    threading.Thread(
-                        target=self._process_ai_query_threaded,
-                        args=(input_text,),
-                        daemon=True
-                    ).start()
+                # Process AI query in background thread
+                threading.Thread(
+                    target=self._process_ai_query_threaded,
+                    args=(input_text,),
+                    daemon=True
+                ).start()
 
     def _process_ai_query_threaded(self, query):
         """Process AI query in background thread."""
@@ -432,9 +430,8 @@ class DarvisGUI:
         print(f"🤖 AI response received: {response[:50]}...")
         # Replace the "Processing..." message with the actual response
         # This is a simple approach - in a real app you'd track the processing message
-        if not getattr(self, 'web_sync_enabled', False):
-            self.display_message(f"AI: {response}\n")
-            self.display_message("─" * 50 + "\n")
+        self.display_message(f"AI: {response}\n")
+        self.display_message("─" * 50 + "\n")
 
         # Stop the glow after a longer delay to ensure it's visible
         print("⏰ Scheduling glow stop in 3 seconds")
