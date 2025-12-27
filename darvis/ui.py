@@ -515,47 +515,9 @@ class DarvisGUI:
                 if self.web_connected:
                     # Add to desktop chat
                     self.display_message(f"AI: {data['message']}\n")
-                    self.display_message("─" * 50 + "\n")
-
-            self.web_socket.on("connect", on_connect)
-            self.web_socket.on("disconnect", on_disconnect)
-            self.web_socket.on("user_message", on_user_message)
-            self.web_socket.on("ai_message", on_ai_message)
-
-            # Connect to web app
-            from .config import WEB_APP_URL
-
-            self.web_socket.connect(WEB_APP_URL, wait_timeout=5)
-            print("🌐 Web sync initialized")
-
-        except ImportError:
-            print("⚠️ socketio-client not available, web sync disabled")
-            self.web_sync_enabled = False
-        except Exception as e:
-            print(f"🌐 Web sync connection failed: {e}")
-            self.web_sync_enabled = False
-
-    def send_to_web(self, message):
-        """Send a message to the web interface if connected."""
-        if self.web_connected and self.web_socket:
-            try:
-                self.web_socket.emit("send_message", {"message": message})
-            except Exception as e:
-                print(f"🌐 Failed to send to web: {e}")
-
-    def _process_and_display_ai_query(self, query):
-        """Process an AI query and display the response."""
-        if getattr(self, 'web_sync_enabled', False):
-            # Skip processing if web sync enabled (let web handle it)
-            return
-
-        try:
-            # Process the query using AI module
-            response, session_id = process_ai_query(query)
-
-            # Display the AI response
-            self.display_message(f"AI: {response}\n")
-            self.display_message("─" * 50 + "\n")
+                    # Dynamic separator based on text widget width
+                    width = int(self.text_info.cget('width') or 80) if self.text_info else 80
+                    self.display_message("─" * width + "\n")
 
         except Exception as e:
             print(f"❌ AI processing failed: {e}")
