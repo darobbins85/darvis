@@ -372,7 +372,6 @@ class DarvisGUI:
                 self.send_to_web(input_text)
 
                 # Start AI processing with visual feedback
-                self.display_message("AI: Processing...\n")
                 print("🚀 Starting AI processing with glow")
                 self.glow_logo(True, True)  # Red glow for AI processing
 
