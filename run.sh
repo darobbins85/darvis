@@ -21,12 +21,18 @@ wait_for_web() {
     echo "⏳ Waiting 5 seconds for web server to start..."
     sleep 5
 
-    # Test if port 5000 is actually listening
-    if nc -z localhost 5000 2>/dev/null; then
-        echo "✅ Web server is listening on port 5000"
+    # Test if port 5001 is actually listening
+    if python3 -c "
+import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+result = sock.connect_ex(('127.0.0.1', 5001))
+sock.close()
+exit(0 if result == 0 else 1)
+"; then
+        echo "✅ Web server is listening on port 5001"
         return 0
     else
-        echo "❌ Web server is not listening on port 5000"
+        echo "❌ Web server is not listening on port 5001"
         return 1
     fi
 }
