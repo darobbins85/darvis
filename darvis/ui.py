@@ -393,9 +393,8 @@ class DarvisGUI:
         if self.manual_input_entry:
             input_text = self.manual_input_entry.get().strip()
             if input_text:
-                # Display the message (skip if web sync enabled to avoid duplicates)
-                if not getattr(self, 'web_sync_enabled', False):
-                    self.display_message(f"You: {input_text}\n")
+                # Display the message locally
+                self.display_message(f"You: {input_text}\n")
 
                 # Clear the input
                 self.manual_input_entry.delete(0, tk.END)
