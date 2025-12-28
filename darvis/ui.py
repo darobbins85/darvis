@@ -529,9 +529,14 @@ class DarvisGUI:
                     width = int(self.text_info.cget('width') or 80) if self.text_info else 80
                     self.display_message("─" * width + "\n")
 
+            # Connect to web app
+            from .config import WEB_APP_URL
+            self.web_socket.connect(WEB_APP_URL, wait_timeout=5)
+            print("🌐 Web sync initialized")
+
         except Exception as e:
-            print(f"❌ AI processing failed: {e}")
-            self.display_message(f"AI: Error processing query: {e}\n")
+            print(f"❌ Web sync connection failed: {e}")
+            self.web_sync_enabled = False
 
     def quit_app(self):
         """Quit the application."""
