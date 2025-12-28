@@ -18,10 +18,17 @@ fi
 
 # Function to wait for web server to start
 wait_for_web() {
-    echo "⏳ Waiting 3 seconds for web server to start..."
-    sleep 3
-    echo "✅ Assuming web server is ready"
-    return 0
+    echo "⏳ Waiting 5 seconds for web server to start..."
+    sleep 5
+
+    # Test if port 5000 is actually listening
+    if nc -z localhost 5000 2>/dev/null; then
+        echo "✅ Web server is listening on port 5000"
+        return 0
+    else
+        echo "❌ Web server is not listening on port 5000"
+        return 1
+    fi
 }
 
 # Start web chat interface in background
