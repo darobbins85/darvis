@@ -33,8 +33,17 @@ wait_for_web() {
 
 # Start web chat interface in background
 echo "🌐 Starting web chat interface..."
-bash -c "cd '$SCRIPT_DIR' && source venv/bin/activate && python web_chat.py" &
+cd "$SCRIPT_DIR" && source venv/bin/activate && python web_chat.py &
 WEB_PID=$!
+echo "🌐 Web app started with PID: $WEB_PID"
+
+# Check if web app is still running
+if kill -0 $WEB_PID 2>/dev/null; then
+    echo "🌐 Web app process is running (PID: $WEB_PID)"
+else
+    echo "❌ Web app process exited early"
+    exit 1
+fi
 
 # Wait for web server to start
 if wait_for_web; then
