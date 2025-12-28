@@ -276,11 +276,15 @@ class DarvisGUI:
 
     def send_to_web(self, message):
         """Send a message to the web interface if connected."""
+        print(f"🌐 send_to_web called: connected={self.web_connected}, socket={self.web_socket is not None}")
         if self.web_connected and self.web_socket:
             try:
                 self.web_socket.emit("chat_message", {"message": message})
+                print(f"🌐 Sent message to web: {message}")
             except Exception as e:
                 print(f"🌐 Failed to send to web: {e}")
+        else:
+            print("🌐 Not connected to web app, cannot send message")
 
 
 
@@ -400,6 +404,7 @@ class DarvisGUI:
                 self.manual_input_entry.delete(0, tk.END)
 
                 # Send to web sync
+                print(f"🌐 Web sync enabled: {getattr(self, 'web_sync_enabled', False)}")
                 self.send_to_web(input_text)
 
                 # Start AI processing with visual feedback
@@ -466,6 +471,7 @@ class DarvisGUI:
                         f"✅ Web app detected at {WEB_APP_HOST}:{WEB_APP_PORT}, enabling sync..."
                     )
                     self.web_sync_enabled = True
+                    print("🌐 Calling connect_to_web_app...")
                     self.connect_to_web_app()
                     return  # Success, exit function
 
@@ -511,6 +517,12 @@ class DarvisGUI:
                 print("🌐 Disconnected from web app")
                 self.web_connected = False
 
+            def on_connect_error(data):
+                print(f"🌐 Connection error: {data}")
+
+            def on_connect_timeout():
+                print("🌐 Connection timeout")
+
             def on_user_message(data):
                 # Received user message from web interface
                 if self.web_connected:
@@ -531,6 +543,7 @@ class DarvisGUI:
 
             # Connect to web app
             from .config import WEB_APP_URL
+            print(f"🌐 Attempting to connect to {WEB_APP_URL}")
             self.web_socket.connect(WEB_APP_URL, wait_timeout=5)
             print("🌐 Web sync initialized")
 
