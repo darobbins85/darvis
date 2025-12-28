@@ -402,12 +402,13 @@ class DarvisGUI:
                 # Send to web sync
                 self.send_to_web(input_text)
 
-                # Start AI processing with visual feedback
-                print("🚀 Starting AI processing with glow")
-                self.glow_logo(True, True)  # Red glow for AI processing
-
-                # Process AI query locally only if web sync is not enabled
-                if not getattr(self, 'web_sync_enabled', False):
+                # Handle AI processing based on sync status
+                if getattr(self, 'web_sync_enabled', False):
+                    print("🌐 Web sync enabled - message sent to web app for processing")
+                    # Don't start glow or local processing - web app handles it
+                else:
+                    print("🚀 Starting local AI processing with glow")
+                    self.glow_logo(True, True)  # Red glow for AI processing
                     threading.Thread(
                         target=self._process_ai_query_threaded,
                         args=(input_text,),
@@ -446,6 +447,7 @@ class DarvisGUI:
     def init_web_sync(self):
         """Initialize web app synchronization if available."""
         print("🌐 init_web_sync called - starting web sync initialization")
+        print(f"🌐 Initial web_sync_enabled: {getattr(self, 'web_sync_enabled', 'not set')}")
         from .config import WEB_APP_HOST, WEB_APP_PORT
 
         print(f"🌐 Web app config loaded: {WEB_APP_HOST}:{WEB_APP_PORT}")
@@ -483,6 +485,7 @@ class DarvisGUI:
                     time.sleep(1)
 
         print("🌐 Web app not detected after 3 attempts, running in standalone mode")
+        print(f"🌐 Final web_sync_enabled: {getattr(self, 'web_sync_enabled', False)}")
 
     def connect_to_web_app(self):
         """Connect to the web app for synchronized chat."""
