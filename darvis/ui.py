@@ -447,7 +447,6 @@ class DarvisGUI:
     def init_web_sync(self):
         """Initialize web app synchronization if available."""
         print("🌐 init_web_sync called - starting web sync initialization")
-        print(f"🌐 Initial web_sync_enabled: {getattr(self, 'web_sync_enabled', 'not set')}")
         from .config import WEB_APP_HOST, WEB_APP_PORT
 
         print(f"🌐 Web app config loaded: {WEB_APP_HOST}:{WEB_APP_PORT}")
@@ -485,7 +484,6 @@ class DarvisGUI:
                     time.sleep(1)
 
         print("🌐 Web app not detected after 3 attempts, running in standalone mode")
-        print(f"🌐 Final web_sync_enabled: {getattr(self, 'web_sync_enabled', False)}")
 
     def connect_to_web_app(self):
         """Connect to the web app for synchronized chat."""
@@ -509,7 +507,6 @@ class DarvisGUI:
             def on_connect():
                 print("🌐 Connected to web app for chat sync")
                 self.web_connected = True
-                print(f"🌐 web_connected set to: {self.web_connected}")
 
             def on_disconnect():
                 print("🌐 Disconnected from web app")
@@ -541,10 +538,8 @@ class DarvisGUI:
 
             # Connect to web app
             from .config import WEB_APP_URL
-            print(f"🌐 Connecting to {WEB_APP_URL}...")
             try:
                 self.web_socket.connect(WEB_APP_URL, wait_timeout=5)
-                print("🌐 Socket.IO connection successful")
             except Exception as e:
                 print(f"🌐 Socket.IO connection failed: {e}")
                 self.web_sync_enabled = False
