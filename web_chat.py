@@ -131,10 +131,16 @@ def handle_speech_recognized(data):
 
 if __name__ == '__main__':
     print("Starting Darvis Web Chat Interface...")
-    print("Open http://localhost:5000 in your browser")
-    print("📱 Open your browser to http://localhost:5000")
+    print("Open http://localhost:5001 in your browser")
+    print("📱 Open your browser to http://localhost:5001")
     print("🎤 Use the listening toggle for voice commands")
     print("❌ Press Ctrl+C to stop")
     print("")
 
-    socketio.run(app, host='127.0.0.1', port=5000, debug=True, allow_unsafe_werkzeug=True)
+    try:
+        print("🌐 Starting Flask-SocketIO server on 127.0.0.1:5001...")
+        socketio.run(app, host='127.0.0.1', port=5001, debug=True, allow_unsafe_werkzeug=True)
+    except Exception as e:
+        print(f"❌ Failed to start web server: {e}")
+        import traceback
+        traceback.print_exc()
