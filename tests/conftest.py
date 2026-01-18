@@ -47,6 +47,23 @@ def darvis_process(test_config):
     """
     darvis_proc = None
     try:
+        # Check for existing Darvis processes and clean them up
+        existing_procs = []
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+            try:
+                if (proc.info['name'] and 'python' in proc.info['name'].lower() and
+                    proc.info['cmdline'] and any('darvis.ui' in arg for arg in proc.info['cmdline'])):
+                    existing_procs.append(proc)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
+        for proc in existing_procs:
+            try:
+                proc.terminate()
+                proc.wait(timeout=2)
+            except psutil.TimeoutExpired:
+                proc.kill()
+
         # Start Darvis in test mode (if supported) or normal mode
         cmd = [sys.executable, "-m", "darvis.ui"]
 
@@ -76,19 +93,27 @@ def darvis_process(test_config):
 
     finally:
         # Cleanup: terminate Darvis process
-        if darvis_proc and darvis_proc.poll() is None:
+        if darvis_proc:
             try:
-                if os.name == 'nt':
-                    darvis_proc.terminate()
-                    darvis_proc.wait(timeout=test_config['cleanup_timeout'])
-                else:
-                    os.killpg(os.getpgid(darvis_proc.pid), signal.SIGTERM)
-                    darvis_proc.wait(timeout=test_config['cleanup_timeout'])
-            except subprocess.TimeoutExpired:
-                if os.name == 'nt':
+                if darvis_proc.poll() is None:
+                    try:
+                        if os.name == 'nt':
+                            darvis_proc.terminate()
+                            darvis_proc.wait(timeout=test_config['cleanup_timeout'])
+                        else:
+                            os.killpg(os.getpgid(darvis_proc.pid), signal.SIGTERM)
+                            darvis_proc.wait(timeout=test_config['cleanup_timeout'])
+                    except subprocess.TimeoutExpired:
+                        if os.name == 'nt':
+                            darvis_proc.kill()
+                        else:
+                            os.killpg(os.getpgid(darvis_proc.pid), signal.SIGKILL)
+            except Exception:
+                # Force kill if needed
+                try:
                     darvis_proc.kill()
-                else:
-                    os.killpg(os.getpgid(darvis_proc.pid), signal.SIGKILL)
+                except Exception:
+                    pass
 
 
 @pytest.fixture
