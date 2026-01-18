@@ -2,7 +2,142 @@
 
 ## Overview
 
-This guide provides comprehensive end-to-end testing procedures for the Darvis voice assistant, featuring speech-bubble interface, darvis agent AI integration, and advanced visual feedback. All tests should be conducted in a Linux environment with microphone access and internet connectivity.
+This guide provides comprehensive end-to-end testing procedures for the Darvis voice assistant, featuring both **automated E2E tests** and **manual testing procedures**. The automated tests provide continuous regression testing, while manual tests validate user experience and edge cases.
+
+### Testing Levels
+
+1. **Automated E2E Tests** - Continuous integration, regression testing (49 tests)
+2. **Manual E2E Tests** - User experience validation, exploratory testing
+3. **Unit Tests** - Component-level testing (pytest suite)
+
+All tests should be conducted in a Linux environment with microphone access and internet connectivity.
+
+## 🤖 Automated E2E Testing Framework
+
+### Overview
+The automated E2E testing framework provides comprehensive, continuous testing of all Darvis functionality. Built with pytest, it includes 49 tests covering voice input, GUI interactions, AI responses, and application launching.
+
+### Test Structure
+```
+tests/e2e/
+├── conftest.py              # Test fixtures and configuration
+├── test_voice_e2e.py        # Voice input and recognition (12 tests)
+├── test_gui_e2e.py          # GUI interactions and feedback (10 tests)
+├── test_ai_e2e.py           # AI query processing and responses (15 tests)
+└── test_apps_e2e.py         # Application launching and web services (12 tests)
+```
+
+### Running Automated Tests
+
+#### Run All E2E Tests
+```bash
+source venv/bin/activate
+pytest tests/e2e/
+# Expected: 49 passed ✅
+```
+
+#### Run Specific Test Categories
+```bash
+# Voice functionality tests
+pytest tests/e2e/ -m voice
+
+# GUI interaction tests
+pytest tests/e2e/ -m gui
+
+# AI response tests
+pytest tests/e2e/ -m ai
+
+# Application launching tests
+pytest tests/e2e/ -m apps
+```
+
+#### Development and Debugging
+```bash
+# Verbose output with failure details
+pytest tests/e2e/ -v --tb=short
+
+# Run specific test
+pytest tests/e2e/test_voice_e2e.py::TestVoiceE2E::test_wake_word_detection -v
+
+# Stop on first failure
+pytest tests/e2e/ -x
+
+# Generate coverage report
+pytest tests/e2e/ --cov=darvis --cov-report=html
+```
+
+### Test Fixtures
+
+**`darvis_process`** - Launches and manages Darvis application instances
+- Starts Darvis in test mode
+- Handles cleanup between tests
+- Provides process monitoring
+
+**`voice_simulator`** - Simulates voice input without hardware
+- Injects wake words and commands
+- Manages timing and sequencing
+
+**`gui_verifier`** - Validates GUI state and visual feedback
+- Checks speech bubble appearance
+- Verifies logo animations
+
+**`process_monitor`** - Monitors system processes
+- Tracks application launches
+- Verifies process creation
+
+### Test Coverage
+
+#### Voice Tests (12 tests)
+- Wake word detection ("hey darvis", "play jarvis")
+- Voice command processing and AI routing
+- Speech recognition timeout handling
+- Background noise resistance
+- Rapid activation scenarios
+
+#### GUI Tests (10 tests)
+- Speech bubble display and color coding
+- Logo animation effects (glow, processing)
+- Visual feedback timing and transitions
+- System tray integration
+- Window management and performance
+
+#### AI Tests (15 tests)
+- Query processing and response generation
+- Conversation continuity and context
+- Response relevance and quality validation
+- Error handling and timeout scenarios
+- Multi-turn conversation flows
+
+#### Application Tests (12 tests)
+- Local application launching (calculator, terminal, browser)
+- Web service integration (YouTube, GitHub, Gmail)
+- Process verification and launch timing
+- Unknown application error handling
+- Concurrent launch scenarios
+
+### CI/CD Integration
+
+The automated tests are designed for continuous integration:
+
+```yaml
+# Example GitHub Actions
+- name: Run E2E Tests
+  run: |
+    source venv/bin/activate
+    pytest tests/e2e/ -x --tb=short
+- name: Generate Coverage
+  uses: codecov/codecov-action@v3
+  with:
+    file: ./coverage.xml
+```
+
+### Test Reliability Features
+
+- **Process Cleanup**: Automatic cleanup of Darvis processes between tests
+- **Mock Integration**: Realistic simulation of external dependencies
+- **Error Resilience**: Graceful handling of GUI environment issues
+- **Cross-Platform**: Works with or without display/GUI automation
+- **Fast Execution**: ~3-4 minutes for full test suite
 
 ## 🧪 Test Environment Setup
 
@@ -310,7 +445,17 @@ python3 darvis.py  # Should start GUI without errors
 
 ## 🔄 Regression Testing
 
-### Automated Checks
+### Automated E2E Tests
+```bash
+# Run full automated E2E test suite
+source venv/bin/activate
+pytest tests/e2e/
+
+# Run with coverage reporting
+pytest tests/e2e/ --cov=darvis --cov-report=html
+```
+
+### Manual Regression Checks
 ```bash
 # Syntax validation
 python3 -m py_compile darvis.py
@@ -320,13 +465,18 @@ python3 -c "import darvis; print('Import successful')"
 
 # Basic functionality
 python3 -c "import darvis; print(darvis.list_microphones())"
+
+# Unit tests
+pytest tests/ -v
 ```
 
 ### Performance Benchmarks
-- **Startup Time**: < 3 seconds
-- **Response Time**: Voice commands < 5 seconds
+- **Application Startup**: < 3 seconds
+- **E2E Test Suite**: < 4 minutes (49 tests)
+- **Voice Command Response**: < 5 seconds
 - **Memory Usage**: < 100MB during normal operation
 - **CPU Usage**: < 10% during idle listening
+- **Test Reliability**: 100% pass rate in CI/CD
 
 ## 📊 Test Results Template
 
@@ -354,8 +504,29 @@ Screenshots: [If applicable]
 
 ## 📞 Support
 
-For test failures or issues:
+### Automated Test Issues
+For automated E2E test failures:
+1. Check pytest output for specific failure details
+2. Run with verbose logging: `pytest tests/e2e/ -v -s`
+3. Verify virtual environment is activated
+4. Check for missing dependencies: `pip install -r requirements.txt`
+5. Review test fixtures in `tests/e2e/conftest.py`
+
+### Manual Test Issues
+For manual testing failures:
 1. Check console output for error messages
 2. Verify microphone and internet connectivity
 3. Test manual input as fallback
 4. Check system logs for additional errors
+5. Ensure GUI environment supports visual effects
+
+### Common Issues
+- **GUI tests fail**: May be running in headless environment
+- **Voice tests fail**: Microphone permissions or hardware issues
+- **AI tests fail**: Network connectivity or OpenCode CLI issues
+- **App tests fail**: Target applications not installed on system
+
+### Getting Help
+- Automated tests: Check `tests/e2e/README.md` for detailed documentation
+- Manual tests: Follow the step-by-step procedures in this guide
+- Report issues: Include pytest output, system info, and reproduction steps
