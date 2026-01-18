@@ -150,7 +150,7 @@ class TestAIErrorHandling:
         # Verify graceful handling
         assert darvis_process.poll() is None, "Should handle network issues gracefully"
 
-    def test_ai_empty_query_handling(self, darvis_process, voice_simulator):
+    def test_ai_empty_query_handling(self, darvis_process, voice_simulator, gui_verifier):
         """
         Test AI handling of empty or minimal queries.
 

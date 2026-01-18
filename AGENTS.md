@@ -34,6 +34,11 @@
 - `source venv/bin/activate && python -m pytest tests/` - Run complete test suite (29 tests, 40% coverage)
 - `source venv/bin/activate && python -m pytest tests/ --cov=darvis --cov-report=html` - Run with coverage report
 - `source venv/bin/activate && python -m pytest tests/test_gui.py` - Run GUI-specific tests
+- `source venv/bin/activate && python -m pytest tests/e2e/` - Run E2E test suite (requires full app startup)
+- `source venv/bin/activate && python -m pytest tests/e2e/ -m voice` - Run voice-related E2E tests
+- `source venv/bin/activate && python -m pytest tests/e2e/ -m gui` - Run GUI-related E2E tests
+- `source venv/bin/activate && python -m pytest tests/e2e/ -m ai` - Run AI-related E2E tests
+- `source venv/bin/activate && python -m pytest tests/e2e/ -m apps` - Run application launching E2E tests
 - Manual testing: Run `python3 -m darvis.ui` and test voice commands
 - Microphone test: `python3 -c "import darvis.speech; darvis.speech.list_microphones()"`
 
