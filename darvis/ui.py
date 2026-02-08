@@ -4,6 +4,8 @@ User interface and GUI components for Darvis Voice Assistant.
 
 import os
 import queue
+import signal
+import sys
 import tkinter as tk
 import threading
 import socket
@@ -19,6 +21,21 @@ except ImportError:
 from .ai import process_ai_query
 from .speech import speak
 from .waybar_status import init_waybar, update_waybar_status
+
+
+# Global flag for graceful shutdown
+_shutdown_requested = False
+
+
+def _handle_sigterm(signum, frame):
+    """Handle SIGTERM for forced shutdown."""
+    global _shutdown_requested
+    print("🪟 SIGTERM received, forcing shutdown...", flush=True)
+    _shutdown_requested = True
+    sys.exit(0)
+
+
+signal.signal(signal.SIGTERM, _handle_sigterm)
 
 
 class DarvisGUI:
@@ -241,6 +258,47 @@ class DarvisGUI:
         if self.manual_input_entry:
             # Bind Enter key to submit function
             self.manual_input_entry.bind('<Return>', lambda event: self.submit_manual_input())
+        
+        # Bind to window destroy event (handles WM kill/close shortcuts like Super+W)
+        self.root.bind('<Destroy>', self._on_destroy)
+        
+        # Also bind Escape as a fallback close mechanism
+        self.root.bind('<Escape>', lambda event: self.quit_app())
+
+    def _on_destroy(self, event):
+        """Handle window destroy event from window manager (e.g., Super+W)."""
+        # Only handle destroy events for the root window
+        if event.widget == self.root:
+            print("🪟 <Destroy> event received", flush=True)
+            self._cleanup_on_destroy()
+
+    def _cleanup_on_destroy(self):
+        """Cleanup resources when window is destroyed externally."""
+        # Send exit status to waybar
+        try:
+            update_waybar_status("idle", "Darvis: Exited")
+        except Exception as e:
+            print(f"Waybar status update failed on exit: {e}")
+
+        # Disconnect from web app
+        if self.web_socket:
+            try:
+                self.web_socket.disconnect()
+            except Exception:
+                pass
+
+        # Perform cleanup of waybar resources
+        from .waybar_status import get_waybar_manager
+        manager = get_waybar_manager()
+        if manager._initialized:
+            manager.cleanup()
+
+        if self.tray_icon:
+            try:
+                self.tray_icon.stop()
+            except Exception:
+                pass
+        # Note: Don't call root.quit() as the window is already destroyed
 
     def setup_system_tray(self):
         """Set up system tray icon."""
@@ -575,6 +633,8 @@ class DarvisGUI:
 
     def quit_app(self):
         """Quit the application."""
+        print("🪟 quit_app() called", flush=True)
+        
         # Send exit status to waybar
         try:
             update_waybar_status("idle", "Darvis: Exited")
@@ -595,8 +655,15 @@ class DarvisGUI:
             manager.cleanup()
 
         if self.tray_icon:
-            self.tray_icon.stop()
+            try:
+                self.tray_icon.stop()
+            except Exception:
+                pass
+        
+        print("🪟 Calling root.quit() and root.destroy()", flush=True)
         self.root.quit()
+        self.root.destroy()
+        print("🪟 root.quit() returned", flush=True)
 
 
 # Global GUI instance for backward compatibility
@@ -620,6 +687,8 @@ def get_gui():
 
 def main():
     """Main entry point for running the GUI application."""
+    print("🪟 main() starting", flush=True)
+    
     # Initialize waybar integration
     init_waybar()
 
@@ -628,9 +697,12 @@ def main():
     gui = DarvisGUI()
     
     # Bind the window close event to our quit_app method
+    print("🪟 Setting WM_DELETE_WINDOW protocol", flush=True)
     gui.root.protocol("WM_DELETE_WINDOW", gui.quit_app)
     
+    print("🪟 Starting mainloop", flush=True)
     gui.run()
+    print("🪟 mainloop ended", flush=True)
 
 
 if __name__ == "__main__":
