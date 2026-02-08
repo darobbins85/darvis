@@ -7,6 +7,7 @@ import atexit
 import json
 import os
 import platform
+import subprocess
 from pathlib import Path
 from typing import Optional
 
@@ -93,33 +94,39 @@ class WaybarStatusManager:
             return
 
         try:
-            with open(self.fifo_path, "w") as fifo:
+            # Open FIFO in non-blocking mode to avoid hanging if no reader
+            import fcntl
+            fd = os.open(self.fifo_path, os.O_WRONLY | os.O_NONBLOCK)
+            with os.fdopen(fd, "w") as fifo:
                 json.dump(data, fifo)
                 fifo.write("\n")
                 fifo.flush()
+        except (OSError, IOError) as e:
+            # No reader connected or other error - silently ignore
+            pass
         except Exception as e:
             print(f"FIFO write failed: {e}")
 
     def _check_waybar_running(self) -> bool:
         """Check if waybar process is running."""
         try:
-            import subprocess
-
-            # Try multiple ways to detect waybar
+            # Try multiple ways to detect waybar with timeout
             # First try exact match
             result = subprocess.run(
-                ["pgrep", "-x", "waybar"], capture_output=True, text=True
+                ["pgrep", "-x", "waybar"], capture_output=True, text=True, timeout=2
             )
             if result.returncode == 0:
                 return True
             
             # Also try with 'ps' command as fallback
             result = subprocess.run(
-                ["ps", "aux"], capture_output=True, text=True
+                ["ps", "aux"], capture_output=True, text=True, timeout=2
             )
             if "waybar" in result.stdout and "/waybar" in result.stdout:
                 return True
                 
+            return False
+        except subprocess.TimeoutExpired:
             return False
         except Exception:
             return False

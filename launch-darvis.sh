@@ -6,8 +6,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR"
 
-# Ensure we're in the correct directory
-cd "$PROJECT_DIR"
+# Change to home directory so AI has access to home folder
+cd "$HOME"
 
 # Set PYTHONPATH explicitly
 export PYTHONPATH="$PROJECT_DIR:$PYTHONPATH"
@@ -17,13 +17,16 @@ if [ -d "$HOME/.opencode/bin" ]; then
     export PATH="$HOME/.opencode/bin:$PATH"
 fi
 
-# Launch the application using the modular UI with system tray
-if [ -f "venv/bin/activate" ]; then
-    # Use exec to replace the shell process entirely
-    exec bash -c "cd '$PROJECT_DIR' && source venv/bin/activate && exec python -m darvis.ui"
-elif [ -f ".venv/bin/activate" ]; then
-    exec bash -c "cd '$PROJECT_DIR' && source .venv/bin/activate && exec python -m darvis.ui"
+# Ensure proper display environment for GUI
+export DISPLAY="${DISPLAY:-:0}"
+
+# Use explicit python from venv
+PYTHON_EXE="$PROJECT_DIR/venv/bin/python"
+
+# Launch the application
+if [ -f "$PYTHON_EXE" ]; then
+    exec "$PYTHON_EXE" -m darvis.ui
 else
-    echo "Warning: Virtual environment not found. Using system Python."
-    exec python -m darvis.ui
+    echo "ERROR: Python not found at $PYTHON_EXE"
+    exit 1
 fi
