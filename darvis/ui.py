@@ -17,6 +17,8 @@ except ImportError:
     HAS_PYSTRAY = False
 
 from .ai import process_ai_query
+from .speech import speak
+from .waybar_status import init_waybar, update_waybar_status
 
 
 class DarvisGUI:
@@ -228,6 +230,12 @@ class DarvisGUI:
 
             traceback.print_exc()
 
+        # Send initial status to waybar
+        try:
+            update_waybar_status("idle", "Darvis: Ready")
+        except Exception as e:
+            print(f"Waybar status update failed: {e}")
+
     def bind_events(self):
         """Bind GUI events."""
         if self.manual_input_entry:
@@ -418,13 +426,21 @@ class DarvisGUI:
     def _process_ai_query_threaded(self, query):
         """Process AI query in background thread."""
         try:
+            # Update waybar status to thinking
+            update_waybar_status("thinking", f"Thinking about: {query[:30]}...")
+            
             response, session_id = process_ai_query(query)
+            
+            # Update waybar status to success
+            update_waybar_status("success", "Response delivered")
 
             # Update UI on main thread
             self.root.after(0, lambda: self._display_ai_response(response))
 
         except Exception as e:
             print(f"❌ AI processing failed: {e}")
+            # Update waybar status to error
+            update_waybar_status("error", f"AI error: {str(e)[:50]}")
             self.root.after(0, lambda: self._display_ai_response(f"Error processing query: {e}"))
 
     def _display_ai_response(self, response):
@@ -435,6 +451,13 @@ class DarvisGUI:
         if not getattr(self, 'web_sync_enabled', False):
             self.display_message(f"AI: {response}\n")
             self.display_message("─" * 50 + "\n")
+
+        # Update waybar status to speaking and speak the response
+        try:
+            update_waybar_status("speaking", "Speaking response...")
+            speak(response)  # Speak the actual response
+        except Exception as e:
+            print(f"Speech failed: {e}")
 
         # Stop the glow after a longer delay to ensure it's visible
         print("⏰ Scheduling glow stop in 3 seconds")
@@ -552,6 +575,12 @@ class DarvisGUI:
 
     def quit_app(self):
         """Quit the application."""
+        # Send exit status to waybar
+        try:
+            update_waybar_status("idle", "Darvis: Exited")
+        except Exception as e:
+            print(f"Waybar status update failed on exit: {e}")
+        
         # Disconnect from web app
         if self.web_socket:
             try:
@@ -585,6 +614,9 @@ def get_gui():
 
 def main():
     """Main entry point for running the GUI application."""
+    # Initialize waybar integration
+    init_waybar()
+    
     # For now, just run the GUI - voice processing is handled differently
     # This allows the desktop launcher to work
     gui = DarvisGUI()

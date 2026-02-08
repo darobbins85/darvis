@@ -105,10 +105,22 @@ class WaybarStatusManager:
         try:
             import subprocess
 
+            # Try multiple ways to detect waybar
+            # First try exact match
             result = subprocess.run(
                 ["pgrep", "-x", "waybar"], capture_output=True, text=True
             )
-            return result.returncode == 0
+            if result.returncode == 0:
+                return True
+            
+            # Also try with 'ps' command as fallback
+            result = subprocess.run(
+                ["ps", "aux"], capture_output=True, text=True
+            )
+            if "waybar" in result.stdout and "/waybar" in result.stdout:
+                return True
+                
+            return False
         except Exception:
             return False
 

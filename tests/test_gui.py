@@ -204,8 +204,8 @@ class TestDarvisGUI(unittest.TestCase):
         gui = DarvisGUI()
         gui.display_message = MagicMock()
 
-        # Test _process_and_display_ai_query
-        gui._process_and_display_ai_query("test query")
+        # Test _process_ai_query_threaded
+        gui._process_ai_query_threaded("test query")
 
         # Verify AI was called and response displayed
         mock_ai_process.assert_called_once_with("test query")
@@ -238,8 +238,8 @@ class TestDarvisGUI(unittest.TestCase):
         gui = DarvisGUI()
         gui.display_message = MagicMock()
 
-        # Test _process_and_display_ai_query with error
-        gui._process_and_display_ai_query("test query")
+        # Test _process_ai_query_threaded with error
+        gui._process_ai_query_threaded("test query")
 
         # Verify error handling
         mock_ai_process.assert_called_once_with("test query")
