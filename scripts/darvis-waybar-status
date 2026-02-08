@@ -6,6 +6,7 @@ Reads from FIFO pipe and outputs JSON for waybar consumption.
 This script runs continuously and provides real-time status updates
 to waybar's custom module. It reads JSON status updates from a FIFO pipe
 and outputs them in the format expected by waybar.
+When Darvis is not running, it shows a cleared status (empty).
 """
 
 import sys
@@ -21,25 +22,26 @@ def main():
     """Main function to run the waybar status monitor."""
 
     # Default status when Darvis is not running or available
-    current_status = {
-        "text": "❌",
-        "class": "error",
+    initial_status = {
+        "text": "",
+        "class": "not-running",
         "tooltip": "Darvis: Not running"
     }
 
     # Output initial status
-    print(json.dumps(current_status), flush=True)
+    print(json.dumps(initial_status), flush=True)
+    current_status = initial_status.copy()
 
     try:
         # Ensure FIFO directory exists
         fifo_dir = FIFO_PATH.parent
         fifo_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create FIFO if it doesn't exist
-        if not FIFO_PATH.exists():
-            os.mkfifo(FIFO_PATH)
-
         while True:
+            # Check if FIFO exists, if not create it
+            if not FIFO_PATH.exists():
+                os.mkfifo(FIFO_PATH)
+
             try:
                 # Open FIFO for reading (blocking)
                 with open(FIFO_PATH, 'r') as fifo:
@@ -50,7 +52,7 @@ def main():
                         "tooltip": "Darvis: Running"
                     }
                     print(json.dumps(running_status), flush=True)
-                    
+
                     while True:
                         line = fifo.readline()
                         if line:
@@ -68,17 +70,13 @@ def main():
                             # No data available, small delay to prevent busy waiting
                             time.sleep(0.1)
 
-            except FileNotFoundError:
+            except (FileNotFoundError, OSError):
                 # FIFO doesn't exist anymore, Darvis has exited
-                # Update status to show Darvis is not running
-                exited_status = {
-                    "text": "",
-                    "class": "exited",
-                    "tooltip": "Darvis: Exited"
-                }
-                print(json.dumps(exited_status), flush=True)
+                # Update status to show Darvis is not running (back to initial/cleared state)
+                print(json.dumps(initial_status), flush=True)
+                
                 # Wait for a while before checking again if Darvis restarts
-                time.sleep(5)
+                time.sleep(2)
                 continue
 
             except KeyboardInterrupt:
