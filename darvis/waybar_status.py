@@ -128,6 +128,16 @@ class WaybarStatusManager:
         """Clean up FIFO pipe."""
         if self.fifo_path and self.fifo_path.exists():
             try:
+                # Send a final status to clear the waybar module before removing the FIFO
+                with open(self.fifo_path, "w") as fifo:
+                    import json
+                    json.dump({"text": "", "class": "exited", "tooltip": "Darvis: Exited"}, fifo)
+                    fifo.write("\n")
+                    fifo.flush()
+                # Small delay to ensure the message is processed
+                import time
+                time.sleep(0.1)
+                # Now remove the FIFO file
                 self.fifo_path.unlink()
             except Exception as e:
                 print(f"FIFO cleanup failed: {e}")

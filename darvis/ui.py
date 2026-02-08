@@ -580,13 +580,19 @@ class DarvisGUI:
             update_waybar_status("idle", "Darvis: Exited")
         except Exception as e:
             print(f"Waybar status update failed on exit: {e}")
-        
+
         # Disconnect from web app
         if self.web_socket:
             try:
                 self.web_socket.disconnect()
             except Exception:
                 pass
+
+        # Perform cleanup of waybar resources
+        from .waybar_status import get_waybar_manager
+        manager = get_waybar_manager()
+        if manager._initialized:
+            manager.cleanup()
 
         if self.tray_icon:
             self.tray_icon.stop()
@@ -616,10 +622,14 @@ def main():
     """Main entry point for running the GUI application."""
     # Initialize waybar integration
     init_waybar()
-    
+
     # For now, just run the GUI - voice processing is handled differently
     # This allows the desktop launcher to work
     gui = DarvisGUI()
+    
+    # Bind the window close event to our quit_app method
+    gui.root.protocol("WM_DELETE_WINDOW", gui.quit_app)
+    
     gui.run()
 
 
