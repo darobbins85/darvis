@@ -67,10 +67,25 @@ if wait_for_web; then
 
     echo "Both apps running (Web PID: $WEB_PID, Desktop PID: $DESKTOP_PID)"
     echo "Press Ctrl+C to stop both applications"
+    echo "Note: Closing the desktop window will stop both apps"
 
-    # Wait for interrupt
+    # Monitor both processes - if either exits, kill the other
     trap "echo 'Stopping both apps...'; kill $WEB_PID $DESKTOP_PID 2>/dev/null; exit 0" INT
-    wait
+    
+    while true; do
+        # Check if desktop app has exited
+        if ! kill -0 $DESKTOP_PID 2>/dev/null; then
+            echo "Desktop app closed. Stopping web server..."
+            kill $WEB_PID 2>/dev/null
+            break
+        fi
+        # Check if web app has exited
+        if ! kill -0 $WEB_PID 2>/dev/null; then
+            echo "Web server stopped."
+            break
+        fi
+        sleep 1
+    done
 else
     echo "❌ Failed to start web server. Check logs above."
     kill $WEB_PID 2>/dev/null
