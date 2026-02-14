@@ -11,14 +11,14 @@ def test_web_app_connection():
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(2)
-        result = sock.connect_ex(('localhost', 5000))
+        result = sock.connect_ex(('localhost', 5001))
         sock.close()
 
         if result == 0:
-            print("✅ Web app is running on localhost:5000")
+            print("✅ Web app is running on localhost:5001")
             return True
         else:
-            print("❌ Web app not found on localhost:5000")
+            print("❌ Web app not found on localhost:5001")
             return False
     except Exception as e:
         print(f"❌ Connection test failed: {e}")
@@ -62,6 +62,5 @@ if __name__ == "__main__":
         print("❌ Neither web nor desktop sync ready")
 
     print("\n🚀 To test:")
-    print("1. Start web app: ./setup_web_chat.sh && ./launch_web_chat.sh")
-    print("2. Start desktop: ./launch-darvis.sh")
-    print("3. Send messages in either - they should appear in both!")
+    print("1. Start both apps: ./run.sh")
+    print("2. Send messages in either - they should appear in both!")

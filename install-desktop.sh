@@ -47,8 +47,8 @@ if [ ! -f "$PROJECT_DIR/assets/darvis-logo.png" ]; then
     exit 1
 fi
 
-if [ ! -f "$PROJECT_DIR/launch-darvis.sh" ]; then
-    echo -e "${RED}Error: launch-darvis.sh not found in $PROJECT_DIR${NC}"
+if [ ! -f "$PROJECT_DIR/run.sh" ]; then
+    echo -e "${RED}Error: run.sh not found in $PROJECT_DIR${NC}"
     exit 1
 fi
 
@@ -62,18 +62,23 @@ elif [ "$IS_MACOS" = true ]; then
     install_macos
 else
     echo -e "${YELLOW}⚠️  Unsupported platform. Skipping desktop integration.${NC}"
-    echo "You can still run Darvis manually with: $PROJECT_DIR/launch-darvis.sh"
+    echo "You can still run Darvis manually with: $PROJECT_DIR/run.sh"
 fi
 
 # Common setup for both platforms
 install_common() {
     # Test launcher script
     echo -e "${YELLOW}Testing launcher script...${NC}"
-    if [ -x "$PROJECT_DIR/launch-darvis.sh" ]; then
+    if [ -x "$PROJECT_DIR/run.sh" ]; then
         echo -e "${GREEN}✓ Launcher script is executable${NC}"
     else
-        chmod +x "$PROJECT_DIR/launch-darvis.sh"
+        chmod +x "$PROJECT_DIR/run.sh"
         echo -e "${GREEN}✓ Made launcher script executable${NC}"
+    fi
+    
+    # Also ensure launch-darvis.sh is executable as a fallback
+    if [ -f "$PROJECT_DIR/launch-darvis.sh" ]; then
+        chmod +x "$PROJECT_DIR/launch-darvis.sh" 2>/dev/null || true
     fi
     
     # Test darvis module
@@ -143,7 +148,7 @@ install_linux() {
     echo "Darvis is now available in your application menu."
     echo ""
     echo "To launch manually:"
-    echo "  $PROJECT_DIR/launch-darvis.sh"
+    echo "  $PROJECT_DIR/run.sh"
     echo ""
     echo "Or find 'Darvis Voice Assistant' in your application menu."
     echo ""
@@ -206,7 +211,7 @@ EOF
     cat > "$MACOS_MACOS/Darvis" << EOF
 #!/bin/bash
 cd "$PROJECT_DIR"
-exec "$PROJECT_DIR/launch-darvis.sh"
+exec "$PROJECT_DIR/run.sh"
 EOF
     chmod +x "$MACOS_MACOS/Darvis"
     
@@ -229,7 +234,7 @@ EOF
     echo ""
     echo "To launch:"
     echo "  - Double-click Darvis.app in /Applications"
-    echo "  - Or run: $PROJECT_DIR/launch-darvis.sh"
+    echo "  - Or run: $PROJECT_DIR/run.sh"
     echo ""
     echo "Note: On first launch, macOS may warn about the app being from an"
     echo "unidentified developer. Go to System Preferences > Security & Privacy"
@@ -245,5 +250,5 @@ else
     install_common
     echo ""
     echo -e "${YELLOW}Installation complete with limited functionality.${NC}"
-    echo "You can still run Darvis manually with: $PROJECT_DIR/launch-darvis.sh"
+    echo "You can still run Darvis manually with: $PROJECT_DIR/run.sh"
 fi
