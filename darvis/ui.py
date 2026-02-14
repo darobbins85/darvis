@@ -89,16 +89,9 @@ class DarvisGUI:
 
         print("✅ Web sync variables initialized")
 
-        # Initialize web app synchronization
-        print("🌐 About to initialize web sync...")
-        try:
-            self.init_web_sync()
-            print("✅ init_web_sync completed successfully")
-        except Exception as e:
-            print(f"❌ init_web_sync failed with exception: {e}")
-            import traceback
-
-            traceback.print_exc()
+        # Defer web sync initialization to after window is shown
+        # This prevents blocking the GUI from appearing
+        self.root.after(100, self._deferred_init_web_sync)
 
         print("🔧 About to call setup methods...")
         try:
@@ -115,24 +108,20 @@ class DarvisGUI:
             self.start_voice_processing()
             self.start_message_processing()
             print("✅ All setup methods completed")
-
-            # Logo is already set up with enhanced styling
         except Exception as e:
             print(f"❌ Setup methods failed: {e}")
             import traceback
             traceback.print_exc()
 
+    def _deferred_init_web_sync(self):
+        """Initialize web sync after window is shown to avoid blocking GUI."""
+        print("🌐 Deferred web sync initialization starting...")
         try:
-            self.bind_events()
-            self.setup_system_tray()
-            self.start_voice_processing()
-            self.start_message_processing()
-
-            print("✅ All setup methods completed")
+            self.init_web_sync()
+            print("✅ init_web_sync completed successfully")
         except Exception as e:
-            print(f"❌ Setup methods failed: {e}")
+            print(f"❌ init_web_sync failed with exception: {e}")
             import traceback
-
             traceback.print_exc()
 
     def setup_ui(self):
