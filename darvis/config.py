@@ -3,9 +3,27 @@ Configuration and constants for Darvis Voice Assistant.
 """
 
 import os
+from pathlib import Path
 
 # Suppress ALSA warnings for cleaner output
 os.environ["ALSA_LOG_LEVEL"] = "0"
+
+
+def get_project_root() -> Path:
+    """Get the absolute path to the project root directory.
+    
+    This allows Darvis to work regardless of where it's installed.
+    """
+    # Get the directory containing this config file
+    return Path(__file__).parent.parent.resolve()
+
+
+def get_waybar_script_path() -> str:
+    """Get the path to the waybar status script.
+    
+    Returns the path as a string for use in waybar configuration.
+    """
+    return str(get_project_root() / "scripts" / "darvis-waybar-status")
 
 # Wake words for voice activation
 WAKE_WORDS = [
@@ -69,9 +87,10 @@ MSG_TYPES = {
 }
 
 # Waybar integration configuration
+# The exec path will be set dynamically at runtime
 WAYBAR_MODULE_CONFIG = {
     "custom/darvis": {
-        "exec": "python3 /home/david/Code/github/darobbins85/darvis/scripts/darvis-waybar-status",
+        "exec": f"python3 {get_waybar_script_path()}",
         "return-type": "json",
         "restart-interval": 0,
         "tooltip-format": "{tooltip}",
