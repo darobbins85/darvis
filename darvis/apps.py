@@ -7,7 +7,53 @@ import os
 import subprocess
 
 
-from .config import DESKTOP_DIRS
+from .config import (
+    DESKTOP_DIRS,
+    get_desktop_dirs,
+    is_macos,
+    is_linux,
+    MACOS_APP_MAPPINGS,
+    get_open_command,
+)
+
+
+def find_macos_app(app_name: str) -> str:
+    """
+    Find macOS .app bundle paths.
+
+    Args:
+        app_name: Name of the application to find
+
+    Returns:
+        Path to .app bundle, or empty string if not found
+    """
+    app_name_lower = app_name.lower()
+
+    # Check macOS-specific mappings first
+    if app_name_lower in MACOS_APP_MAPPINGS:
+        for app_path in MACOS_APP_MAPPINGS[app_name_lower]:
+            if os.path.exists(app_path):
+                return app_path
+
+    # Search in Applications directories
+    for app_dir in get_desktop_dirs():
+        if os.path.exists(app_dir):
+            # Try exact match
+            exact_path = os.path.join(app_dir, f"{app_name}.app")
+            if os.path.exists(exact_path):
+                return exact_path
+
+            # Try case-insensitive search
+            try:
+                for item in os.listdir(app_dir):
+                    if item.lower() == f"{app_name_lower}.app":
+                        full_path = os.path.join(app_dir, item)
+                        if os.path.exists(full_path):
+                            return full_path
+            except (OSError, PermissionError):
+                continue
+
+    return ""  # Not found
 
 
 def find_app_command(app_name: str) -> str:
@@ -15,6 +61,7 @@ def find_app_command(app_name: str) -> str:
     Find the correct command to launch an application.
 
     Checks .desktop files, PATH, and common command variations.
+    Platform-specific: uses .desktop files on Linux, .app bundles on macOS.
 
     Args:
         app_name: Name of the application to find
@@ -24,7 +71,13 @@ def find_app_command(app_name: str) -> str:
     """
     app_name_lower = app_name.lower()
 
-    # Extended app mapping with common variations
+    # macOS-specific handling
+    if is_macos():
+        macos_app = find_macos_app(app_name)
+        if macos_app:
+            return macos_app
+
+    # Extended app mapping with common variations (Linux-focused)
     app_map = {
         "chrome": ["chromium", "google-chrome", "chrome"],
         "browser": ["firefox", "chromium", "chrome"],
@@ -106,42 +159,43 @@ def find_app_command(app_name: str) -> str:
             if is_command_available(cmd):
                 return cmd
 
-    # Check .desktop files in standard locations
-    for desktop_dir in DESKTOP_DIRS:
-        if os.path.exists(desktop_dir):
-            # Look for .desktop files that match the app name
-            # Try multiple variations: original, spaces replaced with hyphens, underscores
-            search_patterns = [
-                f"*{app_name_lower}*.desktop",
-                f"*{app_name_lower.replace(' ', '-')}.desktop",
-                f"*{app_name_lower.replace(' ', '_')}.desktop",
-            ]
+    # Check .desktop files in standard locations (Linux only)
+    if is_linux():
+        for desktop_dir in DESKTOP_DIRS:
+            if os.path.exists(desktop_dir):
+                # Look for .desktop files that match the app name
+                # Try multiple variations: original, spaces replaced with hyphens, underscores
+                search_patterns = [
+                    f"*{app_name_lower}*.desktop",
+                    f"*{app_name_lower.replace(' ', '-')}.desktop",
+                    f"*{app_name_lower.replace(' ', '_')}.desktop",
+                ]
 
-            for pattern in search_patterns:
-                for desktop_file in glob.glob(os.path.join(desktop_dir, pattern)):
-                    try:
-                        exec_cmd = parse_desktop_file(desktop_file)
-                        if exec_cmd and is_command_available(exec_cmd.split()[0]):
-                            return exec_cmd
-                    except (OSError, IOError, ValueError):
-                        continue
+                for pattern in search_patterns:
+                    for desktop_file in glob.glob(os.path.join(desktop_dir, pattern)):
+                        try:
+                            exec_cmd = parse_desktop_file(desktop_file)
+                            if exec_cmd and is_command_available(exec_cmd.split()[0]):
+                                return exec_cmd
+                        except (OSError, IOError, ValueError):
+                            continue
 
-            # Also check for exact matches with various naming patterns
-            exact_patterns = [
-                f"{app_name_lower}.desktop",
-                f"{app_name_lower.replace(' ', '-')}.desktop",
-                f"{app_name_lower.replace(' ', '_')}.desktop",
-            ]
+                # Also check for exact matches with various naming patterns
+                exact_patterns = [
+                    f"{app_name_lower}.desktop",
+                    f"{app_name_lower.replace(' ', '-')}.desktop",
+                    f"{app_name_lower.replace(' ', '_')}.desktop",
+                ]
 
-            for exact_pattern in exact_patterns:
-                exact_desktop = os.path.join(desktop_dir, exact_pattern)
-                if os.path.exists(exact_desktop):
-                    try:
-                        exec_cmd = parse_desktop_file(exact_desktop)
-                        if exec_cmd and is_command_available(exec_cmd.split()[0]):
-                            return exec_cmd
-                    except (OSError, IOError, ValueError):
-                        continue
+                for exact_pattern in exact_patterns:
+                    exact_desktop = os.path.join(desktop_dir, exact_pattern)
+                    if os.path.exists(exact_desktop):
+                        try:
+                            exec_cmd = parse_desktop_file(exact_desktop)
+                            if exec_cmd and is_command_available(exec_cmd.split()[0]):
+                                return exec_cmd
+                        except (OSError, IOError, ValueError):
+                            continue
 
     # Check if the app name itself is a valid command
     if is_command_available(app_name_lower):
@@ -198,6 +252,7 @@ def open_app(app_name: str) -> str:
 
     Supports both local system applications and web services. Uses intelligent
     app detection to find installed applications and their correct launch commands.
+    Works on both Linux and macOS.
 
     Args:
         app_name: Name of application or web service to launch
@@ -209,9 +264,9 @@ def open_app(app_name: str) -> str:
         - youtube, google, gmail, github, netflix, spotify
 
     App Detection:
-        - Checks .desktop files in standard locations
-        - Searches PATH for executable commands
-        - Supports common application name variations
+        - Linux: Checks .desktop files, searches PATH
+        - macOS: Checks /Applications, /System/Applications, ~/Applications
+        - Supports common application name variations on both platforms
     """
     from .config import WEB_SERVICES
 
@@ -219,13 +274,13 @@ def open_app(app_name: str) -> str:
 
     # Handle web services that should open in browser
     if app_name_lower in WEB_SERVICES:
-        # Use xdg-open for cross-desktop compatibility
+        open_cmd = get_open_command()
         try:
-            subprocess.Popen(["xdg-open", WEB_SERVICES[app_name_lower]])
+            subprocess.Popen([open_cmd, WEB_SERVICES[app_name_lower]])
             return f"Opening {app_name}"
         except FileNotFoundError:
             # Fallback to trying browsers directly
-            browsers = ["chromium", "firefox"]
+            browsers = ["chromium", "firefox", "google-chrome", "safari"]
             for browser in browsers:
                 try:
                     subprocess.Popen([browser, WEB_SERVICES[app_name_lower]])
@@ -233,8 +288,8 @@ def open_app(app_name: str) -> str:
                 except FileNotFoundError:
                     continue
             return (
-                f"Couldn't find a way to open {app_name}. Try installing it with your package "
-                "manager or check if it's installed in a custom location."
+                f"Couldn't find a way to open {app_name}. "
+                f"Try installing a browser or check if it's in your PATH."
             )
         except Exception as e:
             return f"Error opening {app_name}: {str(e)}"
@@ -244,12 +299,17 @@ def open_app(app_name: str) -> str:
 
         if app_command:
             try:
-                subprocess.Popen([app_command])
+                # On macOS, use 'open' command for .app bundles
+                if is_macos() and app_command.endswith('.app'):
+                    subprocess.Popen(["open", app_command])
+                else:
+                    subprocess.Popen([app_command])
                 return f"Opening {app_name}"
             except Exception as e:
                 return f"Error launching {app_name}: {str(e)}"
         else:
+            platform_hint = "brew install" if is_macos() else "pacman -S (on Arch)"
             return (
-                f"'{app_name}' is not installed or not found on this system. Try: pacman -S "
-                f"{app_name} (on Arch) or check if it's installed in a custom location"
+                f"'{app_name}' is not installed or not found on this system. "
+                f"Try: {platform_hint} {app_name} or check if it's installed."
             )

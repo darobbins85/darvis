@@ -42,6 +42,14 @@
 - Manual testing: Run `python3 -m darvis.ui` and test voice commands
 - Microphone test: `python3 -c "import darvis.speech; darvis.speech.list_microphones()"`
 
+## Working Directory Configuration
+
+**Default Working Directory:**
+- `DEFAULT_WORKING_DIR` in `darvis/config.py` - Set to user's home folder (`Path.home()`)
+- Use `get_default_working_directory()` function to get the configured working directory
+- All file operations should reference this instead of hardcoded paths
+- This allows Darvis to access files across the entire home directory
+
 ## Code Style Guidelines
 
 **Imports:**
