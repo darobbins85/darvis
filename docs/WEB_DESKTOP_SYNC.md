@@ -11,16 +11,13 @@ This feature allows the desktop GUI and web interface to share chat messages in 
 
 2. **Run both interfaces**:
    ```bash
-   # Terminal 1: Start web interface
-   ./setup_web_chat.sh && ./launch_web_chat.sh
-
-   # Terminal 2: Start desktop interface (will auto-detect web app)
-   ./launch-darvis.sh
+   # Start both web and desktop interfaces with one command
+   ./run.sh
    ```
 
 ## How It Works
 
-- Desktop app automatically detects if web app is running on localhost:5000
+- Desktop app automatically detects if web app is running on localhost:5001
 - If detected, establishes SocketIO connection for real-time sync
 - Messages sent in either interface appear in both
 - AI responses are shared between interfaces

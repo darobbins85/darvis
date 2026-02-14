@@ -56,7 +56,7 @@ if wait_for_web; then
     echo ""
     echo "🖥️  Starting desktop application..."
     echo "💡 Both apps should now sync chats!"
-    echo "   - Web interface: http://localhost:5000"
+    echo "   - Web interface: http://localhost:5001"
     echo "   - Desktop app will open in a new window"
     echo "❌ Press Ctrl+C to stop both applications"
     echo ""
