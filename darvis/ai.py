@@ -74,7 +74,7 @@ def process_ai_query(query: str) -> Tuple[str, str]:
             # Subsequent queries: continue the last session with @darvis prefix
             # This ensures the session continues with the darvis agent
             darvis_query = f"@darvis {query}"
-            command = ["opencode", "run", "--continue", darvis_query]
+            command = ["opencode", "run", "--session", current_session_id, darvis_query]
             print(f"DEBUG: Executing command: {' '.join(command)}")
             current_ai_process = subprocess.Popen(
                 command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
@@ -84,9 +84,12 @@ def process_ai_query(query: str) -> Tuple[str, str]:
                 result = subprocess.CompletedProcess(
                     command, current_ai_process.returncode, stdout, stderr
                 )
+                if stderr:
+                    print(f"DEBUG: stderr: {stderr}")
             finally:
                 current_ai_process = None
             response = (result.stdout or "").strip() or "No response"
+            print(f"DEBUG: Response: {response[:100]}...")
             return response, current_session_id
 
     except subprocess.TimeoutExpired:
