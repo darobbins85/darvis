@@ -139,6 +139,22 @@ def get_open_command() -> str:
     return "xdg-open"
 
 
+def get_default_working_directory() -> Path:
+    """Get the default working directory for file operations.
+    
+    Returns the user's home directory as the default working location
+    instead of the project root directory.
+    
+    Returns:
+        Path: Path to the home directory
+    """
+    return Path.home().resolve()
+
+
+# Default working directory - set to home folder instead of project root
+DEFAULT_WORKING_DIR = get_default_working_directory()
+
+
 # macOS-specific application mappings
 MACOS_APP_MAPPINGS = {
     "safari": ["/Applications/Safari.app"],
