@@ -283,9 +283,10 @@ class DarvisGUI:
         # Disconnect from web app
         if self.web_socket:
             try:
+                print("🪟 Disconnecting from web app (destroy event)...", flush=True)
                 self.web_socket.disconnect()
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"🪟 Web socket disconnect error: {e}", flush=True)
 
         # Perform cleanup of waybar resources
         from .waybar_status import get_waybar_manager
@@ -299,6 +300,11 @@ class DarvisGUI:
             except Exception:
                 pass
         # Note: Don't call root.quit() as the window is already destroyed
+        
+        # Force exit to ensure the process terminates
+        print("🪟 Calling sys.exit(0) from destroy handler", flush=True)
+        import sys
+        sys.exit(0)
 
     def setup_system_tray(self):
         """Set up system tray icon."""
@@ -644,9 +650,13 @@ class DarvisGUI:
         # Disconnect from web app
         if self.web_socket:
             try:
+                print("🪟 Disconnecting from web app...", flush=True)
                 self.web_socket.disconnect()
-            except Exception:
-                pass
+                # Wait a moment for disconnect to complete
+                import time
+                time.sleep(0.5)
+            except Exception as e:
+                print(f"🪟 Web socket disconnect error: {e}", flush=True)
 
         # Perform cleanup of waybar resources
         from .waybar_status import get_waybar_manager
@@ -664,6 +674,11 @@ class DarvisGUI:
         self.root.quit()
         self.root.destroy()
         print("🪟 root.quit() returned", flush=True)
+        
+        # Force exit to ensure all threads and processes terminate
+        print("🪟 Calling sys.exit(0)", flush=True)
+        import sys
+        sys.exit(0)
 
 
 # Global GUI instance for backward compatibility
