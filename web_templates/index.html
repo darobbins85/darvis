@@ -433,7 +433,80 @@
       .message.ai .message-bubble {
         margin-right: 2rem;
       }
+
+      .code-block {
+        max-width: 100%;
+        font-size: 0.75rem;
+      }
     }
+
+    /* Code block styling */
+    .code-block {
+      background: #1e1e2e;
+      border-radius: 8px;
+      margin: 0.75rem 0;
+      overflow: hidden;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .code-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2a2a3e;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #3a3a5e;
+    }
+
+    .code-block-language {
+      color: #00d4ff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .code-block-copy {
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      color: #00d4ff;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: all 0.2s ease;
+    }
+
+    .code-block-copy:hover {
+      background: rgba(0, 212, 255, 0.2);
+    }
+
+    .code-block-copy.copied {
+      background: rgba(0, 255, 136, 0.2);
+      border-color: rgba(0, 255, 136, 0.5);
+      color: #00ff88;
+    }
+
+    .code-block pre {
+      margin: 0;
+      padding: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .code-block code {
+      font-family: inherit;
+      color: #e0e0e0;
+    }
+
+    /* JSON syntax highlighting - lighter colors for dark background */
+    .json-key { color: #ff79c6; }
+    .json-string { color: #a6e3a1; }
+    .json-number { color: #89b4fa; }
+    .json-boolean { color: #f38ba8; }
+    .json-null { color: #bac2de; }
+    .json-bracket { color: #cdd6f4; }
   </style>
 
 
@@ -818,6 +891,11 @@
         messageDiv.className = 'message user';
       }
 
+      // Parse and render code blocks for AI messages
+      if (type === 'ai') {
+        content = renderMessageWithCodeBlocks(message);
+      }
+
       messageDiv.innerHTML = `
                 <div class="${bubbleClass}">
                     ${content}
@@ -836,6 +914,135 @@
           messageDiv.scrollIntoView(false);
         }
       }, 100);
+    }
+
+    // Parse message text and render code blocks
+    function renderMessageWithCodeBlocks(text) {
+      // Match ```language ... ``` code blocks - handles various AI output formats
+      // First try with language specifier: ```json ... ``` or ```json\n...\n```
+      let result = text;
+
+      // Pattern 1: ```language ... ``` (language directly after backticks, possibly with space)
+      const pattern1 = /```(\w+)\s*([\s\S]*?)```/g;
+      result = result.replace(pattern1, (match, language, code) => {
+        const trimmedCode = code.trim();
+        if (!trimmedCode) return '';
+        const escapedCode = escapeHtml(trimmedCode);
+        const highlightedCode = highlightJson(escapedCode);
+        return `
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-block-language">${language}</span>
+              <button class="code-block-copy" onclick="copyCode(this, \`${escapeForAttribute(trimmedCode)}\`)">Copy</button>
+            </div>
+            <pre><code>${highlightedCode}</code></pre>
+          </div>
+        `;
+      });
+
+      // Pattern 2: ```\n...\n``` (just code block markers, no language)
+      const pattern2 = /```\n?([\s\S]*?)```/g;
+      result = result.replace(pattern2, (match, code) => {
+        const trimmedCode = code.trim();
+        if (!trimmedCode) return '';
+        const escapedCode = escapeHtml(trimmedCode);
+        const highlightedCode = highlightJson(escapedCode);
+        return `
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-block-language">code</span>
+              <button class="code-block-copy" onclick="copyCode(this, \`${escapeForAttribute(trimmedCode)}\`)">Copy</button>
+            </div>
+            <pre><code>${highlightedCode}</code></pre>
+          </div>
+        `;
+      });
+
+      // Convert **bold** to HTML
+      result = result.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      // Convert newlines to <br> outside code blocks
+      // Split by code blocks and convert newlines in text portions
+      const parts = result.split(/(<div class="code-block">[\s\S]*?<\/div>)/g);
+      result = parts.map(part => {
+        if (part.startsWith('<div class="code-block">')) {
+          return part;
+        }
+        return part.replace(/\n/g, '<br>');
+      }).join('');
+
+      return result;
+    }
+
+    // Escape HTML special characters
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Escape text for use in onclick attribute
+    function escapeForAttribute(text) {
+      return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    }
+
+    // Simple JSON syntax highlighting
+    function highlightJson(code) {
+      // Only highlight if it looks like JSON (starts with { or [)
+      const trimmed = code.trim();
+      if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+        return code; // Return as-is if not JSON-like
+      }
+
+      // Escape HTML first to prevent XSS and display issues
+      let escaped = escapeHtml(code);
+
+      // Apply highlighting patterns in the right order
+      let highlighted = escaped
+        // Keys (strings followed by colon)
+        .replace(/"([^"\\]|\\.)*"\s*:/g, (match) => {
+          return '<span class="json-key">' + match + '</span>';
+        })
+        // String values (colon followed by string)
+        .replace(/:\s*("([^"\\]|\\.)*")/g, (match, full, inner) => {
+          return ': <span class="json-string">' + full + '</span>';
+        })
+        // Numbers
+        .replace(/:\s*(-?\d+\.?\d*)/g, (match, num) => {
+          return ': <span class="json-number">' + num + '</span>';
+        })
+        // Booleans
+        .replace(/:\s*(true|false)/g, (match, bool) => {
+          return ': <span class="json-boolean">' + bool + '</span>';
+        })
+        // Null
+        .replace(/:\s*(null)/g, (match, nullVal) => {
+          return ': <span class="json-null">' + nullVal + '</span>';
+        })
+        // Brackets and braces last
+        .replace(/([{}\[\]])/g, '<span class="json-bracket">$1</span>');
+
+      return highlighted;
+    }
+
+    // Copy code to clipboard
+    function copyCode(button, code) {
+      navigator.clipboard.writeText(code).then(() => {
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = 'Copy';
+          button.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        button.textContent = 'Failed';
+      });
     }
 
     // Show status message
