@@ -52,29 +52,33 @@
       transition: all 0.3s ease;
     }
 
-    .controls {
+    /* Listening controls below input */
+    .listening-controls {
       display: flex;
-      gap: 1rem;
-      align-items: center;
-      margin-right: 1rem;
-      margin-left: -40px;
+      justify-content: center;
+      margin-top: 0.5rem;
     }
 
     .listening-toggle {
       background: rgba(0, 122, 255, 0.1);
       border: 1px solid rgba(0, 122, 255, 0.3);
       color: #00d4ff;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
+      padding: 0.5rem;
+      border-radius: 50%;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .listening-toggle.active {
-      background: rgba(0, 122, 255, 0.2);
+      background: rgba(0, 122, 255, 0.3);
       border-color: #007aff;
-      box-shadow: 0 0 15px rgba(0, 122, 255, 0.3);
+      box-shadow: 0 0 15px rgba(0, 122, 255, 0.5);
       animation: listeningPulse 2s infinite;
     }
 
@@ -197,10 +201,15 @@
       display: flex;
       gap: 1rem;
       align-items: center;
-      max-width: 800px;
       margin: 0 auto;
-      padding-left: 60px; /* Make room for logo on left */
       box-sizing: border-box;
+      padding-left: 60px;
+    }
+
+    .input-form+.controls {
+      max-width: 600px;
+      margin: 0.5rem auto 0;
+      padding-left: 60px;
     }
 
     .message-input {
@@ -303,7 +312,7 @@
     }
 
     .darvis-logo-wrapper-bottom .darvis-logo img {
-      height: 45px;
+      height: 60px;
     }
 
     .darvis-logo-wrapper-bottom .eye-glow {
@@ -561,18 +570,6 @@
 
 <body>
 
-  <div class="header">
-    <div class="logo">
-      DARVIS
-    </div>
-
-    <div class="controls">
-      <button id="listening-toggle" class="listening-toggle">
-        🎤 Listening Mode
-      </button>
-    </div>
-  </div>
-
   <div class="chat-container">
 
     <div id="status-messages"></div>
@@ -611,375 +608,377 @@
           <button type="submit" class="send-button">
             Send ✉️
           </button>
+          <button id="listening-toggle" class="listening-toggle">
+            🎤
+          </button>
         </form>
       </div>
-    </div>
 
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script>
-      const socket = io();
-      const chatMessages = document.getElementById('chat-messages');
-      const messageInput = document.getElementById('message-input');
-      const messageForm = document.getElementById('message-form');
-      const statusMessages = document.getElementById('status-messages');
-      const listeningToggle = document.getElementById('listening-toggle');
+      <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+      <script>
+        const socket = io();
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const messageForm = document.getElementById('message-form');
+        const statusMessages = document.getElementById('status-messages');
+        const listeningToggle = document.getElementById('listening-toggle');
 
-      let listeningEnabled = false;
-      let currentEyeState = 'idle'; // idle, wake, ai
-      let recognition = null;
-      let waitingForCommand = false;
-      let commandTimeout = null;
-      let aiProcessing = false;
-      let aiStartTime = null;
-      let aiTimerInterval = null;
-      let restartPending = false;
+        let listeningEnabled = false;
+        let currentEyeState = 'idle'; // idle, wake, ai
+        let recognition = null;
+        let waitingForCommand = false;
+        let commandTimeout = null;
+        let aiProcessing = false;
+        let aiStartTime = null;
+        let aiTimerInterval = null;
+        let restartPending = false;
 
-      // Eye control functions
-      function setEyeState(state) {
-        const leftEye = document.querySelector('.eye-glow.left');
-        const rightEye = document.querySelector('.eye-glow.right');
+        // Eye control functions
+        function setEyeState(state) {
+          const leftEye = document.querySelector('.eye-glow.left');
+          const rightEye = document.querySelector('.eye-glow.right');
 
-        // Remove all active states
-        leftEye.classList.remove('active', 'wake', 'ai');
-        rightEye.classList.remove('active', 'wake', 'ai');
+          // Remove all active states
+          leftEye.classList.remove('active', 'wake', 'ai');
+          rightEye.classList.remove('active', 'wake', 'ai');
 
-        if (state !== 'idle') {
-          leftEye.classList.add('active', state);
-          rightEye.classList.add('active', state);
+          if (state !== 'idle') {
+            leftEye.classList.add('active', state);
+            rightEye.classList.add('active', state);
+          }
+
+          currentEyeState = state;
         }
 
-        currentEyeState = state;
-      }
+        // AI Processing functions
+        function startAiProcessing() {
+          console.log('🤖 Starting AI processing...');
+          aiProcessing = true;
+          aiStartTime = Date.now();
+          setEyeState('ai');
 
-      // AI Processing functions
-      function startAiProcessing() {
-        console.log('🤖 Starting AI processing...');
-        aiProcessing = true;
-        aiStartTime = Date.now();
-        setEyeState('ai');
+          // Show processing indicator
+          const indicator = document.getElementById('ai-processing-indicator');
+          indicator.style.display = 'block';
 
-        // Show processing indicator
-        const indicator = document.getElementById('ai-processing-indicator');
-        indicator.style.display = 'block';
+          // Start timer
+          aiTimerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - aiStartTime) / 1000);
+            document.getElementById('ai-timer').textContent = `(${elapsed}s)`;
+          }, 1000);
 
-        // Start timer
-        aiTimerInterval = setInterval(() => {
-          const elapsed = Math.floor((Date.now() - aiStartTime) / 1000);
-          document.getElementById('ai-timer').textContent = `(${elapsed}s)`;
-        }, 1000);
+          // Scroll to show the indicator
+          indicator.scrollIntoView({behavior: 'smooth'});
+        }
 
-        // Scroll to show the indicator
-        indicator.scrollIntoView({behavior: 'smooth'});
-      }
+        function stopAiProcessing() {
+          console.log('🤖 Stopping AI processing...');
+          aiProcessing = false;
+          clearInterval(aiTimerInterval);
+          setEyeState('idle');
 
-      function stopAiProcessing() {
-        console.log('🤖 Stopping AI processing...');
-        aiProcessing = false;
-        clearInterval(aiTimerInterval);
-        setEyeState('idle');
+          // Hide processing indicator
+          document.getElementById('ai-processing-indicator').style.display = 'none';
+        }
 
-        // Hide processing indicator
-        document.getElementById('ai-processing-indicator').style.display = 'none';
-      }
-
-      // Cancel AI processing
-      document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('cancel-ai').addEventListener('click', () => {
-          console.log('❌ User cancelled AI request');
-          stopAiProcessing();
-          socket.emit('cancel_ai_request');
-          showStatus('AI request cancelled', 'warning');
+        // Cancel AI processing
+        document.addEventListener('DOMContentLoaded', () => {
+          document.getElementById('cancel-ai').addEventListener('click', () => {
+            console.log('❌ User cancelled AI request');
+            stopAiProcessing();
+            socket.emit('cancel_ai_request');
+            showStatus('AI request cancelled', 'warning');
+          });
         });
-      });
 
-      // Initialize speech recognition
-      function initSpeechRecognition() {
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-          recognition = new SpeechRecognition();
-          recognition.continuous = false;
-          recognition.interimResults = false;
-          recognition.lang = 'en-US';
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+          if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
 
-          // Try to improve recognition
-          if (recognition.hasOwnProperty('maxAlternatives')) {
-            recognition.maxAlternatives = 1;
-          }
-
-          recognition.onstart = function () {
-            console.log('🎤 Speech recognition started');
-            showStatus('Listening... say "hey darvis"', 'info');
-          };
-
-          recognition.onresult = function (event) {
-            const text = event.results[0][0].transcript;
-            console.log('🎤 Browser heard:', text);
-            socket.emit('speech_recognized', {text: text});
-          };
-
-          recognition.onerror = function (event) {
-            console.error('🎤 Speech recognition error:', event.error);
-
-            // Handle different error types
-            if (event.error === 'no-speech') {
-              console.log('🎤 No speech detected, restarting...');
-              // Don't show "no-speech" errors to user, just restart
-              if (listeningEnabled && !waitingForCommand && !restartPending) {
-                setTimeout(() => startListening(), 1500); // Wait longer before restart
-              }
-            } else if (event.error === 'not-allowed') {
-              showStatus('Microphone access denied. Please allow microphone access and try again.', 'error');
-              listeningEnabled = false;
-              listeningToggle.classList.remove('active');
-              listeningToggle.textContent = '🎤 Listening Mode';
-            } else if (event.error === 'network') {
-              showStatus('Speech recognition network error', 'error');
-            } else {
-              showStatus('Speech recognition error: ' + event.error, 'error');
+            // Try to improve recognition
+            if (recognition.hasOwnProperty('maxAlternatives')) {
+              recognition.maxAlternatives = 1;
             }
-          };
 
-          recognition.onend = function () {
-            console.log('🎤 Speech recognition ended');
-            // Restart listening if still enabled and not waiting for command
-            if (listeningEnabled && !waitingForCommand && !restartPending) {
-              setTimeout(() => startListening(), 1000);
-            }
-          };
+            recognition.onstart = function () {
+              console.log('🎤 Speech recognition started');
+              showStatus('Listening... say "hey darvis"', 'info');
+            };
 
-          console.log('🎤 Speech recognition initialized');
-        } else {
-          console.error('🎤 Speech recognition not supported in this browser');
-          showStatus('Speech recognition not supported in this browser. Try Chrome or Firefox.', 'error');
-        }
-      }
+            recognition.onresult = function (event) {
+              const text = event.results[0][0].transcript;
+              console.log('🎤 Browser heard:', text);
+              socket.emit('speech_recognized', {text: text});
+            };
 
-      function startListening() {
-        if (recognition && listeningEnabled && !restartPending) {
-          console.log('🎤 Starting browser speech recognition...');
-          restartPending = true;
-          try {
-            recognition.start();
-            restartPending = false;
-          } catch (error) {
-            console.error('🎤 Failed to start speech recognition:', error);
-            restartPending = false;
-            if (error.name === 'InvalidStateError') {
-              console.log('🎤 Recognition already started, will retry later...');
-              // Don't retry immediately to avoid spam
-              setTimeout(() => {
-                if (listeningEnabled && !waitingForCommand) {
-                  startListening();
+            recognition.onerror = function (event) {
+              console.error('🎤 Speech recognition error:', event.error);
+
+              // Handle different error types
+              if (event.error === 'no-speech') {
+                console.log('🎤 No speech detected, restarting...');
+                // Don't show "no-speech" errors to user, just restart
+                if (listeningEnabled && !waitingForCommand && !restartPending) {
+                  setTimeout(() => startListening(), 1500); // Wait longer before restart
                 }
-              }, 2000);
-            }
-          }
-        }
-      }
-
-      function stopListening() {
-        if (recognition && recognitionActive) {
-          console.log('🎤 Stopping browser speech recognition...');
-          recognitionActive = false;
-          try {
-            recognition.stop();
-          } catch (error) {
-            console.error('🎤 Error stopping recognition:', error);
-          }
-        }
-      }
-
-      // Handle form submission
-      messageForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const message = messageInput.value.trim();
-        if (message) {
-          // If we were waiting for a command, stop waiting
-          if (waitingForCommand) {
-            clearTimeout(commandTimeout);
-            waitingForCommand = false;
-            console.log('📝 Manual message sent, stopping command wait');
-          }
-          socket.emit('chat_message', {message: message});
-          messageInput.value = '';
-          startAiProcessing();
-        }
-      });
-
-      // Handle listening toggle
-      listeningToggle.addEventListener('click', () => {
-        listeningEnabled = !listeningEnabled;
-
-        if (listeningEnabled) {
-          listeningToggle.classList.add('active');
-          listeningToggle.textContent = '🎤 Listening...';
-          console.log('🎤 Listening mode enabled - using browser microphone');
-
-          // Test microphone access
-          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({audio: true})
-              .then(function (stream) {
-                console.log('🎤 Microphone access granted');
-                stream.getTracks().forEach(track => track.stop()); // Stop the test stream
-                startListening();
-              })
-              .catch(function (error) {
-                console.error('🎤 Microphone access denied:', error);
-                showStatus('Microphone access required for voice commands', 'error');
+              } else if (event.error === 'not-allowed') {
+                showStatus('Microphone access denied. Please allow microphone access and try again.', 'error');
                 listeningEnabled = false;
                 listeningToggle.classList.remove('active');
                 listeningToggle.textContent = '🎤 Listening Mode';
-              });
+              } else if (event.error === 'network') {
+                showStatus('Speech recognition network error', 'error');
+              } else {
+                showStatus('Speech recognition error: ' + event.error, 'error');
+              }
+            };
+
+            recognition.onend = function () {
+              console.log('🎤 Speech recognition ended');
+              // Restart listening if still enabled and not waiting for command
+              if (listeningEnabled && !waitingForCommand && !restartPending) {
+                setTimeout(() => startListening(), 1000);
+              }
+            };
+
+            console.log('🎤 Speech recognition initialized');
           } else {
-            // Fallback for older browsers
-            startListening();
+            console.error('🎤 Speech recognition not supported in this browser');
+            showStatus('Speech recognition not supported in this browser. Try Chrome or Firefox.', 'error');
           }
-        } else {
-          listeningToggle.classList.remove('active');
-          listeningToggle.textContent = '🎤 Listening Mode';
-          console.log('🎤 Listening mode disabled');
-          stopListening();
-          setEyeState('idle'); // Return to idle when listening disabled
-          // Clear any pending command timeout
-          if (commandTimeout) {
-            clearTimeout(commandTimeout);
-            commandTimeout = null;
-          }
-          waitingForCommand = false;
         }
-      });
 
-      // Handle incoming user messages
-      socket.on('user_message', (data) => {
-        addMessage(data.message, 'user');
-      });
-
-      // Handle incoming AI messages
-      socket.on('ai_message', (data) => {
-        stopAiProcessing();
-        addMessage(data.message, 'ai');
-      });
-
-      // Handle wake word detection
-      socket.on('wake_word', (data) => {
-        console.log('🎉 Wake word detected! Eyes turning green...');
-        setEyeState('wake'); // Green eyes for wake word
-      });
-
-      // Handle AI cancellation
-      socket.on('ai_cancelled', (data) => {
-        console.log('❌ AI request cancelled');
-        stopAiProcessing();
-      });
-
-      // Handle speech recognized from browser
-      socket.on('speech_recognized_response', (data) => {
-        const text = data.text;
-        console.log('📝 Processing recognized speech:', text);
-
-        // Check for wake words
-        const wakeWords = ['hey darvis', 'hey jarvis', 'play darvis', 'play jarvis', 'hi darvis', 'hi jarvis'];
-        const textLower = text.toLowerCase();
-        const isWakeWord = wakeWords.some(wake => textLower.includes(wake));
-
-        if (isWakeWord && !waitingForCommand) {
-          // Wake word detected - start listening for command
-          console.log('✅ Wake word detected! Listening for command...');
-          setEyeState('wake');
-          waitingForCommand = true;
-          console.log('🎤 Starting command listening...');
-          // Force restart listening immediately for the command
-          setTimeout(() => {
-            if (listeningEnabled && waitingForCommand) {
-              console.log('🎤 Actually starting command recognition...');
-              startListening();
-            } else {
-              console.log('🎤 Not restarting - listening disabled or not waiting for command');
+        function startListening() {
+          if (recognition && listeningEnabled && !restartPending) {
+            console.log('🎤 Starting browser speech recognition...');
+            restartPending = true;
+            try {
+              recognition.start();
+              restartPending = false;
+            } catch (error) {
+              console.error('🎤 Failed to start speech recognition:', error);
+              restartPending = false;
+              if (error.name === 'InvalidStateError') {
+                console.log('🎤 Recognition already started, will retry later...');
+                // Don't retry immediately to avoid spam
+                setTimeout(() => {
+                  if (listeningEnabled && !waitingForCommand) {
+                    startListening();
+                  }
+                }, 2000);
+              }
             }
-          }, 200);
+          }
+        }
 
-          // Set timeout for command
-          commandTimeout = setTimeout(() => {
-            console.log('⏰ Command timeout - no command received');
+        function stopListening() {
+          if (recognition && recognitionActive) {
+            console.log('🎤 Stopping browser speech recognition...');
+            recognitionActive = false;
+            try {
+              recognition.stop();
+            } catch (error) {
+              console.error('🎤 Error stopping recognition:', error);
+            }
+          }
+        }
+
+        // Handle form submission
+        messageForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const message = messageInput.value.trim();
+          if (message) {
+            // If we were waiting for a command, stop waiting
+            if (waitingForCommand) {
+              clearTimeout(commandTimeout);
+              waitingForCommand = false;
+              console.log('📝 Manual message sent, stopping command wait');
+            }
+            socket.emit('chat_message', {message: message});
+            messageInput.value = '';
+            startAiProcessing();
+          }
+        });
+
+        // Handle listening toggle
+        listeningToggle.addEventListener('click', () => {
+          listeningEnabled = !listeningEnabled;
+
+          if (listeningEnabled) {
+            listeningToggle.classList.add('active');
+            listeningToggle.textContent = '🎤 Listening...';
+            console.log('🎤 Listening mode enabled - using browser microphone');
+
+            // Test microphone access
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+              navigator.mediaDevices.getUserMedia({audio: true})
+                .then(function (stream) {
+                  console.log('🎤 Microphone access granted');
+                  stream.getTracks().forEach(track => track.stop()); // Stop the test stream
+                  startListening();
+                })
+                .catch(function (error) {
+                  console.error('🎤 Microphone access denied:', error);
+                  showStatus('Microphone access required for voice commands', 'error');
+                  listeningEnabled = false;
+                  listeningToggle.classList.remove('active');
+                  listeningToggle.textContent = '🎤 Listening Mode';
+                });
+            } else {
+              // Fallback for older browsers
+              startListening();
+            }
+          } else {
+            listeningToggle.classList.remove('active');
+            listeningToggle.textContent = '🎤 Listening Mode';
+            console.log('🎤 Listening mode disabled');
+            stopListening();
+            setEyeState('idle'); // Return to idle when listening disabled
+            // Clear any pending command timeout
+            if (commandTimeout) {
+              clearTimeout(commandTimeout);
+              commandTimeout = null;
+            }
+            waitingForCommand = false;
+          }
+        });
+
+        // Handle incoming user messages
+        socket.on('user_message', (data) => {
+          addMessage(data.message, 'user');
+        });
+
+        // Handle incoming AI messages
+        socket.on('ai_message', (data) => {
+          stopAiProcessing();
+          addMessage(data.message, 'ai');
+        });
+
+        // Handle wake word detection
+        socket.on('wake_word', (data) => {
+          console.log('🎉 Wake word detected! Eyes turning green...');
+          setEyeState('wake'); // Green eyes for wake word
+        });
+
+        // Handle AI cancellation
+        socket.on('ai_cancelled', (data) => {
+          console.log('❌ AI request cancelled');
+          stopAiProcessing();
+        });
+
+        // Handle speech recognized from browser
+        socket.on('speech_recognized_response', (data) => {
+          const text = data.text;
+          console.log('📝 Processing recognized speech:', text);
+
+          // Check for wake words
+          const wakeWords = ['hey darvis', 'hey jarvis', 'play darvis', 'play jarvis', 'hi darvis', 'hi jarvis'];
+          const textLower = text.toLowerCase();
+          const isWakeWord = wakeWords.some(wake => textLower.includes(wake));
+
+          if (isWakeWord && !waitingForCommand) {
+            // Wake word detected - start listening for command
+            console.log('✅ Wake word detected! Listening for command...');
+            setEyeState('wake');
+            waitingForCommand = true;
+            console.log('🎤 Starting command listening...');
+            // Force restart listening immediately for the command
+            setTimeout(() => {
+              if (listeningEnabled && waitingForCommand) {
+                console.log('🎤 Actually starting command recognition...');
+                startListening();
+              } else {
+                console.log('🎤 Not restarting - listening disabled or not waiting for command');
+              }
+            }, 200);
+
+            // Set timeout for command
+            commandTimeout = setTimeout(() => {
+              console.log('⏰ Command timeout - no command received');
+              waitingForCommand = false;
+              setEyeState('idle');
+              showStatus('No command heard after wake word. Try again.', 'warning');
+            }, 10000);
+          } else if (waitingForCommand && !isWakeWord) {
+            // Command received after wake word
+            console.log('📝 Command received after wake word:', text);
+            clearTimeout(commandTimeout);
             waitingForCommand = false;
             setEyeState('idle');
-            showStatus('No command heard after wake word. Try again.', 'warning');
-          }, 10000);
-        } else if (waitingForCommand && !isWakeWord) {
-          // Command received after wake word
-          console.log('📝 Command received after wake word:', text);
-          clearTimeout(commandTimeout);
-          waitingForCommand = false;
-          setEyeState('idle');
-          socket.emit('chat_message', {message: text});
-        } else if (waitingForCommand && isWakeWord) {
-          // Another wake word while waiting - reset timeout
-          console.log('🎯 Another wake word detected, resetting command timeout');
-          clearTimeout(commandTimeout);
-          commandTimeout = setTimeout(() => {
-            console.log('⏰ Command timeout - no command received');
-            waitingForCommand = false;
-            setEyeState('idle');
-            showStatus('No command heard after wake word. Try again.', 'warning');
-          }, 10000);
-        } else {
-          console.log('❌ Speech detected but not in correct state, ignoring');
-        }
-      });
+            socket.emit('chat_message', {message: text});
+          } else if (waitingForCommand && isWakeWord) {
+            // Another wake word while waiting - reset timeout
+            console.log('🎯 Another wake word detected, resetting command timeout');
+            clearTimeout(commandTimeout);
+            commandTimeout = setTimeout(() => {
+              console.log('⏰ Command timeout - no command received');
+              waitingForCommand = false;
+              setEyeState('idle');
+              showStatus('No command heard after wake word. Try again.', 'warning');
+            }, 10000);
+          } else {
+            console.log('❌ Speech detected but not in correct state, ignoring');
+          }
+        });
 
-      // Add message to chat
-      function addMessage(message, type) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${type}`;
+        // Add message to chat
+        function addMessage(message, type) {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = `message ${type}`;
 
-        let bubbleClass = 'message-bubble';
-        let content = message;
+          let bubbleClass = 'message-bubble';
+          let content = message;
 
-        if (type === 'voice') {
-          bubbleClass += ' voice-input';
-          content = `🎤 ${message}`;
-          messageDiv.className = 'message user';
-        }
+          if (type === 'voice') {
+            bubbleClass += ' voice-input';
+            content = `🎤 ${message}`;
+            messageDiv.className = 'message user';
+          }
 
-        // Parse and render code blocks for AI messages
-        if (type === 'ai') {
-          content = renderMessageWithCodeBlocks(message);
-        }
+          // Parse and render code blocks for AI messages
+          if (type === 'ai') {
+            content = renderMessageWithCodeBlocks(message);
+          }
 
-        messageDiv.innerHTML = `
+          messageDiv.innerHTML = `
                 <div class="${bubbleClass}">
                     ${content}
                 </div>
             `;
 
-        // Insert before the AI processing indicator
-        const processingIndicator = document.getElementById('ai-processing-indicator');
-        chatMessages.insertBefore(messageDiv, processingIndicator);
+          // Insert before the AI processing indicator
+          const processingIndicator = document.getElementById('ai-processing-indicator');
+          chatMessages.insertBefore(messageDiv, processingIndicator);
 
-        // Auto-scroll to show the new message at the bottom
-        setTimeout(() => {
-          try {
-            messageDiv.scrollIntoView({behavior: 'smooth', block: 'end'});
-          } catch (e) {
-            messageDiv.scrollIntoView(false);
-          }
-        }, 100);
-      }
+          // Auto-scroll to show the new message at the bottom
+          setTimeout(() => {
+            try {
+              messageDiv.scrollIntoView({behavior: 'smooth', block: 'end'});
+            } catch (e) {
+              messageDiv.scrollIntoView(false);
+            }
+          }, 100);
+        }
 
-      // Parse message text and render code blocks
-      function renderMessageWithCodeBlocks(text) {
-        // Match ```language ... ``` code blocks - handles various AI output formats
-        // First try with language specifier: ```json ... ``` or ```json\n...\n```
-        let result = text;
+        // Parse message text and render code blocks
+        function renderMessageWithCodeBlocks(text) {
+          // Match ```language ... ``` code blocks - handles various AI output formats
+          // First try with language specifier: ```json ... ``` or ```json\n...\n```
+          let result = text;
 
-        // Pattern 1: ```language ... ``` (language directly after backticks, possibly with space)
-        const pattern1 = /```(\w+)\s*([\s\S]*?)```/g;
-        result = result.replace(pattern1, (match, language, code) => {
-          const trimmedCode = code.trim();
-          if (!trimmedCode) return '';
-          const escapedCode = escapeHtml(trimmedCode);
-          const highlightedCode = highlightJson(escapedCode);
-          return `
+          // Pattern 1: ```language ... ``` (language directly after backticks, possibly with space)
+          const pattern1 = /```(\w+)\s*([\s\S]*?)```/g;
+          result = result.replace(pattern1, (match, language, code) => {
+            const trimmedCode = code.trim();
+            if (!trimmedCode) return '';
+            const escapedCode = escapeHtml(trimmedCode);
+            const highlightedCode = highlightJson(escapedCode);
+            return `
           <div class="code-block">
             <div class="code-block-header">
               <span class="code-block-language">${language}</span>
@@ -988,16 +987,16 @@
             <pre><code>${highlightedCode}</code></pre>
           </div>
         `;
-        });
+          });
 
-        // Pattern 2: ```\n...\n``` (just code block markers, no language)
-        const pattern2 = /```\n?([\s\S]*?)```/g;
-        result = result.replace(pattern2, (match, code) => {
-          const trimmedCode = code.trim();
-          if (!trimmedCode) return '';
-          const escapedCode = escapeHtml(trimmedCode);
-          const highlightedCode = highlightJson(escapedCode);
-          return `
+          // Pattern 2: ```\n...\n``` (just code block markers, no language)
+          const pattern2 = /```\n?([\s\S]*?)```/g;
+          result = result.replace(pattern2, (match, code) => {
+            const trimmedCode = code.trim();
+            if (!trimmedCode) return '';
+            const escapedCode = escapeHtml(trimmedCode);
+            const highlightedCode = highlightJson(escapedCode);
+            return `
           <div class="code-block">
             <div class="code-block-header">
               <span class="code-block-language">code</span>
@@ -1006,126 +1005,126 @@
             <pre><code>${highlightedCode}</code></pre>
           </div>
         `;
-        });
+          });
 
-        // Convert **bold** to HTML
-        result = result.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          // Convert **bold** to HTML
+          result = result.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-        // Convert newlines to <br> outside code blocks
-        // Split by code blocks and convert newlines in text portions
-        const parts = result.split(/(<div class="code-block">[\s\S]*?<\/div>)/g);
-        result = parts.map(part => {
-          if (part.startsWith('<div class="code-block">')) {
-            return part;
-          }
-          return part.replace(/\n/g, '<br>');
-        }).join('');
+          // Convert newlines to <br> outside code blocks
+          // Split by code blocks and convert newlines in text portions
+          const parts = result.split(/(<div class="code-block">[\s\S]*?<\/div>)/g);
+          result = parts.map(part => {
+            if (part.startsWith('<div class="code-block">')) {
+              return part;
+            }
+            return part.replace(/\n/g, '<br>');
+          }).join('');
 
-        return result;
-      }
-
-      // Escape HTML special characters
-      function escapeHtml(text) {
-        const map = {
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, m => map[m]);
-      }
-
-      // Escape text for use in onclick attribute
-      function escapeForAttribute(text) {
-        return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-      }
-
-      // Simple JSON syntax highlighting
-      function highlightJson(code) {
-        // Only highlight if it looks like JSON (starts with { or [)
-        const trimmed = code.trim();
-        if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
-          return code; // Return as-is if not JSON-like
+          return result;
         }
 
-        // Escape HTML first to prevent XSS and display issues
-        let escaped = escapeHtml(code);
+        // Escape HTML special characters
+        function escapeHtml(text) {
+          const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+          };
+          return text.replace(/[&<>"']/g, m => map[m]);
+        }
 
-        // Apply highlighting patterns in the right order
-        let highlighted = escaped
-          // Keys (strings followed by colon)
-          .replace(/"([^"\\]|\\.)*"\s*:/g, (match) => {
-            return '<span class="json-key">' + match + '</span>';
-          })
-          // String values (colon followed by string)
-          .replace(/:\s*("([^"\\]|\\.)*")/g, (match, full, inner) => {
-            return ': <span class="json-string">' + full + '</span>';
-          })
-          // Numbers
-          .replace(/:\s*(-?\d+\.?\d*)/g, (match, num) => {
-            return ': <span class="json-number">' + num + '</span>';
-          })
-          // Booleans
-          .replace(/:\s*(true|false)/g, (match, bool) => {
-            return ': <span class="json-boolean">' + bool + '</span>';
-          })
-          // Null
-          .replace(/:\s*(null)/g, (match, nullVal) => {
-            return ': <span class="json-null">' + nullVal + '</span>';
-          })
-          // Brackets and braces last
-          .replace(/([{}\[\]])/g, '<span class="json-bracket">$1</span>');
+        // Escape text for use in onclick attribute
+        function escapeForAttribute(text) {
+          return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+        }
 
-        return highlighted;
-      }
-
-      // Copy code to clipboard
-      function copyCode(button, code) {
-        navigator.clipboard.writeText(code).then(() => {
-          button.textContent = 'Copied!';
-          button.classList.add('copied');
-          setTimeout(() => {
-            button.textContent = 'Copy';
-            button.classList.remove('copied');
-          }, 2000);
-        }).catch(err => {
-          console.error('Failed to copy:', err);
-          button.textContent = 'Failed';
-        });
-      }
-
-      // Show status message
-      function showStatus(message, type = 'info') {
-        const statusDiv = document.createElement('div');
-        statusDiv.className = `status-message ${type}`;
-        statusDiv.textContent = message;
-
-        statusMessages.appendChild(statusDiv);
-
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-          if (statusDiv.parentNode) {
-            statusDiv.remove();
+        // Simple JSON syntax highlighting
+        function highlightJson(code) {
+          // Only highlight if it looks like JSON (starts with { or [)
+          const trimmed = code.trim();
+          if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+            return code; // Return as-is if not JSON-like
           }
-        }, 5000);
-      }
 
-      // Initialize speech recognition on page load
-      initSpeechRecognition();
+          // Escape HTML first to prevent XSS and display issues
+          let escaped = escapeHtml(code);
 
-      // Auto-focus input on page load
-      messageInput.focus();
+          // Apply highlighting patterns in the right order
+          let highlighted = escaped
+            // Keys (strings followed by colon)
+            .replace(/"([^"\\]|\\.)*"\s*:/g, (match) => {
+              return '<span class="json-key">' + match + '</span>';
+            })
+            // String values (colon followed by string)
+            .replace(/:\s*("([^"\\]|\\.)*")/g, (match, full, inner) => {
+              return ': <span class="json-string">' + full + '</span>';
+            })
+            // Numbers
+            .replace(/:\s*(-?\d+\.?\d*)/g, (match, num) => {
+              return ': <span class="json-number">' + num + '</span>';
+            })
+            // Booleans
+            .replace(/:\s*(true|false)/g, (match, bool) => {
+              return ': <span class="json-boolean">' + bool + '</span>';
+            })
+            // Null
+            .replace(/:\s*(null)/g, (match, nullVal) => {
+              return ': <span class="json-null">' + nullVal + '</span>';
+            })
+            // Brackets and braces last
+            .replace(/([{}\[\]])/g, '<span class="json-bracket">$1</span>');
 
-      // Show connection status
-      socket.on('connect', () => {
-        showStatus('Connected to Darvis', 'success');
-      });
+          return highlighted;
+        }
 
-      socket.on('disconnect', () => {
-        showStatus('Disconnected from Darvis', 'error');
-      });
-    </script>
+        // Copy code to clipboard
+        function copyCode(button, code) {
+          navigator.clipboard.writeText(code).then(() => {
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+            setTimeout(() => {
+              button.textContent = 'Copy';
+              button.classList.remove('copied');
+            }, 2000);
+          }).catch(err => {
+            console.error('Failed to copy:', err);
+            button.textContent = 'Failed';
+          });
+        }
+
+        // Show status message
+        function showStatus(message, type = 'info') {
+          const statusDiv = document.createElement('div');
+          statusDiv.className = `status-message ${type}`;
+          statusDiv.textContent = message;
+
+          statusMessages.appendChild(statusDiv);
+
+          // Auto-remove after 5 seconds
+          setTimeout(() => {
+            if (statusDiv.parentNode) {
+              statusDiv.remove();
+            }
+          }, 5000);
+        }
+
+        // Initialize speech recognition on page load
+        initSpeechRecognition();
+
+        // Auto-focus input on page load
+        messageInput.focus();
+
+        // Show connection status
+        socket.on('connect', () => {
+          showStatus('Connected to Darvis', 'success');
+        });
+
+        socket.on('disconnect', () => {
+          showStatus('Disconnected from Darvis', 'error');
+        });
+      </script>
 </body>
 
 </html>
