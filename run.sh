@@ -9,6 +9,10 @@ echo ""
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# Add opencode to PATH (needed for AI functionality)
+export PATH="$HOME/.opencode/bin:$PATH"
+echo "📍 PATH set to: $PATH"
+
 # Check if virtual environment exists
 if [ ! -d "venv" ]; then
     echo "❌ Virtual environment 'venv' not found. Please set up the environment first."
