@@ -2,6 +2,7 @@
 AI integration and intelligent response functionality.
 """
 
+import os
 import subprocess
 from typing import Tuple
 
@@ -11,11 +12,31 @@ current_session_id = None
 current_ai_process = None  # Track the current AI subprocess for cancellation
 
 
+def _get_opencode_cmd() -> str:
+    """Get the opencode command, checking PATH and common locations."""
+    # First try PATH
+    result = subprocess.run(["which", "opencode"], capture_output=True, text=True)
+    if result.returncode == 0:
+        return "opencode"
+
+    # Try home directory location
+    home_opencode = os.path.expanduser("~/.opencode/bin/opencode")
+    if os.path.isfile(home_opencode) and os.access(home_opencode, os.X_OK):
+        return home_opencode
+
+    # Fall back to PATH
+    return "opencode"
+
+
+# Get the opencode command once at module load
+OPENCODE_CMD = _get_opencode_cmd()
+
+
 def get_latest_session_id() -> str:
     """Extract the latest session ID from opencode session list."""
     try:
         result = subprocess.run(
-            ["opencode", "session", "list"], capture_output=True, text=True, timeout=10
+            [OPENCODE_CMD, "session", "list"], capture_output=True, text=True, timeout=10
         )
 
         if result.returncode == 0 and result.stdout:
@@ -51,7 +72,7 @@ def process_ai_query(query: str) -> Tuple[str, str]:
     try:
         if current_session_id is None:
             # First query: start new session with darvis agent
-            command = ["opencode", "run", "--agent", "darvis", query]
+            command = [OPENCODE_CMD, "run", "--agent", "darvis", query]
             print(f"DEBUG: Executing command: {' '.join(command)}")
             current_ai_process = subprocess.Popen(
                 command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
@@ -74,7 +95,7 @@ def process_ai_query(query: str) -> Tuple[str, str]:
             # Subsequent queries: continue the last session with @darvis prefix
             # This ensures the session continues with the darvis agent
             darvis_query = f"@darvis {query}"
-            command = ["opencode", "run", "--session", current_session_id, darvis_query]
+            command = [OPENCODE_CMD, "run", "--session", current_session_id, darvis_query]
             print(f"DEBUG: Executing command: {' '.join(command)}")
             current_ai_process = subprocess.Popen(
                 command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
