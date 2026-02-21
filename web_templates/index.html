@@ -76,9 +76,9 @@
     }
 
     .listening-toggle.active {
-      background: rgba(0, 122, 255, 0.3);
-      border-color: #007aff;
-      box-shadow: 0 0 15px rgba(0, 122, 255, 0.5);
+      background: rgba(255, 0, 0, 0.4);
+      border-color: #ff0000;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
       animation: listeningPulse 2s infinite;
     }
 
@@ -203,7 +203,7 @@
       align-items: center;
       margin: 0 auto;
       box-sizing: border-box;
-      padding-left: 60px;
+      padding-left: 80px;
     }
 
     .input-form+.controls {
@@ -303,6 +303,21 @@
       justify-content: center;
     }
 
+    .darvis-logo {
+      position: relative;
+      display: inline-block;
+      width: 75px;
+      height: 75px;
+    }
+
+    .darvis-logo img {
+      position: relative;
+      z-index: 1;
+      height: 75px;
+      width: 75px;
+      display: block;
+    }
+
     /* Logo inside input container, left side */
     .darvis-logo-wrapper-bottom {
       position: absolute;
@@ -311,13 +326,9 @@
       transform: translateY(50%);
     }
 
-    .darvis-logo-wrapper-bottom .darvis-logo img {
-      height: 60px;
-    }
-
     .darvis-logo-wrapper-bottom .eye-glow {
-      width: 3px;
-      height: 3px;
+      height: 5px;
+      width: 5px;
     }
 
     .darvis-logo-wrapper-bottom .eye-glow.left {
@@ -328,66 +339,6 @@
     .darvis-logo-wrapper-bottom .eye-glow.right {
       top: 14px;
       left: 26px;
-    }
-
-    .darvis-logo {
-      position: relative;
-      display: inline-block;
-    }
-
-    .darvis-logo img {
-      position: relative;
-      z-index: 1;
-      height: 150px;
-      width: auto;
-    }
-
-    .eye-glow {
-      position: absolute;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 2;
-      box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
-    }
-
-    .eye-glow.left {
-      top: 48px;
-      left: 64px;
-    }
-
-    .eye-glow.right {
-      top: 48px;
-      left: 80px;
-    }
-
-    .eye-glow.active {
-      opacity: 1;
-      animation: pulse 0.5s infinite alternate;
-    }
-
-    .eye-glow.wake {
-      background: #00ff88;
-      color: #00ff88;
-    }
-
-    .eye-glow.ai {
-      background: #ff6b6b;
-      color: #ff6b6b;
-    }
-
-    @keyframes pulse {
-      from {
-        transform: scale(1);
-        opacity: 0.9;
-      }
-
-      to {
-        transform: scale(1.4);
-        opacity: 1;
-      }
     }
 
     /* AI Processing Indicator */
@@ -595,9 +546,7 @@
       <!-- Darvis logo at bottom left -->
       <div class="darvis-logo-wrapper-bottom">
         <div class="darvis-logo">
-          <img src="/static/darvis-logo.png">
-          <div class="eye-glow left"></div>
-          <div class="eye-glow right"></div>
+          <img id="darvis-logo-img" src="/static/darvis-logo.png">
         </div>
       </div>
 
@@ -626,6 +575,7 @@
         let listeningEnabled = false;
         let currentEyeState = 'idle'; // idle, wake, ai
         let recognition = null;
+        let recognitionActive = false;
         let waitingForCommand = false;
         let commandTimeout = null;
         let aiProcessing = false;
@@ -635,16 +585,20 @@
 
         // Eye control functions
         function setEyeState(state) {
-          const leftEye = document.querySelector('.eye-glow.left');
-          const rightEye = document.querySelector('.eye-glow.right');
+          console.log('👁️ setEyeState called with:', state);
+          const logoImg = document.getElementById('darvis-logo-img');
+          const timestamp = Date.now();
 
-          // Remove all active states
-          leftEye.classList.remove('active', 'wake', 'ai');
-          rightEye.classList.remove('active', 'wake', 'ai');
-
-          if (state !== 'idle') {
-            leftEye.classList.add('active', state);
-            rightEye.classList.add('active', state);
+          // Change the logo image based on state
+          if (state === 'wake') {
+            console.log('👁️ Setting logo to green eyes');
+            logoImg.src = '/static/darvis-logo-hires-green-eyes.png?v=' + timestamp;
+          } else if (state === 'ai') {
+            console.log('👁️ Setting logo to red eyes');
+            logoImg.src = '/static/darvis-logo-hires-red-eyes.png?v=' + timestamp;
+          } else {
+            console.log('👁️ Setting logo to base');
+            logoImg.src = '/static/darvis-logo.png?v=' + timestamp;
           }
 
           currentEyeState = state;
@@ -707,6 +661,7 @@
 
             recognition.onstart = function () {
               console.log('🎤 Speech recognition started');
+              recognitionActive = true;
               showStatus('Listening... say "hey darvis"', 'info');
             };
 
@@ -730,7 +685,6 @@
                 showStatus('Microphone access denied. Please allow microphone access and try again.', 'error');
                 listeningEnabled = false;
                 listeningToggle.classList.remove('active');
-                listeningToggle.textContent = '🎤 Listening Mode';
               } else if (event.error === 'network') {
                 showStatus('Speech recognition network error', 'error');
               } else {
@@ -740,6 +694,7 @@
 
             recognition.onend = function () {
               console.log('🎤 Speech recognition ended');
+              recognitionActive = false;
               // Restart listening if still enabled and not waiting for command
               if (listeningEnabled && !waitingForCommand && !restartPending) {
                 setTimeout(() => startListening(), 1000);
@@ -811,7 +766,7 @@
 
           if (listeningEnabled) {
             listeningToggle.classList.add('active');
-            listeningToggle.textContent = '🎤 Listening...';
+            setEyeState('wake'); // Green eyes when listening
             console.log('🎤 Listening mode enabled - using browser microphone');
 
             // Test microphone access
@@ -827,7 +782,6 @@
                   showStatus('Microphone access required for voice commands', 'error');
                   listeningEnabled = false;
                   listeningToggle.classList.remove('active');
-                  listeningToggle.textContent = '🎤 Listening Mode';
                 });
             } else {
               // Fallback for older browsers
@@ -835,9 +789,9 @@
             }
           } else {
             listeningToggle.classList.remove('active');
-            listeningToggle.textContent = '🎤 Listening Mode';
             console.log('🎤 Listening mode disabled');
             stopListening();
+            console.log('🎤 Setting eye state to idle');
             setEyeState('idle'); // Return to idle when listening disabled
             // Clear any pending command timeout
             if (commandTimeout) {
@@ -856,6 +810,16 @@
         // Handle incoming AI messages
         socket.on('ai_message', (data) => {
           stopAiProcessing();
+          // If listening mode is still enabled, restart speech recognition for next command
+          if (listeningEnabled) {
+            console.log('🔄 Restarting speech recognition after AI response...');
+            setEyeState('wake'); // Green eyes while waiting for next command
+            setTimeout(() => {
+              if (listeningEnabled) {
+                startListening();
+              }
+            }, 1000);
+          }
           addMessage(data.message, 'ai');
         });
 
@@ -869,6 +833,16 @@
         socket.on('ai_cancelled', (data) => {
           console.log('❌ AI request cancelled');
           stopAiProcessing();
+          // If listening mode is still enabled, restart speech recognition
+          if (listeningEnabled) {
+            console.log('🔄 Restarting speech recognition after AI cancellation...');
+            setEyeState('wake'); // Green eyes while waiting for next command
+            setTimeout(() => {
+              if (listeningEnabled) {
+                startListening();
+              }
+            }, 1000);
+          }
         });
 
         // Handle speech recognized from browser
@@ -876,53 +850,22 @@
           const text = data.text;
           console.log('📝 Processing recognized speech:', text);
 
-          // Check for wake words
-          const wakeWords = ['hey darvis', 'hey jarvis', 'play darvis', 'play jarvis', 'hi darvis', 'hi jarvis'];
-          const textLower = text.toLowerCase();
-          const isWakeWord = wakeWords.some(wake => textLower.includes(wake));
-
-          if (isWakeWord && !waitingForCommand) {
-            // Wake word detected - start listening for command
-            console.log('✅ Wake word detected! Listening for command...');
-            setEyeState('wake');
-            waitingForCommand = true;
-            console.log('🎤 Starting command listening...');
-            // Force restart listening immediately for the command
-            setTimeout(() => {
-              if (listeningEnabled && waitingForCommand) {
-                console.log('🎤 Actually starting command recognition...');
-                startListening();
-              } else {
-                console.log('🎤 Not restarting - listening disabled or not waiting for command');
+          // If listening mode is enabled, process any speech as a command
+          if (listeningEnabled) {
+            console.log('📝 Voice command received:', text);
+            // Stop speech recognition while AI processes
+            if (recognition) {
+              try {
+                recognition.stop();
+              } catch (e) {
+                // Ignore if already stopped
               }
-            }, 200);
-
-            // Set timeout for command
-            commandTimeout = setTimeout(() => {
-              console.log('⏰ Command timeout - no command received');
-              waitingForCommand = false;
-              setEyeState('idle');
-              showStatus('No command heard after wake word. Try again.', 'warning');
-            }, 10000);
-          } else if (waitingForCommand && !isWakeWord) {
-            // Command received after wake word
-            console.log('📝 Command received after wake word:', text);
-            clearTimeout(commandTimeout);
-            waitingForCommand = false;
-            setEyeState('idle');
+            }
             socket.emit('chat_message', {message: text});
-          } else if (waitingForCommand && isWakeWord) {
-            // Another wake word while waiting - reset timeout
-            console.log('🎯 Another wake word detected, resetting command timeout');
-            clearTimeout(commandTimeout);
-            commandTimeout = setTimeout(() => {
-              console.log('⏰ Command timeout - no command received');
-              waitingForCommand = false;
-              setEyeState('idle');
-              showStatus('No command heard after wake word. Try again.', 'warning');
-            }, 10000);
+            // Show AI processing indicator
+            startAiProcessing();
           } else {
-            console.log('❌ Speech detected but not in correct state, ignoring');
+            console.log('❌ Speech detected but listening not enabled, ignoring');
           }
         });
 
