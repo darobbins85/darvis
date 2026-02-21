@@ -136,18 +136,25 @@ class WaybarStatusManager:
         if self.fifo_path and self.fifo_path.exists():
             try:
                 # Send a final status to clear the waybar module before removing the FIFO
-                with open(self.fifo_path, "w") as fifo:
+                # Use non-blocking mode
+                import os
+                fd = os.open(str(self.fifo_path), os.O_WRONLY | os.O_NONBLOCK)
+                try:
                     import json
-                    json.dump({"text": "", "class": "exited", "tooltip": "Darvis: Exited"}, fifo)
-                    fifo.write("\n")
-                    fifo.flush()
-                # Small delay to ensure the message is processed
-                import time
-                time.sleep(0.1)
-                # Now remove the FIFO file
-                self.fifo_path.unlink()
+                    data = json.dumps({"text": "", "class": "exited", "tooltip": "Darvis: Exited"}) + "\n"
+                    os.write(fd, data.encode())
+                except (BlockingIOError, BrokenPipeError):
+                    pass  # Ignore if FIFO is not being read
+                finally:
+                    os.close(fd)
             except Exception as e:
                 print(f"FIFO cleanup failed: {e}")
+
+            # Try to remove the FIFO file (ignore errors)
+            try:
+                self.fifo_path.unlink()
+            except Exception:
+                pass
 
 
 # Global instance for easy access

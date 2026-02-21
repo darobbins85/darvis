@@ -2,6 +2,8 @@
 User interface and GUI components for Darvis Voice Assistant.
 """
 
+import atexit
+import atexit
 import os
 import queue
 import signal
@@ -32,7 +34,15 @@ def _handle_sigterm(signum, frame):
     global _shutdown_requested
     print("🪟 SIGTERM received, forcing shutdown...", flush=True)
     _shutdown_requested = True
-    sys.exit(0)
+
+    # Try to get the GUI instance and clean up
+    if _gui_instance is not None:
+        try:
+            _gui_instance.quit_app()
+        except Exception as e:
+            print(f"🪟 Error in SIGTERM cleanup: {e}", flush=True)
+
+    os._exit(0)  # Force exit without cleanup
 
 
 signal.signal(signal.SIGTERM, _handle_sigterm)
@@ -247,19 +257,46 @@ class DarvisGUI:
         if self.manual_input_entry:
             # Bind Enter key to submit function
             self.manual_input_entry.bind('<Return>', lambda event: self.submit_manual_input())
-        
+
         # Bind to window destroy event (handles WM kill/close shortcuts like Super+W)
         self.root.bind('<Destroy>', self._on_destroy)
-        
+
+        # Bind to ClientMessage - X11 way to detect WM close requests
+        self.root.bind('<ClientMessage>', self._on_client_message)
+
+        # Bind Super+W directly as some WMs don't send Destroy
+        # Run in thread to avoid blocking if quit_app takes time
+        self.root.bind('<Super-W>', lambda event: threading.Thread(target=self.quit_app, daemon=True).start())
+
         # Also bind Escape as a fallback close mechanism
-        self.root.bind('<Escape>', lambda event: self.quit_app())
+        self.root.bind('<Escape>', lambda event: threading.Thread(target=self.quit_app, daemon=True).start())
+
+        # Bind to window close events via protocol
+        self.root.protocol("WM_DELETE_WINDOW", self.quit_app)
+
+        # Bind to FocusOut to detect window losing focus (fallback)
+        # self.root.bind('<FocusOut>', self._on_focus_out)
 
     def _on_destroy(self, event):
         """Handle window destroy event from window manager (e.g., Super+W)."""
-        # Only handle destroy events for the root window
+        print(f"🪟 <Destroy> event received, widget={event.widget}", flush=True)
+        # Always handle destroy for root window
         if event.widget == self.root:
-            print("🪟 <Destroy> event received", flush=True)
             self._cleanup_on_destroy()
+        # Also handle if it's any child widget (Super+W may trigger differently)
+        else:
+            # Check if window is being destroyed
+            if str(event.type) == 'Destroy':
+                print("🪟 Destroy event on child widget, checking root state...", flush=True)
+
+    def _on_client_message(self, event):
+        """Handle ClientMessage from X11 window manager (e.g., close request)."""
+        # WM_DELETE_WINDOW is message type 33 in X11
+        print(f"🪟 ClientMessage received: {event}", flush=True)
+        # Check for delete window message
+        if hasattr(event, 'type') and str(event.type) == 'ClientMessage':
+            # Run quit in a thread to avoid blocking
+            threading.Thread(target=self.quit_app, daemon=True).start()
 
     def _cleanup_on_destroy(self):
         """Cleanup resources when window is destroyed externally."""
@@ -629,7 +666,90 @@ class DarvisGUI:
     def quit_app(self):
         """Quit the application."""
         print("🪟 quit_app() called", flush=True)
-        
+
+        # Set a flag to prevent re-entrance
+        if getattr(self, '_exiting', False):
+            print("🪟 Already exiting, ignoring", flush=True)
+            return
+        self._exiting = True
+
+        # Kill the web chat server process FIRST - this is critical
+        import subprocess
+        import os
+        try:
+            print("🪟 Killing web_chat.py process...", flush=True)
+            result = subprocess.run(['pkill', '-f', 'web_chat.py'],
+                                capture_output=True, timeout=3)
+            print(f"🪟 pkill result: {result.returncode}", flush=True)
+        except subprocess.TimeoutExpired:
+            print("🪟 pkill timed out", flush=True)
+        except Exception as e:
+            print(f"🪟 Error killing web_chat: {e}", flush=True)
+
+        # Send exit status to waybar
+        try:
+            update_waybar_status("idle", "Darvis: Exited")
+        except Exception as e:
+            print(f"Waybar status update failed on exit: {e}")
+
+        # Disconnect from web app if still connected
+        if self.web_socket:
+            try:
+                print("🪟 Disconnecting from web app...", flush=True)
+                self.web_socket.disconnect()
+            except Exception as e:
+                print(f"🪟 Web socket disconnect error: {e}", flush=True)
+
+        # Perform cleanup of waybar resources
+        try:
+            from .waybar_status import get_waybar_manager
+            manager = get_waybar_manager()
+            if manager._initialized:
+                manager.cleanup()
+        except Exception as e:
+            print(f"🪟 Waybar cleanup error: {e}", flush=True)
+
+        if self.tray_icon:
+            try:
+                self.tray_icon.stop()
+            except Exception:
+                pass
+
+        print("🪟 Calling root.quit() and root.destroy()", flush=True)
+        try:
+            self.root.quit()
+        except Exception as e:
+            print(f"🪟 root.quit() error: {e}", flush=True)
+        try:
+            self.root.destroy()
+        except Exception as e:
+            print(f"🪟 root.destroy() error: {e}", flush=True)
+
+        # Force exit
+        print("🪟 Calling os._exit(0)", flush=True)
+        os._exit(0)
+
+    def _force_cleanup(self):
+        """Force cleanup called from SIGTERM handler."""
+        print("🪟 _force_cleanup() called", flush=True)
+        # Schedule on main thread
+        self.root.after(0, self._do_quit)
+
+    def _do_quit(self):
+        """Actual quit logic."""
+
+        # Set a flag to prevent re-entrance
+        if getattr(self, '_exiting', False):
+            print("🪟 Already exiting, ignoring", flush=True)
+            return
+        self._exiting = True
+
+        # Run the actual cleanup
+        self._do_cleanup()
+
+    def _do_cleanup(self):
+        """Actual cleanup logic shared by quit_app and _force_cleanup."""
+
         # Send exit status to waybar
         try:
             update_waybar_status("idle", "Darvis: Exited")
@@ -641,33 +761,63 @@ class DarvisGUI:
             try:
                 print("🪟 Disconnecting from web app...", flush=True)
                 self.web_socket.disconnect()
-                # Wait a moment for disconnect to complete
-                import time
-                time.sleep(0.5)
+                print("🪟 Web socket disconnected", flush=True)
             except Exception as e:
                 print(f"🪟 Web socket disconnect error: {e}", flush=True)
 
         # Perform cleanup of waybar resources
-        from .waybar_status import get_waybar_manager
-        manager = get_waybar_manager()
-        if manager._initialized:
-            manager.cleanup()
+        try:
+            from .waybar_status import get_waybar_manager
+            manager = get_waybar_manager()
+            if manager._initialized:
+                manager.cleanup()
+        except Exception as e:
+            print(f"🪟 Waybar cleanup error: {e}", flush=True)
 
         if self.tray_icon:
             try:
                 self.tray_icon.stop()
             except Exception:
                 pass
-        
+
+        # Kill the web chat server process
+        import subprocess
+        try:
+            print("🪟 Killing web_chat.py process...", flush=True)
+            subprocess.run(['pkill', '-f', 'web_chat.py'], check=False)
+        except Exception as e:
+            print(f"🪟 Error killing web_chat process: {e}", flush=True)
+
+        # Force kill any child processes before destroying window
+        import os
+        import signal
+        try:
+            # Kill any child processes we spawned
+            subprocess.run(['pkill', '-f', 'darvis'], check=False)
+        except Exception as e:
+            print(f"🪟 Error killing child processes: {e}", flush=True)
+
+        # Kill the web chat server process
+        try:
+            subprocess.run(['pkill', '-f', 'web_chat.py'], check=False)
+            print("🪟 Killed web_chat.py process", flush=True)
+        except Exception as e:
+            print(f"🪟 Error killing web_chat.py: {e}", flush=True)
+
         print("🪟 Calling root.quit() and root.destroy()", flush=True)
-        self.root.quit()
-        self.root.destroy()
+        try:
+            self.root.quit()
+        except Exception as e:
+            print(f"🪟 root.quit() error: {e}", flush=True)
+        try:
+            self.root.destroy()
+        except Exception as e:
+            print(f"🪟 root.destroy() error: {e}", flush=True)
         print("🪟 root.quit() returned", flush=True)
-        
-        # Force exit to ensure all threads and processes terminate
-        print("🪟 Calling sys.exit(0)", flush=True)
-        import sys
-        sys.exit(0)
+
+        # Force exit - os._exit is more aggressive and guaranteed to terminate
+        print("🪟 Calling os._exit(0)", flush=True)
+        os._exit(0)
 
 
 # Global GUI instance for backward compatibility
