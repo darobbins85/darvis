@@ -1,37 +1,64 @@
 #/usr/bin/env python3
 """
-Web-based Chat Interface for Darvis Voice Assistant
-Provides perfect chat bubbles with real-time communication
+Web-based Chat Interface for Darvis Voice Assistant.
+
+This module provides the Flask-SocketIO server that serves the web-based
+chat interface. It handles real-time communication between the browser
+and Darvis backend services.
+
+Routes:
+    - GET /: Serves the main chat interface (index.html)
+
+Socket Events:
+    - connect: Handle client connection
+    - disconnect: Handle client disconnection
+    - chat_message: Process user messages (text input or voice commands)
+    - toggle_listening: Handle microphone toggle
+    - speech_recognized: Handle browser speech recognition results
+
+Dependencies:
+    - Flask: Web framework
+    - flask-socketio: Real-time communication
+    - darvis.ai: AI query processing
+    - darvis.apps: Application launching
+    - darvis.waybar_status: Status updates for waybar
+
+Usage:
+    python web_chat.py
+    # Then open http://localhost:5001 in browser
 """
 
-import os
 import sys
-from flask import Flask, render_template, request
+import os
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import threading
-import queue
 
 # Add the parent directory to the path so we can import darvis modules
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
 
-# Import existing darvis functionality
+# Import darvis modules
 from darvis.ai import process_ai_query
-from darvis.speech import listen
 from darvis.apps import open_app
 from darvis.waybar_status import update_waybar_status
 
-# Global variables for communication between threads
-message_queue = queue.Queue()
-response_queue = queue.Queue()
 
-app = Flask(__name__,
-            template_folder='web_templates')
+# =============================================================================
+# Flask Application Setup
+# =============================================================================
+
+app = Flask(__name__, template_folder='web_templates')
 app.config['SECRET_KEY'] = 'darvis_secret_key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Global state
+
+# =============================================================================
+# Global State
+# =============================================================================
+
+# Track if voice listening mode is active
 listening_mode = False
-current_ai_thread = None
 
 @app.route('/')
 def index():
@@ -42,7 +69,7 @@ def index():
 def handle_connect():
     """Handle client connection."""
     print("Client connected")
-    emit('status', {'message': 'Connected to Darvis', 'type': 'success'})
+
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -106,16 +133,18 @@ def handle_message(data):
 
 @socketio.on('toggle_listening')
 def handle_toggle_listening(data):
-    """Handle listening mode toggle."""
+    """Handle listening mode toggle from browser.
+    
+    The browser handles speech recognition directly using the Web Speech API.
+    This just tracks the listening state on the server.
+    """
     global listening_mode
     listening_mode = data.get('enabled', False)
 
     if listening_mode:
         print("🎤 Listening mode ENABLED - browser will handle speech recognition")
-        emit('status', {'message': 'Listening mode enabled - say "hey darvis"', 'type': 'info'})
     else:
         print("🔇 Listening mode DISABLED")
-        emit('status', {'message': 'Listening mode disabled', 'type': 'info'})
 
 @socketio.on('speech_recognized')
 def handle_speech_recognized(data):

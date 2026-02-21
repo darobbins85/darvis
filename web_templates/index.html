@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Darvis - Voice Assistant</title>
   <style>
+    /* =============================================================================
+       Base Styles - Reset and fundamental element styling
+       ============================================================================= */
     * {
       margin: 0;
       padding: 0;
@@ -21,6 +24,9 @@
       flex-direction: column;
     }
 
+    /* =============================================================================
+       Header - Top navigation bar with logo
+       ============================================================================= */
     .header {
       background: rgba(15, 15, 35, 0.9);
       backdrop-filter: blur(10px);
@@ -52,6 +58,9 @@
       transition: all 0.3s ease;
     }
 
+    /* =============================================================================
+       Microphone Button - Voice input toggle
+       ============================================================================= */
     /* Listening controls below input */
     .listening-controls {
       display: flex;
@@ -98,6 +107,9 @@
       background: rgba(0, 122, 255, 0.15);
     }
 
+    /* =============================================================================
+       Chat Container - Main message area layout
+       ============================================================================= */
     .chat-container {
       position: relative;
       display: flex;
@@ -128,6 +140,9 @@
       padding-bottom: 20px;
     }
 
+    /* =============================================================================
+       Messages - Chat bubble styling
+       ============================================================================= */
     .message {
       margin-bottom: 1rem;
       animation: slideIn 0.3s ease-out;
@@ -197,6 +212,9 @@
       box-sizing: border-box;
     }
 
+    /* =============================================================================
+       Input Form - Text input and send button
+       ============================================================================= */
     .input-form {
       display: flex;
       gap: 1rem;
@@ -212,6 +230,9 @@
       padding-left: 60px;
     }
 
+    /* =============================================================================
+       Message Input - Text field styling
+       ============================================================================= */
     .message-input {
       flex: 1;
       padding: 0.75rem 1rem;
@@ -494,12 +515,18 @@
 
       <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
       <script>
+        /* =============================================================================
+           Initialization - Socket connection and DOM element references
+           ============================================================================= */
         const socket = io();
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const messageForm = document.getElementById('message-form');
         const listeningToggle = document.getElementById('listening-toggle');
 
+        /* =============================================================================
+           State Variables - Track application state
+           ============================================================================= */
         let listeningEnabled = false;
         let currentEyeState = 'idle'; // idle, wake, ai
         let recognition = null;
@@ -511,6 +538,9 @@
         let aiTimerInterval = null;
         let restartPending = false;
 
+        /* =============================================================================
+           Eye State Control - Darvis logo image switching based on state
+           ============================================================================= */
         // Eye control functions
         function setEyeState(state) {
           console.log('👁️ setEyeState called with:', state);
@@ -532,6 +562,9 @@
           currentEyeState = state;
         }
 
+        /* =============================================================================
+           AI Processing - Show/hide processing indicator during AI queries
+           ============================================================================= */
         // AI Processing functions
         function startAiProcessing() {
           console.log('🤖 Starting AI processing...');
@@ -572,6 +605,9 @@
           });
         });
 
+        /* =============================================================================
+           Speech Recognition - Web Speech API initialization and handlers
+           ============================================================================= */
         // Initialize speech recognition
         function initSpeechRecognition() {
           if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -668,6 +704,9 @@
           }
         }
 
+        /* =============================================================================
+           Event Handlers - Form submission and microphone toggle
+           ============================================================================= */
         // Handle form submission
         messageForm.addEventListener('submit', (e) => {
           e.preventDefault();
@@ -726,6 +765,9 @@
           }
         });
 
+        /* =============================================================================
+           Socket Event Handlers - Server-to-client communication
+           ============================================================================= */
         // Handle incoming user messages
         socket.on('user_message', (data) => {
           addMessage(data.message, 'user');
@@ -793,6 +835,9 @@
           }
         });
 
+        /* =============================================================================
+           UI Helper Functions - Message display and utility functions
+           ============================================================================= */
         // Add message to chat
         function addMessage(message, type) {
           const messageDiv = document.createElement('div');
