@@ -79,6 +79,13 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 
+# Install opencode CLI for AI functionality
+curl -sL https://opencode.ai/install.sh | bash
+
+# Copy the darvis agent to your opencode config
+mkdir -p ~/.config/opencode/agent
+cp agent/darvis.md ~/.config/opencode/agent/
+
 # For desktop integration (Linux)
 ./install-desktop.sh
 ```
@@ -88,20 +95,7 @@ pip install -r requirements-dev.txt
 ./run.sh  # Linux/macOS (starts both web and desktop interfaces)
 ```
 
-### AI Functionality (Optional)
-
-For AI-powered voice responses, install opencode CLI and the darvis agent:
-
-```bash
-# Install opencode CLI
-curl -sL https://opencode.ai/install.sh | bash
-
-# Copy the darvis agent to your opencode config
-mkdir -p ~/.config/opencode/agent
-cp agent/darvis.md ~/.config/opencode/agent/
-```
-
-> Without opencode, Darvis will still work for local app launching (calculator, terminal, etc.) but AI queries will return "AI assistance not available"
+> **Note:** Without opencode CLI, Darvis will still work for local app launching (calculator, terminal, etc.) but AI queries will return "AI assistance not available"
 
 ### Voice Commands
 - Say **"hey darvis"** to wake the assistant
