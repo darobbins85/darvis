@@ -13,7 +13,7 @@ Darvis is a cross-platform voice assistant with intelligent command processing, 
 source venv/bin/activate
 
 # Run the application
-./launch-darvis.sh
+./run.sh
 
 # Run both web and desktop interfaces (web-desktop sync)
 ./run.sh

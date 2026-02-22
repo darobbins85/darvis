@@ -44,7 +44,28 @@ darvis/
 
 ## 🚀 Quick Start
 
-### Installation
+### 1. Install System Dependencies
+
+**Before** setting up Python, install system-level packages:
+
+#### Arch Linux
+```bash
+sudo pacman -S python-pyaudio portaudio
+```
+
+#### Ubuntu/Debian
+```bash
+sudo apt-get install portaudio19-dev python3-pyaudio
+```
+
+#### macOS
+```bash
+brew install portaudio
+```
+
+> **Note**: PyAudio requires these system packages to be installed BEFORE running `pip install -r requirements.txt`
+
+### 2. Installation
 ```bash
 # Clone the repository
 git clone https://github.com/darobbins85/darvis.git
@@ -58,17 +79,29 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 
-# For Linux system tray support
-pip install PyGObject
-
 # For desktop integration (Linux)
 ./install-desktop.sh
 ```
 
 ### Launch
 ```bash
-./launch-darvis.sh  # Linux/macOS
+./run.sh  # Linux/macOS (starts both web and desktop interfaces)
 ```
+
+### AI Functionality (Optional)
+
+For AI-powered voice responses, install opencode CLI and the darvis agent:
+
+```bash
+# Install opencode CLI
+curl -sL https://opencode.ai/install.sh | bash
+
+# Copy the darvis agent to your opencode config
+mkdir -p ~/.config/opencode/agent
+cp agent/darvis.md ~/.config/opencode/agent/
+```
+
+> Without opencode, Darvis will still work for local app launching (calculator, terminal, etc.) but AI queries will return "AI assistance not available"
 
 ### Voice Commands
 - Say **"hey darvis"** to wake the assistant

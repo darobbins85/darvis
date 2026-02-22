@@ -13,7 +13,7 @@ flask-socketio>=5.0.0
 python-socketio[client]>=5.0.0
 
 # Optional: GTK support for system tray (Linux)
-# PyGObject>=3.42.0  # Uncomment if needed for GTK system tray
+PyGObject>=3.42.0
 
 # E2E Testing Dependencies
 pytest>=7.0.0

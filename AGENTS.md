@@ -4,7 +4,7 @@
 
 **Run Application:**
 - `source venv/bin/activate && python3 -m darvis.ui` - Execute the main application with dependencies
-- `./launch-darvis.sh` - Clean launcher script with proper environment setup
+- `./run.sh` - Clean launcher script with proper environment setup (web + desktop)
 - Desktop menu: Search for "Darvis Voice Assistant" after running `./install-desktop.sh`
 
 **Desktop Integration:**
@@ -18,7 +18,8 @@
 - `assets/darvis-logo-hires.png` - High-resolution transparent version
 - `assets/darvis-logo.png` - UI-sized logo (150x150) with transparent background
 - `darvis.desktop` - Desktop integration file
-- `launch-darvis.sh` - Application launcher script
+- `run.sh` - Primary launcher (web + desktop)
+- `launch-darvis.sh` - Desktop-only launcher (alternative)
 - `install-desktop.sh` - Desktop integration installer
 
 **Linting (recommended setup):**
