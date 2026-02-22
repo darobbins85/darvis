@@ -50,20 +50,20 @@ darvis/
 
 #### Arch Linux
 ```bash
-sudo pacman -S python-pyaudio portaudio
+sudo pacman -S tk python-pyaudio portaudio
 ```
 
 #### Ubuntu/Debian
 ```bash
-sudo apt-get install portaudio19-dev python3-pyaudio
+sudo apt-get install python3-tk portaudio19-dev python3-pyaudio
 ```
 
 #### macOS
 ```bash
-brew install portaudio
+brew install python-tk portaudio
 ```
 
-> **Note**: PyAudio requires these system packages to be installed BEFORE running `pip install -r requirements.txt`
+> **Note**: PyAudio and Tkinter require these system packages to be installed BEFORE running `pip install -r requirements.txt`
 
 ### 2. Installation
 ```bash
@@ -159,6 +159,52 @@ isort darvis/
 ### Windows
 - **System Tray**: Win32 API integration
 - **Display**: Native Windows display detection
+
+## 🔧 Troubleshooting
+
+### ImportError: libtk8.6.so: cannot open shared object file
+The Tkinter GUI library is not installed on your system.
+
+**Arch Linux:**
+```bash
+sudo pacman -S tk
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install python3-tk
+```
+
+**macOS:**
+```bash
+brew install python-tk
+```
+
+### ModuleNotFoundError: No module named 'flask'
+Python dependencies are not installed.
+
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Microphone not detected
+1. Check available microphones:
+   ```bash
+   python3 -c "import darvis.speech; darvis.speech.list_microphones()"
+   ```
+2. Ensure your microphone is not muted in system settings
+3. Check that pulseaudio/pipewire is running
+
+### AI commands not working
+1. Install opencode CLI:
+   ```bash
+   curl -sL https://opencode.ai/install.sh | bash
+   ```
+2. Verify it's in your PATH:
+   ```bash
+   which opencode
+   ```
 
 ## 🤝 Contributing
 
