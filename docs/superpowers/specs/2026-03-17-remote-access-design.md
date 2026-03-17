@@ -34,7 +34,8 @@ A startup flag or config option selects the mode:
 
 - Default binding: `127.0.0.1` (localhost only)
 - Remote binding: `0.0.0.0` (all interfaces)
-- Config: `WEB_APP_HOST` in `config.py` is set automatically based on `DARVIS_MODE`:
+- Port: `DARVIS_WEB_PORT` (default: 5001)
+- Config: `WEB_APP_HOST` and `WEB_APP_PORT` in `config.py` are set automatically based on `DARVIS_MODE`:
   - `DARVIS_MODE=local`: `WEB_APP_HOST = "127.0.0.1"`
   - `DARVIS_MODE=remote`: `WEB_APP_HOST = "0.0.0.0"`
 
@@ -66,7 +67,7 @@ A startup flag or config option selects the mode:
 
 - Simple HTML form: password input + submit button
 - POST to `/login` endpoint
-- On success: redirect to main chat interface
+- On success: redirect to `/` (main chat interface)
 - On failure: show error message, stay on login
 
 ### Main Chat Interface
@@ -176,10 +177,10 @@ function playNext() {
 
 ### Output Path
 
-1. TTS generates audio (PCM format)
-2. Server chunks audio into 4096-sample segments
-3. Sends each chunk via WebSocket `tts_audio` event
-4. Client buffers and plays via Web Audio API
+1. TTS generates audio (raw PCM format)
+2. Server wraps PCM in WAV container with proper header (44100 Hz, 16-bit, mono)
+3. Server sends WAV data via WebSocket `tts_audio` event
+4. Client uses `decodeAudioData` to decode WAV and plays via Web Audio API
 5. Server sends `tts_end` when complete
 
 ## Desktop GUI Integration
@@ -218,7 +219,7 @@ If both local GUI and remote access needed:
 
 1. **Password** - Stored as hashed using Werkzeug's `generate_password_hash` (PBKDF2+SHA256), never transmitted in plain text
 2. **Session** - Flask signed cookies, expires after 24 hours
-3. **Network** - No HTTPS by default (add reverse proxy for production)
+3. **Network** - No HTTPS by default (add reverse proxy for production). **Warning**: Over HTTP, credentials and audio streams are transmitted in plain text. For actual remote access over the internet, use a reverse proxy with HTTPS (e.g., nginx with SSL/TLS cert).
 4. **Rate limiting** - Not implemented (single user, low risk)
 
 ## File Changes
