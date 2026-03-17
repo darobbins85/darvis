@@ -34,12 +34,15 @@ A startup flag or config option selects the mode:
 
 - Default binding: `127.0.0.1` (localhost only)
 - Remote binding: `0.0.0.0` (all interfaces)
-- Config: `WEB_APP_HOST` in `config.py`
+- Config: `WEB_APP_HOST` in `config.py` is set automatically based on `DARVIS_MODE`:
+  - `DARVIS_MODE=local`: `WEB_APP_HOST = "127.0.0.1"`
+  - `DARVIS_MODE=remote`: `WEB_APP_HOST = "0.0.0.0"`
 
 ### Authentication
 
 - Simple session-based auth with Flask-Login
 - Password stored as environment variable `DARVIS_WEB_PASSWORD`
+- **Required for remote mode**: Server refuses to start in remote mode if `DARVIS_WEB_PASSWORD` is not set
 - Hashed using Werkzeug security functions
 - Login page: `GET /login` - renders password form
 - Login handler: `POST /login` - validates credentials
@@ -158,7 +161,7 @@ function playNext() {
 ### Input Path
 
 1. Browser captures audio via WebRTC `getUserMedia`
-2. Audio processed through ScriptProcessor (4096 samples)
+2. Audio processed through AudioWorklet (4096 samples)
 3. Converted to PCM16 format
 4. Sent to server via WebSocket `voice_data` event
 5. Server receives chunks, accumulates into buffer
