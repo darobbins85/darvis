@@ -73,32 +73,78 @@ A startup flag or config option selects the mode:
 
 ### Voice Input (WebRTC)
 
+Use `AudioWorklet` instead of deprecated `createScriptProcessor`:
+
 ```javascript
-// Capture microphone
+// In main thread
 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 const audioContext = new AudioContext();
 const source = audioContext.createMediaStreamSource(stream);
-const processor = audioContext.createScriptProcessor(4096, 1, 1);
 
-processor.onaudioprocess = (e) => {
-    const inputBuffer = e.inputBuffer;
-    // Convert to PCM16 and send via WebSocket
-    socket.emit('voice_data', { audio: PCM16Buffer });
-};
+// Load AudioWorklet processor
+await audioContext.audioWorklet.addModule('/static/js/voice-processor.js');
+
+const processor = new AudioWorkletNode(audioContext, 'voice-processor');
+source.connect(processor);
+processor.connect(audioContext.destination);
+
+// voice-processor.js runs in worklet thread
+class VoiceProcessor extends AudioWorkletProcessor {
+    process(inputs, outputs, parameters) {
+        const input = inputs[0];
+        if (input.length > 0) {
+            const channelData = input[0];
+            // Convert Float32 to Int16 PCM and send via WebSocket
+            const pcmData = new Int16Array(channelData.length);
+            for (let i = 0; i < channelData.length; i++) {
+                pcmData[i] = Math.max(-1, Math.min(1, channelData[i])) * 32767;
+            }
+            this.port.postMessage(pcmData);
+        }
+        return true;
+    }
+}
+registerProcessor('voice-processor', VoiceProcessor);
 ```
 
 ### Voice Output (Web Audio API)
 
+Reuse a single `AudioContext` for all TTS playback:
+
 ```javascript
+// Create once at initialization
+const ttsAudioContext = new AudioContext();
+let audioQueue = [];
+let isPlaying = false;
+
 socket.on('tts_audio', (data) => {
-    const audioContext = new AudioContext();
-    const buffer = audioContext.createBuffer(1, data.samples, 16000);
-    buffer.getChannelData(0).set(data.samples);
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioContext.destination);
-    source.start();
+    // Decode base64 audio data
+    const binaryString = atob(data.audio);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    
+    // Decode WAV format from server
+    ttsAudioContext.decodeAudioData(bytes.buffer, (buffer) => {
+        audioQueue.push(buffer);
+        playNext();
+    });
 });
+
+function playNext() {
+    if (isPlaying || audioQueue.length === 0) return;
+    isPlaying = true;
+    const buffer = audioQueue.shift();
+    const source = ttsAudioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ttsAudioContext.destination);
+    source.onended = () => {
+        isPlaying = false;
+        playNext();
+    };
+    source.start();
+}
 ```
 
 ### Visual Indicators
@@ -116,7 +162,8 @@ socket.on('tts_audio', (data) => {
 3. Converted to PCM16 format
 4. Sent to server via WebSocket `voice_data` event
 5. Server receives chunks, accumulates into buffer
-6. When silence detected or timeout, processes through STT
+6. Silence detection: client analyzes audio levels; when average amplitude < 0.01 for 1.5 seconds, sends `voice_end` event
+7. Server processes accumulated audio through STT
 
 ### Processing
 
@@ -166,7 +213,7 @@ If both local GUI and remote access needed:
 
 ## Security Considerations
 
-1. **Password** - Stored as hashed SHA256, never transmitted in plain text
+1. **Password** - Stored as hashed using Werkzeug's `generate_password_hash` (PBKDF2+SHA256), never transmitted in plain text
 2. **Session** - Flask signed cookies, expires after 24 hours
 3. **Network** - No HTTPS by default (add reverse proxy for production)
 4. **Rate limiting** - Not implemented (single user, low risk)
