@@ -241,6 +241,63 @@ def handle_speech_recognized(data):
     emit("speech_recognized_response", {"text": text})
 
 
+# =============================================================================
+# Voice Processing WebSocket Handlers
+# =============================================================================
+
+voice_buffer = []
+
+
+@socketio.on("voice_start")
+def handle_voice_start():
+    """Client started recording."""
+    global voice_buffer
+    voice_buffer = []
+    print("Voice recording started")
+
+
+@socketio.on("voice_data")
+def handle_voice_data(data):
+    """Receive audio chunk from client."""
+    global voice_buffer
+    audio_bytes = data.get("audio")
+    if audio_bytes:
+        voice_buffer.append(audio_bytes)
+
+
+@socketio.on("voice_end")
+def handle_voice_end():
+    """Client stopped recording, process audio."""
+    global voice_buffer
+    print(f"Voice recording ended, {len(voice_buffer)} chunks")
+
+    if not voice_buffer:
+        return
+
+    try:
+        all_data = b"".join(voice_buffer)
+
+        emit(
+            "speech_recognized",
+            {"text": "[Voice input received, STT integration pending]"},
+        )
+    except Exception as e:
+        print(f"Error processing voice: {e}")
+
+    voice_buffer = []
+
+
+@socketio.on("request_tts")
+def handle_tts_request(data):
+    """Generate TTS for given text."""
+    text = data.get("text", "")
+    if not text:
+        return
+
+    emit("tts_start", {})
+    emit("tts_end", {})
+
+
 if __name__ == "__main__":
     print("Starting Darvis Web Chat Interface...")
     print("Open http://localhost:5001 in your browser")
