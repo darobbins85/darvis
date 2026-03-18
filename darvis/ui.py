@@ -3,14 +3,14 @@ User interface and GUI components for Darvis Voice Assistant.
 """
 
 import atexit
-import atexit
 import os
 import queue
 import signal
+import socket
 import sys
+import time
 import tkinter as tk
 import threading
-import socket
 from PIL import Image, ImageTk
 
 try:
@@ -900,9 +900,6 @@ def main():
         print("🪟 mainloop ended", flush=True)
     else:
         print("Desktop GUI disabled - running in headless mode", flush=True)
-        # Keep main thread alive for web server
-        import time
-
         while True:
             time.sleep(1)
 
