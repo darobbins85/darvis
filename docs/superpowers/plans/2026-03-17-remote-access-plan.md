@@ -59,12 +59,22 @@ Add imports to `web_chat.py`:
 ```python
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session
 import os
+
+# Validate remote mode password requirement
+from darvis.config import DARVIS_MODE
+if DARVIS_MODE == "remote" and not os.getenv('DARVIS_WEB_PASSWORD'):
+    raise ValueError("DARVIS_WEB_PASSWORD must be set when DARVIS_MODE=remote")
 
 # Setup Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+login_manager.session_protection = "strong"
+
+# Session configuration (24 hour expiry)
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600 * 24  # 24 hours
 
 # Simple user class
 class User(UserMixin):
@@ -617,13 +627,24 @@ Add before closing `</body>` tag in `web_templates/index.html`:
 
 - [ ] **Step 2: Add voice button to UI**
 
-Add voice button in the UI (find appropriate spot in HTML):
+Add voice button near the chat input area in `web_templates/index.html`. Look for the input field or send button, and add the mic button beside it:
 
 ```html
-<button id="mic-btn" onclick="toggleMic()" title="Hold to talk">
-    🎤
-</button>
+<div class="chat-input-container">
+    <input type="text" id="user-input" placeholder="Type a message...">
+    <button id="mic-btn" onclick="toggleMic()" title="Click to talk">🎤</button>
+    <button onclick="sendMessage()">Send</button>
+</div>
 <span id="voice-status"></span>
+```
+
+Also add this CSS for the recording state:
+
+```css
+#mic-btn.recording {
+    background: #ff4444;
+    animation: pulse 1s infinite;
+}
 ```
 
 - [ ] **Step 3: Commit**
@@ -708,13 +729,15 @@ git commit --allow-empty -m "test: manual integration testing complete"
 
 This plan implements the core remote access functionality:
 
-1. Config options for mode, password, port
-2. Flask-Login authentication
+1. Config options for mode, password, port (used by web_chat.py)
+2. Flask-Login authentication with password validation
 3. Login page template
 4. Server-side voice WebSocket handlers
-5. Client-side AudioWorklet and voice.js
+5. Client-side AudioWorklet with silence detection and voice.js
 6. Updated index.html with voice controls
 7. Configurable server binding
+
+Note: `DARVIS_ENABLE_DESKTOP_GUI` config is used in `darvis/ui.py` to conditionally enable the Tkinter GUI. The web server can run with or without the desktop GUI.
 
 Follow-up tasks (not in this plan):
 - STT integration: Connect voice_end handler to darvis.speech module
