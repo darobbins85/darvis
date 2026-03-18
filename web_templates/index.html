@@ -465,6 +465,15 @@
     .json-bracket {
       color: #cdd6f4;
     }
+    #mic-btn.recording {
+        background: #ff4444;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
   </style>
 
 
@@ -507,10 +516,9 @@
           <button type="submit" class="send-button">
             Send ✉️
           </button>
-          <button id="listening-toggle" class="listening-toggle">
-            🎤
-          </button>
+          <button id="mic-btn" onclick="toggleMic()" title="Click to talk" class="listening-toggle">🎤</button>
         </form>
+        <span id="voice-status"></span>
       </div>
 
       <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
@@ -522,7 +530,8 @@
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const messageForm = document.getElementById('message-form');
-        const listeningToggle = document.getElementById('listening-toggle');
+        const listeningToggle = document.getElementById('mic-btn');
+        const micBtn = document.getElementById('mic-btn');
 
         /* =============================================================================
            State Variables - Track application state
@@ -1012,6 +1021,69 @@
         // Auto-focus input on page load
         messageInput.focus();
       </script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/static/js/voice.js"></script>
+<script>
+    // Initialize socket and voice client
+    const socket = io();
+    let voiceClient = null;
+    
+    // Check auth and init voice
+    fetch('/')
+        .then(response => {
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return null;
+            }
+            return response.text();
+        })
+        .then(html => {
+            if (html) {
+                initVoice();
+            }
+        });
+    
+    function initVoice() {
+        voiceClient = new VoiceClient(socket);
+        
+        voiceClient.setStatusCallback((status) => {
+            const micBtn = document.getElementById('mic-btn');
+            const statusText = document.getElementById('voice-status');
+            if (micBtn && statusText) {
+                if (status === 'listening') {
+                    micBtn.classList.add('recording');
+                    statusText.textContent = 'Listening...';
+                } else if (status === 'processing') {
+                    micBtn.classList.remove('recording');
+                    statusText.textContent = 'Processing...';
+                } else if (status === 'speaking') {
+                    statusText.textContent = 'Speaking...';
+                } else {
+                    micBtn.classList.remove('recording');
+                    statusText.textContent = '';
+                }
+            }
+        });
+        
+        voiceClient.initTTS();
+    }
+    
+    function toggleMic() {
+        if (!voiceClient) {
+            // Fallback to existing browser speech recognition
+            if (listeningToggle) {
+                listeningToggle.click();
+            }
+            return;
+        }
+        
+        if (voiceClient.isRecording) {
+            voiceClient.stopRecording();
+        } else {
+            voiceClient.startRecording();
+        }
+    }
+</script>
 </body>
 
 </html>
