@@ -51,7 +51,7 @@ sys.path.insert(0, project_root)
 from darvis.ai import process_ai_query
 from darvis.apps import open_app
 from darvis.waybar_status import update_waybar_status
-from darvis.config import DARVIS_MODE
+from darvis.config import DARVIS_MODE, WEB_APP_HOST, WEB_APP_PORT
 
 # Validate remote mode password requirement
 if DARVIS_MODE == "remote" and not os.getenv("DARVIS_WEB_PASSWORD"):
@@ -300,16 +300,19 @@ def handle_tts_request(data):
 
 if __name__ == "__main__":
     print("Starting Darvis Web Chat Interface...")
-    print("Open http://localhost:5001 in your browser")
-    print("📱 Open your browser to http://localhost:5001")
-    print("🎤 Use the listening toggle for voice commands")
-    print("❌ Press Ctrl+C to stop")
+    print(f"Open http://localhost:{WEB_APP_PORT} in your browser")
+    print(f"Server binding: {WEB_APP_HOST}")
     print("")
+    print("❌ Press Ctrl+C to stop")
 
     try:
-        print("🌐 Starting Flask-SocketIO server on 127.0.0.1:5001...")
+        print(f"🌐 Starting Flask-SocketIO server on {WEB_APP_HOST}:{WEB_APP_PORT}...")
         socketio.run(
-            app, host="127.0.0.1", port=5001, debug=True, allow_unsafe_werkzeug=True
+            app,
+            host=WEB_APP_HOST,
+            port=WEB_APP_PORT,
+            debug=True,
+            allow_unsafe_werkzeug=True,
         )
     except Exception as e:
         print(f"❌ Failed to start web server: {e}")
