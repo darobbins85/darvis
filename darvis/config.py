@@ -73,6 +73,12 @@ WEB_SERVICES = {
     "confluence": "https://confluence.atlassian.com",
 }
 
+# Desktop GUI configuration
+# Set to False to run in headless mode (useful for remote access via web UI only)
+DARVIS_ENABLE_DESKTOP_GUI = (
+    os.environ.get("DARVIS_ENABLE_DESKTOP_GUI", "true").lower() == "true"
+)
+
 # GUI configuration
 FONT_SIZE_NORMAL = 16
 FONT_SIZE_LARGE = 24
