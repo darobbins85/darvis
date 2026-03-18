@@ -124,24 +124,30 @@ WAYBAR_MODULE_CONFIG = {
     }
 }
 
-# Web app integration settings
-WEB_APP_HOST = "localhost"
-WEB_APP_PORT = 5001
-WEB_APP_URL = f"http://{WEB_APP_HOST}:{WEB_APP_PORT}"
-
 # Remote access configuration
 DARVIS_MODE = os.getenv("DARVIS_MODE", "local")
 DARVIS_WEB_PASSWORD = os.getenv("DARVIS_WEB_PASSWORD")
 DARVIS_ENABLE_DESKTOP_GUI = (
     os.getenv("DARVIS_ENABLE_DESKTOP_GUI", "true").lower() == "true"
 )
-DARVIS_WEB_PORT = int(os.getenv("DARVIS_WEB_PORT", "5001"))
 
-# Auto-set host based on mode
+# Web app port with validation
+try:
+    DARVIS_WEB_PORT = int(os.getenv("DARVIS_WEB_PORT", "5001"))
+except ValueError:
+    import warnings
+
+    warnings.warn("Invalid DARVIS_WEB_PORT, using default 5001")
+    DARVIS_WEB_PORT = 5001
+
+# Auto-set host based on mode (web app host)
 if DARVIS_MODE == "remote":
     WEB_APP_HOST = "0.0.0.0"
 else:
     WEB_APP_HOST = "127.0.0.1"
+
+WEB_APP_PORT = DARVIS_WEB_PORT
+WEB_APP_URL = f"http://{WEB_APP_HOST}:{WEB_APP_PORT}"
 
 
 def get_open_command() -> str:
