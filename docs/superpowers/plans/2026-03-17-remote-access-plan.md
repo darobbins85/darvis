@@ -47,6 +47,48 @@ git commit -m "feat: add remote access config options"
 
 ---
 
+## Task 1.5: Desktop GUI Integration
+
+**Files:**
+- Modify: `darvis/ui.py`
+
+- [ ] **Step 1: Add conditional GUI initialization**
+
+Find the main entry point in `darvis/ui.py` (typically in `main()` function or `if __name__ == '__main__':` block) and add the config check:
+
+```python
+# In darvis/ui.py, before GUI initialization
+from darvis.config import DARVIS_ENABLE_DESKTOP_GUI
+
+def main():
+    # ... existing code ...
+    
+    # Conditionally enable desktop GUI
+    if DARVIS_ENABLE_DESKTOP_GUI:
+        gui = DarvisGUI()
+        root.mainloop()
+    else:
+        print("Desktop GUI disabled - running in headless mode")
+        # Keep main thread alive for web server
+        import time
+        while True:
+            time.sleep(1)
+```
+
+- [ ] **Step 2: Test GUI disable**
+
+Run: `DARVIS_ENABLE_DESKTOP_GUI=false python3 -m darvis.ui`
+Expected: "Desktop GUI disabled" message, no Tkinter window
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add darvis/ui.py
+git commit -m "feat: add conditional desktop GUI initialization"
+```
+
+---
+
 ## Task 2: Add Flask-Login Auth
 
 **Files:**
