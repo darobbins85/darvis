@@ -327,8 +327,11 @@ def handle_tts_request(data):
     emit('tts_start', {})
     
     # NOTE: TTS integration with darvis.speech module is a follow-up task
-    # For now, emit placeholder to test voice pipeline
-    # When implementing: wrap PCM in WAV container (44100 Hz, 16-bit, mono)
+    # When implementing TTS:
+    # 1. Generate audio using darvis.speech TTS
+    # 2. Wrap PCM in WAV container (44100 Hz, 16-bit, mono)
+    # 3. Send chunks via: emit('tts_audio', {'audio': base64_encoded_wav})
+    # 4. When done: emit('tts_end', {})
     emit('tts_end', {})
 ```
 
