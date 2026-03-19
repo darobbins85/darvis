@@ -583,8 +583,9 @@
     }
 
     .sidebar-footer .username {
-        font-size: 0.9rem;
-        color: #888;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #00d4ff;
     }
 
     .sidebar-footer a {
@@ -630,7 +631,7 @@
         <!-- Sessions loaded dynamically -->
       </div>
       <div class="sidebar-footer">
-        <span id="username-display" class="username"></span>
+        <span id="username-display" class="username">👤 <span id="username-text"></span></span>
         <a href="/logout">Logout</a>
       </div>
     </aside>
@@ -1350,7 +1351,7 @@
             const userResponse = await fetch('/api/user');
             if (userResponse.ok) {
                 const user = await userResponse.json();
-                document.getElementById('username-display').textContent = user.username;
+                document.getElementById('username-text').textContent = user.username;
             }
             
             // Load sessions
