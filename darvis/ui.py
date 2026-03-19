@@ -3,14 +3,14 @@ User interface and GUI components for Darvis Voice Assistant.
 """
 
 import atexit
-import atexit
 import os
 import queue
 import signal
+import socket
 import sys
+import time
 import tkinter as tk
 import threading
-import socket
 from PIL import Image, ImageTk
 
 try:
@@ -23,6 +23,7 @@ except ImportError:
 from .ai import process_ai_query
 from .speech import speak
 from .waybar_status import init_waybar, update_waybar_status
+from .config import DARVIS_ENABLE_DESKTOP_GUI
 
 
 # Global flag for graceful shutdown
@@ -110,6 +111,7 @@ class DarvisGUI:
         except Exception as e:
             print(f"❌ setup_ui failed: {e}")
             import traceback
+
             traceback.print_exc()
 
         try:
@@ -121,6 +123,7 @@ class DarvisGUI:
         except Exception as e:
             print(f"❌ Setup methods failed: {e}")
             import traceback
+
             traceback.print_exc()
 
     def _deferred_init_web_sync(self):
@@ -132,6 +135,7 @@ class DarvisGUI:
         except Exception as e:
             print(f"❌ init_web_sync failed with exception: {e}")
             import traceback
+
             traceback.print_exc()
 
     def setup_ui(self):
@@ -161,7 +165,9 @@ class DarvisGUI:
                 self.ai_glow_image = ImageTk.PhotoImage(ai_glow)
 
                 # Create logo label with base image immediately
-                self.logo_label = tk.Label(logo_frame, image=self.base_logo_image, bg="black")
+                self.logo_label = tk.Label(
+                    logo_frame, image=self.base_logo_image, bg="black"
+                )
                 self.logo_label.pack(side=tk.TOP, padx=10, pady=10)
                 print("✅ Logo with actual image created successfully")
 
@@ -173,7 +179,7 @@ class DarvisGUI:
                     text="DARVIS",
                     bg="black",
                     fg="#00D4FF",
-                    font=('Arial', 28, 'bold')
+                    font=("Arial", 28, "bold"),
                 )
                 self.logo_label.pack(side=tk.TOP, padx=10, pady=10)
                 print("✅ Fallback text logo created")
@@ -206,7 +212,7 @@ class DarvisGUI:
                 bg="#333",
                 fg="white",
                 font=("JetBrains Mono", 10),
-                command=self.copy_chat
+                command=self.copy_chat,
             )
             copy_button.pack(side=tk.RIGHT)
             print("✅ Copy button created")
@@ -256,20 +262,28 @@ class DarvisGUI:
         """Bind GUI events."""
         if self.manual_input_entry:
             # Bind Enter key to submit function
-            self.manual_input_entry.bind('<Return>', lambda event: self.submit_manual_input())
+            self.manual_input_entry.bind(
+                "<Return>", lambda event: self.submit_manual_input()
+            )
 
         # Bind to window destroy event (handles WM kill/close shortcuts like Super+W)
-        self.root.bind('<Destroy>', self._on_destroy)
+        self.root.bind("<Destroy>", self._on_destroy)
 
         # Bind to ClientMessage - X11 way to detect WM close requests
-        self.root.bind('<ClientMessage>', self._on_client_message)
+        self.root.bind("<ClientMessage>", self._on_client_message)
 
         # Bind Super+W directly as some WMs don't send Destroy
         # Run in thread to avoid blocking if quit_app takes time
-        self.root.bind('<Super-W>', lambda event: threading.Thread(target=self.quit_app, daemon=True).start())
+        self.root.bind(
+            "<Super-W>",
+            lambda event: threading.Thread(target=self.quit_app, daemon=True).start(),
+        )
 
         # Also bind Escape as a fallback close mechanism
-        self.root.bind('<Escape>', lambda event: threading.Thread(target=self.quit_app, daemon=True).start())
+        self.root.bind(
+            "<Escape>",
+            lambda event: threading.Thread(target=self.quit_app, daemon=True).start(),
+        )
 
         # Bind to window close events via protocol
         self.root.protocol("WM_DELETE_WINDOW", self.quit_app)
@@ -286,15 +300,18 @@ class DarvisGUI:
         # Also handle if it's any child widget (Super+W may trigger differently)
         else:
             # Check if window is being destroyed
-            if str(event.type) == 'Destroy':
-                print("🪟 Destroy event on child widget, checking root state...", flush=True)
+            if str(event.type) == "Destroy":
+                print(
+                    "🪟 Destroy event on child widget, checking root state...",
+                    flush=True,
+                )
 
     def _on_client_message(self, event):
         """Handle ClientMessage from X11 window manager (e.g., close request)."""
         # WM_DELETE_WINDOW is message type 33 in X11
         print(f"🪟 ClientMessage received: {event}", flush=True)
         # Check for delete window message
-        if hasattr(event, 'type') and str(event.type) == 'ClientMessage':
+        if hasattr(event, "type") and str(event.type) == "ClientMessage":
             # Run quit in a thread to avoid blocking
             threading.Thread(target=self.quit_app, daemon=True).start()
 
@@ -316,6 +333,7 @@ class DarvisGUI:
 
         # Perform cleanup of waybar resources
         from .waybar_status import get_waybar_manager
+
         manager = get_waybar_manager()
         if manager._initialized:
             manager.cleanup()
@@ -326,10 +344,11 @@ class DarvisGUI:
             except Exception:
                 pass
         # Note: Don't call root.quit() as the window is already destroyed
-        
+
         # Force exit to ensure the process terminates
         print("🪟 Calling sys.exit(0) from destroy handler", flush=True)
         import sys
+
         sys.exit(0)
 
     def setup_system_tray(self):
@@ -380,12 +399,6 @@ class DarvisGUI:
             except Exception as e:
                 print(f"🌐 Failed to send to web: {e}")
 
-
-
-
-
-
-
     def glow_logo(self, enable_glow, ai_active=False):
         """Add or remove glow effect from logo by switching images (like master branch)."""
         print(f"🔥 glow_logo called: enable_glow={enable_glow}, ai_active={ai_active}")
@@ -422,9 +435,8 @@ class DarvisGUI:
         except Exception as e:
             print(f"⚠️ Could not update logo glow: {e}")
             import traceback
+
             traceback.print_exc()
-
-
 
     def create_eye_glow(self, image, eye_color):
         """Create a dramatic red glow effect in the eyes of the face - Terminator style."""
@@ -440,9 +452,9 @@ class DarvisGUI:
                 height // 3 + 10,
             ),  # Left eye
             (
-                2*width // 3 - 15,
+                2 * width // 3 - 15,
                 height // 3 - 10,
-                2*width // 3 + 15,
+                2 * width // 3 + 15,
                 height // 3 + 10,
             ),  # Right eye
         ]
@@ -469,22 +481,32 @@ class DarvisGUI:
                         if distance <= 4:  # Inner glow - very bright
                             blend_factor = min(1.0, 1.0 - (distance / 4.0) ** 0.5)
                         else:  # Outer glow - exponential falloff
-                            blend_factor = max(0.1, 0.6 * (1 - (distance - 4) / (glow_radius - 4)) ** 0.7)
+                            blend_factor = max(
+                                0.1,
+                                0.6 * (1 - (distance - 4) / (glow_radius - 4)) ** 0.7,
+                            )
 
                         # Get original pixel
                         r, g, b, a = eye_glow.getpixel((x, y))
 
                         # Blend with glow color
-                        new_r = int(eye_color[0] * blend_factor + r * (1 - blend_factor))
-                        new_g = int(eye_color[1] * blend_factor + g * (1 - blend_factor))
-                        new_b = int(eye_color[2] * blend_factor + b * (1 - blend_factor))
-                        new_a = min(255, int(eye_color[3] * blend_factor + a * (1 - blend_factor)))
+                        new_r = int(
+                            eye_color[0] * blend_factor + r * (1 - blend_factor)
+                        )
+                        new_g = int(
+                            eye_color[1] * blend_factor + g * (1 - blend_factor)
+                        )
+                        new_b = int(
+                            eye_color[2] * blend_factor + b * (1 - blend_factor)
+                        )
+                        new_a = min(
+                            255,
+                            int(eye_color[3] * blend_factor + a * (1 - blend_factor)),
+                        )
 
                         eye_glow.putpixel((x, y), (new_r, new_g, new_b, new_a))
 
         return eye_glow
-
-
 
     def submit_manual_input(self):
         """Process manual text input from the GUI."""
@@ -501,8 +523,10 @@ class DarvisGUI:
                 self.send_to_web(input_text)
 
                 # Handle AI processing based on sync status
-                if getattr(self, 'web_sync_enabled', False):
-                    print("🌐 Web sync enabled - message sent to web app for processing")
+                if getattr(self, "web_sync_enabled", False):
+                    print(
+                        "🌐 Web sync enabled - message sent to web app for processing"
+                    )
                     # Don't start glow or local processing - web app handles it
                 else:
                     print("🚀 Starting local AI processing with glow")
@@ -510,7 +534,7 @@ class DarvisGUI:
                     threading.Thread(
                         target=self._process_ai_query_threaded,
                         args=(input_text,),
-                        daemon=True
+                        daemon=True,
                     ).start()
 
     def _process_ai_query_threaded(self, query):
@@ -518,9 +542,9 @@ class DarvisGUI:
         try:
             # Update waybar status to thinking
             update_waybar_status("thinking", f"Thinking about: {query[:30]}...")
-            
+
             response, session_id = process_ai_query(query)
-            
+
             # Update waybar status to success
             update_waybar_status("success", "Response delivered")
 
@@ -531,14 +555,16 @@ class DarvisGUI:
             print(f"❌ AI processing failed: {e}")
             # Update waybar status to error
             update_waybar_status("error", f"AI error: {str(e)[:50]}")
-            self.root.after(0, lambda: self._display_ai_response(f"Error processing query: {e}"))
+            self.root.after(
+                0, lambda: self._display_ai_response(f"Error processing query: {e}")
+            )
 
     def _display_ai_response(self, response):
         """Display AI response and stop glow effect."""
         print(f"🤖 AI response received: {response[:50]}...")
         # Replace the "Processing..." message with the actual response
         # This is a simple approach - in a real app you'd track the processing message
-        if not getattr(self, 'web_sync_enabled', False):
+        if not getattr(self, "web_sync_enabled", False):
             self.display_message(f"AI: {response}\n")
             self.display_message("─" * 50 + "\n")
 
@@ -630,7 +656,9 @@ class DarvisGUI:
                 if self.web_connected:
                     # Add to desktop chat with yellow color
                     self.text_info.config(state=tk.NORMAL)
-                    self.text_info.insert(tk.END, f"You: {data['message']}\n", "web_user")
+                    self.text_info.insert(
+                        tk.END, f"You: {data['message']}\n", "web_user"
+                    )
                     self.text_info.config(state=tk.DISABLED)
                     self.text_info.see(tk.END)
 
@@ -640,7 +668,11 @@ class DarvisGUI:
                     # Add to desktop chat
                     self.display_message(f"AI: {data['message']}\n")
                     # Dynamic separator based on text widget width
-                    width = int(self.text_info.cget('width') or 80) if self.text_info else 80
+                    width = (
+                        int(self.text_info.cget("width") or 80)
+                        if self.text_info
+                        else 80
+                    )
                     self.display_message("─" * width + "\n")
 
             # Register event handlers BEFORE connecting
@@ -651,6 +683,7 @@ class DarvisGUI:
 
             # Connect to web app
             from .config import WEB_APP_URL
+
             try:
                 self.web_socket.connect(WEB_APP_URL, wait_timeout=5)
             except Exception as e:
@@ -668,7 +701,7 @@ class DarvisGUI:
         print("🪟 quit_app() called", flush=True)
 
         # Set a flag to prevent re-entrance
-        if getattr(self, '_exiting', False):
+        if getattr(self, "_exiting", False):
             print("🪟 Already exiting, ignoring", flush=True)
             return
         self._exiting = True
@@ -676,10 +709,12 @@ class DarvisGUI:
         # Kill the web chat server process FIRST - this is critical
         import subprocess
         import os
+
         try:
             print("🪟 Killing web_chat.py process...", flush=True)
-            result = subprocess.run(['pkill', '-f', 'web_chat.py'],
-                                capture_output=True, timeout=3)
+            result = subprocess.run(
+                ["pkill", "-f", "web_chat.py"], capture_output=True, timeout=3
+            )
             print(f"🪟 pkill result: {result.returncode}", flush=True)
         except subprocess.TimeoutExpired:
             print("🪟 pkill timed out", flush=True)
@@ -703,6 +738,7 @@ class DarvisGUI:
         # Perform cleanup of waybar resources
         try:
             from .waybar_status import get_waybar_manager
+
             manager = get_waybar_manager()
             if manager._initialized:
                 manager.cleanup()
@@ -739,7 +775,7 @@ class DarvisGUI:
         """Actual quit logic."""
 
         # Set a flag to prevent re-entrance
-        if getattr(self, '_exiting', False):
+        if getattr(self, "_exiting", False):
             print("🪟 Already exiting, ignoring", flush=True)
             return
         self._exiting = True
@@ -768,6 +804,7 @@ class DarvisGUI:
         # Perform cleanup of waybar resources
         try:
             from .waybar_status import get_waybar_manager
+
             manager = get_waybar_manager()
             if manager._initialized:
                 manager.cleanup()
@@ -782,24 +819,26 @@ class DarvisGUI:
 
         # Kill the web chat server process
         import subprocess
+
         try:
             print("🪟 Killing web_chat.py process...", flush=True)
-            subprocess.run(['pkill', '-f', 'web_chat.py'], check=False)
+            subprocess.run(["pkill", "-f", "web_chat.py"], check=False)
         except Exception as e:
             print(f"🪟 Error killing web_chat process: {e}", flush=True)
 
         # Force kill any child processes before destroying window
         import os
         import signal
+
         try:
             # Kill any child processes we spawned
-            subprocess.run(['pkill', '-f', 'darvis'], check=False)
+            subprocess.run(["pkill", "-f", "darvis"], check=False)
         except Exception as e:
             print(f"🪟 Error killing child processes: {e}", flush=True)
 
         # Kill the web chat server process
         try:
-            subprocess.run(['pkill', '-f', 'web_chat.py'], check=False)
+            subprocess.run(["pkill", "-f", "web_chat.py"], check=False)
             print("🪟 Killed web_chat.py process", flush=True)
         except Exception as e:
             print(f"🪟 Error killing web_chat.py: {e}", flush=True)
@@ -842,21 +881,27 @@ def get_gui():
 def main():
     """Main entry point for running the GUI application."""
     print("🪟 main() starting", flush=True)
-    
+
     # Initialize waybar integration
     init_waybar()
 
-    # For now, just run the GUI - voice processing is handled differently
-    # This allows the desktop launcher to work
-    gui = DarvisGUI()
-    
-    # Bind the window close event to our quit_app method
-    print("🪟 Setting WM_DELETE_WINDOW protocol", flush=True)
-    gui.root.protocol("WM_DELETE_WINDOW", gui.quit_app)
-    
-    print("🪟 Starting mainloop", flush=True)
-    gui.run()
-    print("🪟 mainloop ended", flush=True)
+    # Conditionally enable desktop GUI
+    if DARVIS_ENABLE_DESKTOP_GUI:
+        # For now, just run the GUI - voice processing is handled differently
+        # This allows the desktop launcher to work
+        gui = DarvisGUI()
+
+        # Bind the window close event to our quit_app method
+        print("🪟 Setting WM_DELETE_WINDOW protocol", flush=True)
+        gui.root.protocol("WM_DELETE_WINDOW", gui.quit_app)
+
+        print("🪟 Starting mainloop", flush=True)
+        gui.run()
+        print("🪟 mainloop ended", flush=True)
+    else:
+        print("Desktop GUI disabled - running in headless mode", flush=True)
+        while True:
+            time.sleep(1)
 
 
 if __name__ == "__main__":
