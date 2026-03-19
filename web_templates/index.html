@@ -678,7 +678,6 @@
             <span id="voice-status"></span>
           </div>
 
-          <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
       <script>
         /* =============================================================================
            Initialization - Socket connection and DOM element references
@@ -1183,7 +1182,7 @@
 <script src="/static/js/voice.js"></script>
 <script>
     // Initialize socket and voice client
-    const socket = io();
+    // Note: socket is already declared in the first script block
     let voiceClient = null;
     
     // Check auth and init voice
