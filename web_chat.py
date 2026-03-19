@@ -30,7 +30,16 @@ Usage:
 
 import sys
 import os
-from flask import Flask, render_template, redirect, url_for, flash, session, request
+from flask import (
+    Flask,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    session,
+    request,
+    jsonify,
+)
 from flask_socketio import SocketIO, emit
 from flask_login import (
     LoginManager,
@@ -58,6 +67,14 @@ from darvis.database import (
     get_user_by_username,
     get_user_by_id,
     get_or_create_default_session,
+    get_user_sessions,
+    create_session,
+    get_session_by_id,
+    update_session_name,
+    delete_session,
+    get_next_session_number,
+    add_message,
+    get_session_messages,
 )
 
 # Initialize database on startup
@@ -188,6 +205,103 @@ def signup():
 def logout():
     logout_user()
     return redirect(url_for("login"))
+
+
+# =============================================================================
+# API Endpoints
+# =============================================================================
+
+
+@app.route("/api/user")
+@login_required
+def get_current_user():
+    """Get current user info."""
+    return jsonify(
+        {
+            "id": current_user.id,
+            "username": current_user.username,
+        }
+    )
+
+
+@app.route("/api/sessions")
+@login_required
+def get_sessions():
+    """Get all sessions for current user."""
+    sessions = get_user_sessions(current_user.id)
+    return jsonify(
+        [
+            {
+                "id": s["id"],
+                "name": s["name"],
+                "session_number": s["session_number"],
+                "created_at": s["created_at"],
+                "updated_at": s["updated_at"],
+            }
+            for s in sessions
+        ]
+    )
+
+
+@app.route("/api/sessions", methods=["POST"])
+@login_required
+def create_session_api():
+    """Create a new session for current user."""
+    session_num = get_next_session_number(current_user.id)
+    name = f"Session {session_num}"
+    session_id = create_session(current_user.id, name, session_num)
+    session = get_session_by_id(session_id)
+    return jsonify(
+        {
+            "id": session["id"],
+            "name": session["name"],
+            "session_number": session["session_number"],
+        }
+    )
+
+
+@app.route("/api/sessions/<int:session_id>", methods=["PUT"])
+@login_required
+def update_session_api(session_id):
+    """Update a session (rename)."""
+    session = get_session_by_id(session_id)
+    if session and session["user_id"] == current_user.id:
+        data = request.get_json()
+        update_session_name(session_id, data.get("name", session["name"]))
+        return jsonify({"success": True})
+    return jsonify({"error": "Not found"}), 404
+
+
+@app.route("/api/sessions/<int:session_id>", methods=["DELETE"])
+@login_required
+def delete_session_api(session_id):
+    """Delete a session."""
+    session = get_session_by_id(session_id)
+    if session and session["user_id"] == current_user.id:
+        delete_session(session_id)
+        return jsonify({"success": True})
+    return jsonify({"error": "Not found"}), 404
+
+
+@app.route("/api/sessions/<int:session_id>/messages")
+@login_required
+def get_session_messages_api(session_id):
+    """Get all messages for a session."""
+    session = get_session_by_id(session_id)
+    if session and session["user_id"] == current_user.id:
+        messages = get_session_messages(session_id)
+        return jsonify(
+            [
+                {
+                    "id": m["id"],
+                    "role": m["role"],
+                    "content": m["content"],
+                    "created_at": m["created_at"],
+                }
+                for m in messages
+            ]
+        )
+    return jsonify({"error": "Not found"}), 404
 
 
 @socketio.on("connect")
