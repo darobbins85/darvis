@@ -498,6 +498,33 @@
         overflow: hidden;
     }
 
+    #sidebar-toggle {
+        position: fixed;
+        top: 10px;
+        left: 260px;
+        z-index: 1000;
+        background: rgba(0, 212, 255, 0.2);
+        border: 1px solid rgba(0, 212, 255, 0.5);
+        color: #00d4ff;
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: left 0.3s ease;
+    }
+
+    #sidebar-toggle:hover {
+        background: rgba(0, 212, 255, 0.3);
+    }
+
+    body.sidebar-collapsed #sidebar-toggle {
+        left: 10px;
+    }
+
     .sidebar-header {
         display: flex;
         justify-content: space-between;
@@ -510,24 +537,6 @@
         margin: 0;
         font-size: 1rem;
         color: #00d4ff;
-    }
-
-    #sidebar-toggle {
-        background: rgba(0, 212, 255, 0.2);
-        border: 1px solid rgba(0, 212, 255, 0.5);
-        color: #00d4ff;
-        width: 28px;
-        height: 28px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    #sidebar-toggle:hover {
-        background: rgba(0, 212, 255, 0.3);
     }
 
     #new-session-btn {
@@ -646,11 +655,12 @@
 
 <body>
 
+  <button id="sidebar-toggle" title="Toggle Sessions">←</button>
+
   <div class="app-container">
     <!-- Session Sidebar -->
     <aside class="sessions-sidebar" id="sessions-sidebar">
       <div class="sidebar-header">
-        <button id="sidebar-toggle" title="Toggle Sessions">☰</button>
         <h3>Sessions</h3>
         <button id="new-session-btn" title="New Session">+</button>
       </div>
@@ -1271,8 +1281,9 @@
     function toggleSidebar() {
         const sidebar = document.getElementById('sessions-sidebar');
         sidebar.classList.toggle('collapsed');
+        document.body.classList.toggle('sidebar-collapsed');
         const toggleBtn = document.getElementById('sidebar-toggle');
-        toggleBtn.textContent = sidebar.classList.contains('collapsed') ? '☰' : '✕';
+        toggleBtn.textContent = sidebar.classList.contains('collapsed') ? '→' : '←';
     }
 
     document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
