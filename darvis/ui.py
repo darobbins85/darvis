@@ -645,12 +645,14 @@ class DarvisGUI:
 
     def _process_ai_query_threaded(self, query):
         """Process AI query in background thread."""
+        print(f"🤖 Processing AI query: {query[:50]}...")
         try:
             # Update waybar status to thinking
             update_waybar_status("thinking", f"Thinking about: {query[:30]}...")
 
             response, session_id = process_ai_query(query)
 
+            print(f"✅ AI response received: {response[:50]}...")
             # Update waybar status to success
             update_waybar_status("success", "Response delivered")
 
