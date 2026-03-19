@@ -30,6 +30,32 @@ from .config import DARVIS_ENABLE_DESKTOP_GUI
 _shutdown_requested = False
 
 
+class GUIPrinter:
+    """Custom stdout writer that also logs to GUI."""
+
+    def __init__(self, gui_instance):
+        self.gui = gui_instance
+        self.original_stdout = sys.stdout
+
+    def write(self, text):
+        if text and text.strip():
+            # Write to original stdout
+            self.original_stdout.write(text)
+            # Also add to GUI log (strip emojis for cleaner log)
+            clean_text = text.strip()
+            if clean_text:
+                self.gui.add_log(clean_text)
+
+    def flush(self):
+        self.original_stdout.flush()
+
+    def fileno(self):
+        return self.original_stdout.fileno()
+
+    def isatty(self):
+        return self.original_stdout.isatty()
+
+
 def _handle_sigterm(signum, frame):
     """Handle SIGTERM for forced shutdown."""
     global _shutdown_requested
@@ -53,6 +79,10 @@ class DarvisGUI:
     """Main GUI class for the Darvis Voice Assistant."""
 
     def __init__(self):
+        # Redirect stdout to GUI log before any prints
+        self._gui_printer = GUIPrinter(self)
+        sys.stdout = self._gui_printer
+
         print("🏗️ DarvisGUI constructor starting...")
         self.root = tk.Tk()
         self.root.title("Darvis Voice Assistant")
@@ -837,6 +867,9 @@ class DarvisGUI:
         except Exception as e:
             print(f"🪟 root.destroy() error: {e}", flush=True)
 
+        # Restore stdout before exit
+        sys.stdout = self._gui_printer.original_stdout
+
         # Force exit
         print("🪟 Calling os._exit(0)", flush=True)
         os._exit(0)
@@ -929,6 +962,9 @@ class DarvisGUI:
         except Exception as e:
             print(f"🪟 root.destroy() error: {e}", flush=True)
         print("🪟 root.quit() returned", flush=True)
+
+        # Restore stdout before exit
+        sys.stdout = self._gui_printer.original_stdout
 
         # Force exit - os._exit is more aggressive and guaranteed to terminate
         print("🪟 Calling os._exit(0)", flush=True)
