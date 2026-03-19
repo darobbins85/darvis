@@ -201,6 +201,47 @@ class DarvisGUI:
             self.text_info.tag_config("ai", foreground="red")
             self.text_info.tag_config("web_user", foreground="yellow")
 
+            # Create log panel frame (collapsible)
+            self.log_frame = tk.Frame(self.root, bg="black")
+            self.log_frame.pack(fill=tk.X, padx=10, pady=(0, 5))
+
+            # Log toggle button
+            self.log_toggle_btn = tk.Button(
+                self.log_frame,
+                text="📜 Logs",
+                bg="#333",
+                fg="white",
+                font=("JetBrains Mono", 9),
+                command=self.toggle_log_panel,
+            )
+            self.log_toggle_btn.pack(side=tk.LEFT)
+
+            # Clear log button
+            clear_log_btn = tk.Button(
+                self.log_frame,
+                text="🗑️",
+                bg="#333",
+                fg="white",
+                font=("JetBrains Mono", 9),
+                command=self.clear_log,
+            )
+            clear_log_btn.pack(side=tk.LEFT, padx=(2, 0))
+
+            # Log text area (initially hidden)
+            self.log_text = tk.Text(
+                self.log_frame,
+                bg="#1a1a2e",
+                fg="#00ff88",
+                font=("JetBrains Mono", 8),
+                height=6,
+                wrap=tk.WORD,
+                state=tk.DISABLED,
+            )
+            self.log_scroll = tk.Scrollbar(self.log_frame, command=self.log_text.yview)
+            self.log_text.config(yscrollcommand=self.log_scroll.set)
+            self.log_panel_visible = False
+            print("✅ Log panel created (hidden by default)")
+
             # Create controls frame
             controls_frame = tk.Frame(self.root, bg="black")
             controls_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
@@ -257,6 +298,41 @@ class DarvisGUI:
             update_waybar_status("idle", "Darvis: Ready")
         except Exception as e:
             print(f"Waybar status update failed: {e}")
+
+        # Log initial message
+        self.add_log("Darvis GUI initialized")
+
+    def toggle_log_panel(self):
+        """Toggle the visibility of the log panel."""
+        if self.log_panel_visible:
+            self.log_scroll.pack_forget()
+            self.log_text.pack_forget()
+            self.log_toggle_btn.config(text="📜 Logs")
+            self.log_panel_visible = False
+        else:
+            self.log_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+            self.log_text.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            self.log_toggle_btn.config(text="📜 Logs ▲")
+            self.log_panel_visible = True
+
+    def clear_log(self):
+        """Clear the log panel."""
+        self.log_text.config(state=tk.NORMAL)
+        self.log_text.delete(1.0, tk.END)
+        self.log_text.config(state=tk.DISABLED)
+
+    def add_log(self, message):
+        """Add a message to the log panel."""
+        if not hasattr(self, "log_text") or self.log_text is None:
+            return
+        try:
+            self.log_text.config(state=tk.NORMAL)
+            timestamp = time.strftime("%H:%M:%S")
+            self.log_text.insert(tk.END, f"[{timestamp}] {message}\n")
+            self.log_text.see(tk.END)
+            self.log_text.config(state=tk.DISABLED)
+        except Exception:
+            pass
 
     def bind_events(self):
         """Bind GUI events."""
