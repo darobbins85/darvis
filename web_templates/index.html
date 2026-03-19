@@ -1256,11 +1256,16 @@
                 const div = document.createElement('div');
                 div.className = 'session-item' + (session.id === currentSessionId ? ' active' : '');
                 div.innerHTML = `
-                    <span class="session-name">${session.name}</span>
+                    <span class="session-name" data-id="${session.id}">${session.name}</span>
                     <button class="delete-session" data-id="${session.id}">🗑️</button>
                 `;
                 div.onclick = (e) => {
-                    if (!e.target.classList.contains('delete-session')) {
+                    if (e.target.classList.contains('delete-session')) {
+                        // Handled by document click listener
+                    } else if (e.target.classList.contains('session-name')) {
+                        // Double-click to rename
+                        renameSession(session.id, session.name);
+                    } else {
                         switchSession(session.id);
                     }
                 };
@@ -1268,6 +1273,22 @@
             });
         } catch (err) {
             console.error('Failed to load sessions:', err);
+        }
+    }
+
+    async function renameSession(sessionId, currentName) {
+        const newName = prompt('Enter new session name:', currentName);
+        if (newName && newName.trim() && newName.trim() !== currentName) {
+            try {
+                await fetch(`/api/sessions/${sessionId}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name: newName.trim() })
+                });
+                await loadSessions();
+            } catch (err) {
+                console.error('Failed to rename session:', err);
+            }
         }
     }
 
