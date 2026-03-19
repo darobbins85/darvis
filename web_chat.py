@@ -337,10 +337,16 @@ def handle_message(data):
     def process_message_async():
         nonlocal session_id
 
+        # Capture user_id before thread (current_user not available in async)
+        user_id = current_user.id if current_user else None
+        if not user_id:
+            socketio.emit("ai_message", {"message": "Error: User not logged in"})
+            return
+
         try:
             # Get or create session for user
             if not session_id:
-                session = get_or_create_default_session(current_user.id)
+                session = get_or_create_default_session(user_id)
                 session_id = session["id"]
 
             # Save user message
