@@ -80,11 +80,6 @@ from darvis.database import (
 # Initialize database on startup
 init_db()
 
-# Validate remote mode password requirement
-if DARVIS_MODE == "remote" and not os.getenv("DARVIS_WEB_PASSWORD"):
-    raise ValueError("DARVIS_WEB_PASSWORD must be set when DARVIS_MODE=remote")
-
-
 # =============================================================================
 # Flask Application Setup
 # =============================================================================
