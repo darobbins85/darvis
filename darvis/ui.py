@@ -762,6 +762,7 @@ class DarvisGUI:
             def on_user_message(data):
                 # Received user message from web interface
                 if self.web_connected:
+                    print(f"📱 Web message received: {data['message'][:50]}...")
                     # Add to desktop chat with yellow color
                     self.text_info.config(state=tk.NORMAL)
                     self.text_info.insert(
@@ -773,6 +774,7 @@ class DarvisGUI:
             def on_ai_message(data):
                 # Received AI response from web interface
                 if self.web_connected:
+                    print(f"🤖 Web AI response: {data['message'][:50]}...")
                     # Add to desktop chat
                     self.display_message(f"AI: {data['message']}\n")
                     # Dynamic separator based on text widget width
@@ -789,11 +791,17 @@ class DarvisGUI:
             self.web_socket.on("user_message", on_user_message)
             self.web_socket.on("ai_message", on_ai_message)
 
+            # Also register handlers for default namespace
+            self.web_socket.on("connect", on_connect, namespace="/")
+            self.web_socket.on("disconnect", on_disconnect, namespace="/")
+            self.web_socket.on("user_message", on_user_message, namespace="/")
+            self.web_socket.on("ai_message", on_ai_message, namespace="/")
+
             # Connect to web app
             from .config import WEB_APP_URL
 
             try:
-                self.web_socket.connect(WEB_APP_URL, wait_timeout=5, namespaces=["/"])
+                self.web_socket.connect(WEB_APP_URL, wait_timeout=10)
             except Exception as e:
                 print(f"🌐 Socket.IO connection failed: {e}")
                 self.web_sync_enabled = False
