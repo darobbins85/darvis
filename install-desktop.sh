@@ -11,59 +11,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Detect platform
-PLATFORM="$(uname -s)"
-IS_MACOS=false
-IS_LINUX=false
-
-if [ "$PLATFORM" = "Darwin" ]; then
-    IS_MACOS=true
-    echo -e "${GREEN}Detected: macOS${NC}"
-elif [ "$PLATFORM" = "Linux" ]; then
-    IS_LINUX=true
-    echo -e "${GREEN}Detected: Linux${NC}"
-else
-    echo -e "${YELLOW}Unknown platform: $PLATFORM${NC}"
-    echo "Proceeding with limited functionality..."
-fi
-
-echo ""
-echo -e "${GREEN}Darvis Voice Assistant - Desktop Integration Setup${NC}"
-echo "=================================================="
-
 # Get the absolute path of the project directory
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_DIR="$PROJECT_DIR"
-
-echo "Project directory: $PROJECT_DIR"
-echo "Script directory: $SCRIPT_DIR"
-echo ""
-
-# Check if required files exist
-echo -e "${YELLOW}Checking required files...${NC}"
-
-if [ ! -f "$PROJECT_DIR/assets/darvis-logo.png" ]; then
-    echo -e "${RED}Error: assets/darvis-logo.png not found in $PROJECT_DIR${NC}"
-    exit 1
-fi
-
-if [ ! -f "$PROJECT_DIR/run.sh" ]; then
-    echo -e "${RED}Error: run.sh not found in $PROJECT_DIR${NC}"
-    exit 1
-fi
-
-echo -e "${GREEN}✓ All required files found${NC}"
-echo ""
-
-# Platform-specific installation
-if [ "$IS_LINUX" = true ]; then
-    install_linux
-elif [ "$IS_MACOS" = true ]; then
-    install_macos
-else
-    echo -e "${YELLOW}⚠️  Unsupported platform. Skipping desktop integration.${NC}"
-    echo "You can still run Darvis manually with: $PROJECT_DIR/run.sh"
-fi
 
 # Common setup for both platforms
 install_common() {
@@ -240,6 +190,50 @@ EOF
     echo "unidentified developer. Go to System Preferences > Security & Privacy"
     echo "to allow it."
 }
+
+# =============================================================================
+# Main Script
+# =============================================================================
+
+# Detect platform
+PLATFORM="$(uname -s)"
+IS_MACOS=false
+IS_LINUX=false
+
+if [ "$PLATFORM" = "Darwin" ]; then
+    IS_MACOS=true
+    echo -e "${GREEN}Detected: macOS${NC}"
+elif [ "$PLATFORM" = "Linux" ]; then
+    IS_LINUX=true
+    echo -e "${GREEN}Detected: Linux${NC}"
+else
+    echo -e "${YELLOW}Unknown platform: $PLATFORM${NC}"
+    echo "Proceeding with limited functionality..."
+fi
+
+echo ""
+echo -e "${GREEN}Darvis Voice Assistant - Desktop Integration Setup${NC}"
+echo "=================================================="
+
+echo "Project directory: $PROJECT_DIR"
+echo "Script directory: $SCRIPT_DIR"
+echo ""
+
+# Check if required files exist
+echo -e "${YELLOW}Checking required files...${NC}"
+
+if [ ! -f "$PROJECT_DIR/assets/darvis-logo.png" ]; then
+    echo -e "${RED}Error: assets/darvis-logo.png not found in $PROJECT_DIR${NC}"
+    exit 1
+fi
+
+if [ ! -f "$PROJECT_DIR/run.sh" ]; then
+    echo -e "${RED}Error: run.sh not found in $PROJECT_DIR${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ All required files found${NC}"
+echo ""
 
 # Run platform-specific installation
 if [ "$IS_LINUX" = true ]; then
