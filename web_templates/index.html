@@ -631,7 +631,7 @@
         <!-- Sessions loaded dynamically -->
       </div>
       <div class="sidebar-footer">
-        <span id="username-display" class="username">👤 <span id="username-text"></span></span>
+        <span id="username-display" class="username">Loading...</span>
         <a href="/logout">Logout</a>
       </div>
     </aside>
@@ -1346,12 +1346,18 @@
     }
 
     async function initApp() {
+        console.log('initApp called');
         try {
             // Load user info
             const userResponse = await fetch('/api/user');
+            console.log('User API status:', userResponse.status);
             if (userResponse.ok) {
                 const user = await userResponse.json();
-                document.getElementById('username-text').textContent = user.username;
+                console.log('User loaded:', user.username);
+                document.getElementById('username-display').innerHTML = '👤 <strong>' + user.username + '</strong>';
+            } else {
+                console.error('User API failed');
+                document.getElementById('username-display').textContent = 'Not logged in';
             }
             
             // Load sessions
