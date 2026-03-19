@@ -37,6 +37,7 @@ def init_db():
                 user_id INTEGER NOT NULL,
                 name TEXT NOT NULL,
                 session_number INTEGER NOT NULL,
+                ai_session_id TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -51,6 +52,10 @@ def init_db():
                 FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
             );
         """)
+        try:
+            conn.execute("ALTER TABLE sessions ADD COLUMN ai_session_id TEXT")
+        except Exception:
+            pass
 
 
 def create_user(username, password_hash):
@@ -104,6 +109,36 @@ def update_session_name(session_id, name):
             "UPDATE sessions SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
             (name, session_id),
         )
+
+
+def rename_session_by_id(session_id, new_name):
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE sessions SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            (new_name, session_id),
+        )
+
+
+def update_session_ai_id(session_id, ai_session_id):
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE sessions SET ai_session_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            (ai_session_id, session_id),
+        )
+        session = conn.execute(
+            "SELECT name, ai_session_id FROM sessions WHERE id = ?",
+            (session_id,),
+        ).fetchone()
+        return session
+
+
+def get_session_ai_id(session_id):
+    with get_db() as conn:
+        session = conn.execute(
+            "SELECT ai_session_id FROM sessions WHERE id = ?",
+            (session_id,),
+        ).fetchone()
+        return session["ai_session_id"] if session else None
 
 
 def delete_session(session_id):

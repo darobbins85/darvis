@@ -71,10 +71,13 @@ from darvis.database import (
     create_session,
     get_session_by_id,
     update_session_name,
+    rename_session_by_id,
     delete_session,
     get_next_session_number,
     add_message,
     get_session_messages,
+    update_session_ai_id,
+    get_session_ai_id,
 )
 
 # Initialize database on startup
@@ -351,6 +354,9 @@ def handle_message(data):
                 session_obj = get_or_create_default_session(user_id)
                 session_id = session_obj["id"]
 
+            # Get current AI session ID before processing
+            current_ai_id = get_session_ai_id(session_id)
+
             # Save user message
             add_message(session_id, "user", message)
 
@@ -372,6 +378,11 @@ def handle_message(data):
                         "thinking", f"Thinking about: {message[:30]}..."
                     )
                     response, ai_session_id = process_ai_query(message)
+                    # Rename session if we got a new AI session ID
+                    if ai_session_id and ai_session_id != current_ai_id:
+                        short_id = ai_session_id[:12] if ai_session_id else "new"
+                        rename_session_by_id(session_id, f"AI-{short_id}")
+                        update_session_ai_id(session_id, ai_session_id)
                     update_waybar_status("success", "Response delivered")
                     socketio.emit(
                         "ai_message", {"message": response, "session_id": session_id}
@@ -386,6 +397,11 @@ def handle_message(data):
             # Default to AI processing
             update_waybar_status("thinking", f"Thinking about: {message[:30]}...")
             response, ai_session_id = process_ai_query(message)
+            # Rename session if we got a new AI session ID
+            if ai_session_id and ai_session_id != current_ai_id:
+                short_id = ai_session_id[:12] if ai_session_id else "new"
+                rename_session_by_id(session_id, f"AI-{short_id}")
+                update_session_ai_id(session_id, ai_session_id)
             update_waybar_status("success", "Response delivered")
 
             # Save assistant message
