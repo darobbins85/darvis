@@ -13,10 +13,13 @@ cd "$SCRIPT_DIR"
 export PATH="$HOME/.opencode/bin:$PATH"
 echo "📍 PATH set to: $PATH"
 
-# Check if virtual environment exists
+# Check if virtual environment exists, create if not
 if [ ! -d "venv" ]; then
-    echo "❌ Virtual environment 'venv' not found. Please set up the environment first."
-    exit 1
+    echo "📦 Creating virtual environment..."
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -q flask flask-socketio flask-login werkzeug SpeechRecognition pyaudio pyttsx3 Pillow pystray PyGObject
+    echo "✅ Virtual environment created"
 fi
 
 # Function to cleanup and exit
