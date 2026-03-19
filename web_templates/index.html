@@ -697,6 +697,7 @@
         let recognition = null;
         let recognitionActive = false;
         let waitingForCommand = false;
+        let currentSessionId = null;
         let commandTimeout = null;
         let aiProcessing = false;
         let aiStartTime = null;
@@ -1241,7 +1242,6 @@
     }
 
     // Session management
-    let currentSessionId = null;
 
     async function loadSessions() {
         try {
