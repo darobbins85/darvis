@@ -23,7 +23,7 @@ def is_macos() -> bool:
 
 def get_project_root() -> Path:
     """Get the absolute path to the project root directory.
-    
+
     This allows Darvis to work regardless of where it's installed.
     """
     # Get the directory containing this config file
@@ -32,10 +32,11 @@ def get_project_root() -> Path:
 
 def get_waybar_script_path() -> str:
     """Get the path to the waybar status script.
-    
+
     Returns the path as a string for use in waybar configuration.
     """
     return str(get_project_root() / "scripts" / "darvis-waybar-status")
+
 
 # Wake words for voice activation
 WAKE_WORDS = [
@@ -72,6 +73,12 @@ WEB_SERVICES = {
     "confluence": "https://confluence.atlassian.com",
 }
 
+# Desktop GUI configuration
+# Set to False to run in headless mode (useful for remote access via web UI only)
+DARVIS_ENABLE_DESKTOP_GUI = (
+    os.environ.get("DARVIS_ENABLE_DESKTOP_GUI", "true").lower() == "true"
+)
+
 # GUI configuration
 FONT_SIZE_NORMAL = 16
 FONT_SIZE_LARGE = 24
@@ -81,6 +88,7 @@ GLOW_DURATION_MS = 1500
 ENERGY_THRESHOLD = 400
 LISTEN_TIMEOUT = 5
 PHRASE_TIME_LIMIT = 5
+
 
 # Application detection settings - platform-specific
 def get_desktop_dirs() -> list:
@@ -122,15 +130,35 @@ WAYBAR_MODULE_CONFIG = {
     }
 }
 
-# Web app integration settings
-WEB_APP_HOST = "localhost"
-WEB_APP_PORT = 5001
+# Remote access configuration
+DARVIS_MODE = os.getenv("DARVIS_MODE", "local")
+DARVIS_WEB_PASSWORD = os.getenv("DARVIS_WEB_PASSWORD")
+DARVIS_ENABLE_DESKTOP_GUI = (
+    os.getenv("DARVIS_ENABLE_DESKTOP_GUI", "true").lower() == "true"
+)
+
+# Web app port with validation
+try:
+    DARVIS_WEB_PORT = int(os.getenv("DARVIS_WEB_PORT", "5001"))
+except ValueError:
+    import warnings
+
+    warnings.warn("Invalid DARVIS_WEB_PORT, using default 5001")
+    DARVIS_WEB_PORT = 5001
+
+# Auto-set host based on mode (web app host)
+if DARVIS_MODE == "remote":
+    WEB_APP_HOST = "0.0.0.0"
+else:
+    WEB_APP_HOST = "127.0.0.1"
+
+WEB_APP_PORT = DARVIS_WEB_PORT
 WEB_APP_URL = f"http://{WEB_APP_HOST}:{WEB_APP_PORT}"
 
 
 def get_open_command() -> str:
     """Get the appropriate command to open files/URLs based on platform.
-    
+
     Returns:
         Command string: 'xdg-open' for Linux, 'open' for macOS
     """
@@ -141,10 +169,10 @@ def get_open_command() -> str:
 
 def get_default_working_directory() -> Path:
     """Get the default working directory for file operations.
-    
+
     Returns the user's home directory as the default working location
     instead of the project root directory.
-    
+
     Returns:
         Path: Path to the home directory
     """
@@ -160,7 +188,11 @@ MACOS_APP_MAPPINGS = {
     "safari": ["/Applications/Safari.app"],
     "chrome": ["/Applications/Google Chrome.app", "/Applications/Chromium.app"],
     "firefox": ["/Applications/Firefox.app"],
-    "browser": ["/Applications/Safari.app", "/Applications/Google Chrome.app", "/Applications/Firefox.app"],
+    "browser": [
+        "/Applications/Safari.app",
+        "/Applications/Google Chrome.app",
+        "/Applications/Firefox.app",
+    ],
     "terminal": ["/System/Applications/Terminal.app", "/Applications/iTerm.app"],
     "editor": ["/Applications/TextEdit.app", "/Applications/CotEditor.app"],
     "textedit": ["/Applications/TextEdit.app"],
@@ -173,8 +205,14 @@ MACOS_APP_MAPPINGS = {
     "photos": ["/System/Applications/Photos.app"],
     "music": ["/System/Applications/Music.app"],
     "appstore": ["/System/Applications/App Store.app"],
-    "settings": ["/System/Applications/System Settings.app", "/System/Applications/System Preferences.app"],
-    "system preferences": ["/System/Applications/System Settings.app", "/System/Applications/System Preferences.app"],
+    "settings": [
+        "/System/Applications/System Settings.app",
+        "/System/Applications/System Preferences.app",
+    ],
+    "system preferences": [
+        "/System/Applications/System Settings.app",
+        "/System/Applications/System Preferences.app",
+    ],
     "preview": ["/System/Applications/Preview.app"],
     "activity monitor": ["/System/Applications/Utilities/Activity Monitor.app"],
     "console": ["/System/Applications/Utilities/Console.app"],
