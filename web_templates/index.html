@@ -1256,15 +1256,12 @@
                 const div = document.createElement('div');
                 div.className = 'session-item' + (session.id === currentSessionId ? ' active' : '');
                 div.innerHTML = `
-                    <span class="session-name" data-id="${session.id}">${session.name}</span>
+                    <span class="session-name" data-id="${session.id}" ondblclick="renameSession(${session.id}, '${session.name}')">${session.name}</span>
                     <button class="delete-session" data-id="${session.id}">🗑️</button>
                 `;
                 div.onclick = (e) => {
                     if (e.target.classList.contains('delete-session')) {
                         // Handled by document click listener
-                    } else if (e.target.classList.contains('session-name')) {
-                        // Double-click to rename
-                        renameSession(session.id, session.name);
                     } else {
                         switchSession(session.id);
                     }
