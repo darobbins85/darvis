@@ -334,6 +334,12 @@ def handle_message(data):
 
     print(f"Received message: {message}")
 
+    # Capture user_id BEFORE spawning thread (Flask session doesn't work in background threads)
+    user_id = session.get("user_id")
+    if not user_id:
+        emit("ai_message", {"message": "Error: User not logged in"})
+        return
+
     # Emit the user message to all clients
     emit("user_message", {"message": message}, broadcast=True)
 
@@ -341,14 +347,8 @@ def handle_message(data):
     emit("ai_processing", {}, broadcast=True)
 
     # Process the message (this will be done asynchronously)
-    def process_message_async():
+    def process_message_async(user_id):
         nonlocal session_id
-
-        # Get user_id from session (current_user not available in socket handlers)
-        user_id = session.get("user_id")
-        if not user_id:
-            socketio.emit("ai_message", {"message": "Error: User not logged in"})
-            return
 
         try:
             # Get or create session for user
@@ -404,7 +404,9 @@ def handle_message(data):
             update_waybar_status("error", f"Error: {str(e)[:50]}")
 
     # Start processing in a background thread
-    thread = threading.Thread(target=process_message_async, daemon=True)
+    thread = threading.Thread(
+        target=process_message_async, args=(user_id,), daemon=True
+    )
     thread.start()
 
 

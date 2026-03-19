@@ -883,7 +883,7 @@
               waitingForCommand = false;
               console.log('📝 Manual message sent, stopping command wait');
             }
-            socket.emit('chat_message', {message: message});
+            socket.emit('chat_message', {message: message, session_id: currentSessionId});
             messageInput.value = '';
             startAiProcessing();
           }
@@ -992,7 +992,7 @@
                 // Ignore if already stopped
               }
             }
-            socket.emit('chat_message', {message: text});
+            socket.emit('chat_message', {message: text, session_id: currentSessionId});
             // Show AI processing indicator
             startAiProcessing();
           } else {
