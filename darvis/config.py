@@ -131,7 +131,9 @@ WAYBAR_MODULE_CONFIG = {
 }
 
 # Remote access configuration
-DARVIS_MODE = os.getenv("DARVIS_MODE", "local")
+# Set DARVIS_MODE=local to restrict to localhost only (default)
+# Set DARVIS_MODE=remote to allow access from other devices on network
+DARVIS_MODE = os.getenv("DARVIS_MODE", "remote")
 DARVIS_WEB_PASSWORD = os.getenv("DARVIS_WEB_PASSWORD")
 DARVIS_ENABLE_DESKTOP_GUI = (
     os.getenv("DARVIS_ENABLE_DESKTOP_GUI", "true").lower() == "true"
