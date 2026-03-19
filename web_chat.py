@@ -149,6 +149,9 @@ def login():
     if user and check_password_hash(user["password_hash"], password):
         login_user(User(user["id"], user["username"]))
 
+        # Store user_id in session for socket handlers
+        session["user_id"] = user["id"]
+
         # Create default session if none exists
         get_or_create_default_session(user["id"])
 
@@ -194,6 +197,9 @@ def signup():
     # Auto-login after signup
     login_user(User(user_id, username))
 
+    # Store user_id in session for socket handlers
+    session["user_id"] = user_id
+
     # Create default session
     get_or_create_default_session(user_id)
 
@@ -203,6 +209,7 @@ def signup():
 @app.route("/logout")
 @login_required
 def logout():
+    session.pop("user_id", None)
     logout_user()
     return redirect(url_for("login"))
 
@@ -337,8 +344,8 @@ def handle_message(data):
     def process_message_async():
         nonlocal session_id
 
-        # Capture user_id before thread (current_user not available in async)
-        user_id = current_user.id if current_user else None
+        # Get user_id from session (current_user not available in socket handlers)
+        user_id = session.get("user_id")
         if not user_id:
             socketio.emit("ai_message", {"message": "Error: User not logged in"})
             return
@@ -346,8 +353,8 @@ def handle_message(data):
         try:
             # Get or create session for user
             if not session_id:
-                session = get_or_create_default_session(user_id)
-                session_id = session["id"]
+                session_obj = get_or_create_default_session(user_id)
+                session_id = session_obj["id"]
 
             # Save user message
             add_message(session_id, "user", message)
