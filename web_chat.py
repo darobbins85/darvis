@@ -52,6 +52,16 @@ from darvis.ai import process_ai_query
 from darvis.apps import open_app
 from darvis.waybar_status import update_waybar_status
 from darvis.config import DARVIS_MODE, WEB_APP_HOST, WEB_APP_PORT
+from darvis.database import (
+    init_db,
+    create_user,
+    get_user_by_username,
+    get_user_by_id,
+    get_or_create_default_session,
+)
+
+# Initialize database on startup
+init_db()
 
 # Validate remote mode password requirement
 if DARVIS_MODE == "remote" and not os.getenv("DARVIS_WEB_PASSWORD"):
@@ -76,32 +86,22 @@ login_manager.session_protection = "strong"
 
 # Simple user class
 class User(UserMixin):
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, user_id, username):
+        self.id = user_id
+        self.username = username
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User(user_id)
+    user = get_user_by_id(user_id)
+    if user:
+        return User(user["id"], user["username"])
+    return None
 
 
 # =============================================================================
 # Global State
 # =============================================================================
-
-# Store hashed password at startup
-_hashed_password = None
-
-
-def get_hashed_password():
-    """Get or create hashed password from env."""
-    global _hashed_password
-    if _hashed_password is None:
-        raw_password = os.getenv("DARVIS_WEB_PASSWORD", "")
-        if raw_password:
-            _hashed_password = generate_password_hash(raw_password)
-    return _hashed_password
-
 
 listening_mode = False
 
@@ -119,20 +119,68 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
 
-    # POST - validate password
+    # POST - validate username and password
+    username = request.form.get("username", "")
     password = request.form.get("password", "")
-    hashed = get_hashed_password()
 
-    if not hashed:
-        flash("Server not configured for remote access")
+    if not username or not password:
+        flash("Username and password required")
         return render_template("login.html")
 
-    if check_password_hash(hashed, password):
-        login_user(User("remote_user"))
-        return redirect(url_for("index"))
+    user = get_user_by_username(username)
 
-    flash("Invalid password")
+    if user and check_password_hash(user["password_hash"], password):
+        login_user(User(user["id"], user["username"]))
+
+        # Create default session if none exists
+        get_or_create_default_session(user["id"])
+
+        # Redirect to main chat
+        next_page = request.args.get("next")
+        return redirect(next_page or url_for("index"))
+
+    flash("Invalid username or password")
     return render_template("login.html")
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    """Handle user registration."""
+    if request.method == "GET":
+        return render_template("signup.html")
+
+    username = request.form.get("username", "")
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm", "")
+
+    if not username or not password:
+        flash("Username and password required")
+        return render_template("signup.html")
+
+    if password != confirm:
+        flash("Passwords do not match")
+        return render_template("signup.html")
+
+    if len(password) < 6:
+        flash("Password must be at least 6 characters")
+        return render_template("signup.html")
+
+    # Check if username exists
+    if get_user_by_username(username):
+        flash("Username already taken")
+        return render_template("signup.html")
+
+    # Create user
+    password_hash = generate_password_hash(password)
+    user_id = create_user(username, password_hash)
+
+    # Auto-login after signup
+    login_user(User(user_id, username))
+
+    # Create default session
+    get_or_create_default_session(user_id)
+
+    return redirect(url_for("index"))
 
 
 @app.route("/logout")
