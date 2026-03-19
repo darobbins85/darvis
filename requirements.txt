@@ -11,6 +11,8 @@ pystray>=0.19.0
 flask>=2.0.0
 flask-socketio>=5.0.0
 python-socketio[client]>=5.0.0
+websocket-client>=0.59.0
+requests>=2.28.0
 
 # Optional: GTK support for system tray (Linux)
 PyGObject>=3.42.0
