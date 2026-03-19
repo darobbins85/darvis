@@ -320,6 +320,8 @@ def handle_disconnect():
 def handle_message(data):
     """Handle incoming messages from the web interface."""
     message = data.get("message", "").strip()
+    session_id = data.get("session_id")
+
     if not message:
         return
 
@@ -334,6 +336,14 @@ def handle_message(data):
     # Process the message (this will be done asynchronously)
     def process_message_async():
         try:
+            # Get or create session for user
+            if not session_id:
+                session = get_or_create_default_session(current_user.id)
+                session_id = session["id"]
+
+            # Save user message
+            add_message(session_id, "user", message)
+
             # Check if it's a local app command
             command_lower = message.lower()
             if command_lower.startswith("open "):
@@ -351,18 +361,27 @@ def handle_message(data):
                     update_waybar_status(
                         "thinking", f"Thinking about: {message[:30]}..."
                     )
-                    response, session_id = process_ai_query(message)
+                    response, ai_session_id = process_ai_query(message)
                     update_waybar_status("success", "Response delivered")
-                    socketio.emit("ai_message", {"message": response})
+                    socketio.emit(
+                        "ai_message", {"message": response, "session_id": session_id}
+                    )
                 else:
-                    socketio.emit("ai_message", {"message": f"Result: {response}"})
+                    socketio.emit(
+                        "ai_message",
+                        {"message": f"Result: {response}", "session_id": session_id},
+                    )
                 return
 
             # Default to AI processing
             update_waybar_status("thinking", f"Thinking about: {message[:30]}...")
-            response, session_id = process_ai_query(message)
+            response, ai_session_id = process_ai_query(message)
             update_waybar_status("success", "Response delivered")
-            socketio.emit("ai_message", {"message": response})
+
+            # Save assistant message
+            add_message(session_id, "assistant", response)
+
+            socketio.emit("ai_message", {"message": response, "session_id": session_id})
 
         except Exception as e:
             error_msg = f"Error: {str(e)}"
