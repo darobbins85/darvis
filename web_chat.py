@@ -335,6 +335,8 @@ def handle_message(data):
 
     # Process the message (this will be done asynchronously)
     def process_message_async():
+        nonlocal session_id
+
         try:
             # Get or create session for user
             if not session_id:
