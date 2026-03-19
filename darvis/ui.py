@@ -793,7 +793,7 @@ class DarvisGUI:
             from .config import WEB_APP_URL
 
             try:
-                self.web_socket.connect(WEB_APP_URL, wait_timeout=5)
+                self.web_socket.connect(WEB_APP_URL, wait_timeout=5, namespaces=["/"])
             except Exception as e:
                 print(f"🌐 Socket.IO connection failed: {e}")
                 self.web_sync_enabled = False
