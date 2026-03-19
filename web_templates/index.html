@@ -474,6 +474,144 @@
         0%, 100% { opacity: 1; }
         50% { opacity: 0.7; }
     }
+
+    /* Session sidebar styles */
+    .app-container {
+        display: flex;
+        height: 100vh;
+    }
+
+    .sessions-sidebar {
+        width: 250px;
+        background: rgba(15, 15, 35, 0.95);
+        border-right: 1px solid rgba(42, 42, 78, 0.5);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+    }
+
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(42, 42, 78, 0.5);
+    }
+
+    .sidebar-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: #00d4ff;
+    }
+
+    #new-session-btn {
+        background: rgba(0, 255, 136, 0.2);
+        border: 1px solid rgba(0, 255, 136, 0.5);
+        color: #00ff88;
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #new-session-btn:hover {
+        background: rgba(0, 255, 136, 0.3);
+    }
+
+    .sessions-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.5rem;
+    }
+
+    .session-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-bottom: 0.25rem;
+        transition: background 0.2s;
+    }
+
+    .session-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .session-item.active {
+        background: rgba(0, 212, 255, 0.2);
+        border-left: 3px solid #00d4ff;
+    }
+
+    .session-item .session-name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .session-item .delete-session {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 0.25rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .session-item:hover .delete-session {
+        opacity: 1;
+    }
+
+    .session-item .delete-session:hover {
+        color: #ff6b6b;
+    }
+
+    .sidebar-footer {
+        padding: 1rem;
+        border-top: 1px solid rgba(42, 42, 78, 0.5);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sidebar-footer .username {
+        font-size: 0.9rem;
+        color: #888;
+    }
+
+    .sidebar-footer a {
+        color: #00d4ff;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+    .sidebar-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .chat-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        max-width: 100%;
+        padding: 1rem;
+        overflow-y: auto;
+    }
   </style>
 
 
@@ -481,47 +619,65 @@
 
 <body>
 
-  <div class="chat-container">
+  <div class="app-container">
+    <!-- Session Sidebar -->
+    <aside class="sessions-sidebar">
+      <div class="sidebar-header">
+        <h3>Sessions</h3>
+        <button id="new-session-btn" title="New Session">+</button>
+      </div>
+      <div id="sessions-list" class="sessions-list">
+        <!-- Sessions loaded dynamically -->
+      </div>
+      <div class="sidebar-footer">
+        <span id="username-display" class="username"></span>
+        <a href="/logout">Logout</a>
+      </div>
+    </aside>
 
-    <div id="chat-messages" class="chat-messages">
-      <div class="message system">
-        <div class="message-bubble">
-          👋 Welcome to Darvis! I'm your AI voice assistant. Type a message or enable listening mode to get started.
+    <!-- Chat Area -->
+    <div class="chat-wrapper">
+      <div class="chat-container">
+
+        <div id="chat-messages" class="chat-messages">
+          <div class="message system">
+            <div class="message-bubble">
+              👋 Welcome to Darvis! I'm your AI voice assistant. Type a message or enable listening mode to get started.
+            </div>
+          </div>
+          <!-- AI Processing Indicator -->
+          <div id="ai-processing-indicator" class="message ai" style="display: none;">
+            <div class="message-bubble">
+              <span id="ai-dots">...</span>
+              <span id="ai-timer">(0s)</span>
+              <button id="cancel-ai" class="cancel-button" title="Cancel AI request">❌</button>
+            </div>
+          </div>
         </div>
-      </div>
-      <!-- AI Processing Indicator -->
-      <div id="ai-processing-indicator" class="message ai" style="display: none;">
-        <div class="message-bubble">
-          <span id="ai-dots">...</span>
-          <span id="ai-timer">(0s)</span>
-          <button id="cancel-ai" class="cancel-button" title="Cancel AI request">❌</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Input container centered at bottom of chat -->
-    <div class="input-container">
+        <!-- Input container centered at bottom of chat -->
+        <div class="input-container">
 
-      <!-- Darvis logo at bottom left -->
-      <div class="darvis-logo-wrapper-bottom">
-        <div class="darvis-logo">
-          <img id="darvis-logo-img" src="/static/darvis-logo.png">
-        </div>
-      </div>
+          <!-- Darvis logo at bottom left -->
+          <div class="darvis-logo-wrapper-bottom">
+            <div class="darvis-logo">
+              <img id="darvis-logo-img" src="/static/darvis-logo.png">
+            </div>
+          </div>
 
-      <div>
-        <form id="message-form" class="input-form">
-          <input type="text" id="message-input" class="message-input" placeholder="Type your message..."
-            autocomplete="off">
-          <button type="submit" class="send-button">
-            Send ✉️
-          </button>
-          <button id="mic-btn" onclick="toggleMic()" title="Click to talk" class="listening-toggle">🎤</button>
-        </form>
-        <span id="voice-status"></span>
-      </div>
+          <div>
+            <form id="message-form" class="input-form">
+              <input type="text" id="message-input" class="message-input" placeholder="Type your message..."
+                autocomplete="off">
+              <button type="submit" class="send-button">
+                Send ✉️
+              </button>
+              <button id="mic-btn" onclick="toggleMic()" title="Click to talk" class="listening-toggle">🎤</button>
+            </form>
+            <span id="voice-status"></span>
+          </div>
 
-      <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+          <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
       <script>
         /* =============================================================================
            Initialization - Socket connection and DOM element references
@@ -1083,7 +1239,162 @@
             voiceClient.startRecording();
         }
     }
+
+    // Session management
+    let currentSessionId = null;
+
+    async function loadSessions() {
+        try {
+            const response = await fetch('/api/sessions');
+            if (!response.ok) return;
+            
+            const sessions = await response.json();
+            const list = document.getElementById('sessions-list');
+            list.innerHTML = '';
+            
+            sessions.forEach(session => {
+                const div = document.createElement('div');
+                div.className = 'session-item' + (session.id === currentSessionId ? ' active' : '');
+                div.innerHTML = `
+                    <span class="session-name">${session.name}</span>
+                    <button class="delete-session" data-id="${session.id}">🗑️</button>
+                `;
+                div.onclick = (e) => {
+                    if (!e.target.classList.contains('delete-session')) {
+                        switchSession(session.id);
+                    }
+                };
+                list.appendChild(div);
+            });
+        } catch (err) {
+            console.error('Failed to load sessions:', err);
+        }
+    }
+
+    async function switchSession(sessionId) {
+        currentSessionId = sessionId;
+        await loadSessions();
+        await loadMessages();
+        
+        // Update active session name in header
+        try {
+            const response = await fetch('/api/sessions');
+            const sessions = await response.json();
+            const session = sessions.find(s => s.id === sessionId);
+            if (session) {
+                document.getElementById('current-session-name').textContent = session.name;
+            }
+        } catch (err) {
+            console.error('Failed to get session name:', err);
+        }
+    }
+
+    async function loadMessages() {
+        if (!currentSessionId) return;
+        
+        try {
+            const response = await fetch(`/api/sessions/${currentSessionId}/messages`);
+            if (!response.ok) return;
+            
+            const messages = await response.json();
+            
+            // Clear existing messages except the welcome and processing indicator
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML = `
+                <div class="message system">
+                    <div class="message-bubble">
+                        👋 Welcome to Darvis! I'm your AI voice assistant. Type a message or enable listening mode to get started.
+                    </div>
+                </div>
+                <div id="ai-processing-indicator" class="message ai" style="display: none;">
+                    <div class="message-bubble">
+                        <span id="ai-dots">...</span>
+                        <span id="ai-timer">(0s)</span>
+                        <button id="cancel-ai" class="cancel-button" title="Cancel AI request">❌</button>
+                    </div>
+                </div>
+            `;
+            
+            messages.forEach(msg => {
+                addMessage(msg.content, msg.role === 'user' ? 'user' : 'ai');
+            });
+        } catch (err) {
+            console.error('Failed to load messages:', err);
+        }
+    }
+
+    async function initApp() {
+        try {
+            // Load user info
+            const userResponse = await fetch('/api/user');
+            if (userResponse.ok) {
+                const user = await userResponse.json();
+                document.getElementById('username-display').textContent = user.username;
+            }
+            
+            // Load sessions
+            await loadSessions();
+            
+            // Switch to first session if none selected
+            if (!currentSessionId) {
+                const sessions = await (await fetch('/api/sessions')).json();
+                if (sessions.length > 0) {
+                    currentSessionId = sessions[0].id;
+                    await loadSessions();
+                    await loadMessages();
+                }
+            }
+        } catch (err) {
+            console.error('Failed to init app:', err);
+        }
+    }
+
+    // New session button
+    document.getElementById('new-session-btn').onclick = async () => {
+        try {
+            const response = await fetch('/api/sessions', { method: 'POST' });
+            const session = await response.json();
+            await loadSessions();
+            await switchSession(session.id);
+        } catch (err) {
+            console.error('Failed to create session:', err);
+        }
+    };
+
+    // Delete session button
+    document.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('delete-session')) {
+            const sessionId = parseInt(e.target.dataset.id);
+            
+            if (confirm('Delete this session? This cannot be undone.')) {
+                try {
+                    await fetch(`/api/sessions/${sessionId}`, { method: 'DELETE' });
+                    
+                    if (sessionId === currentSessionId) {
+                        const sessions = await (await fetch('/api/sessions')).json();
+                        if (sessions.length > 0) {
+                            await switchSession(sessions[0].id);
+                        } else {
+                            // Create new session if all deleted
+                            const newSession = await (await fetch('/api/sessions', { method: 'POST' })).json();
+                            await switchSession(newSession.id);
+                        }
+                    } else {
+                        await loadSessions();
+                    }
+                } catch (err) {
+                    console.error('Failed to delete session:', err);
+                }
+            }
+        }
+    });
+
+    // Initialize app
+    initApp();
 </script>
+</div>  <!-- Close chat-container -->
+</div>  <!-- Close chat-wrapper -->
+</div>  <!-- Close app-container -->
 </body>
 
 </html>
