@@ -148,13 +148,27 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
-      padding: 0 6px;
+      flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
+      padding: 8px 0;
     }
 
     .rail-sessions::-webkit-scrollbar {
       display: none;
+    }
+
+    #user-profile-btn {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      border-radius: 0;
+      width: 100%;
+    }
+
+    #user-avatar {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
     }
 
     .session-icon {
@@ -242,7 +256,7 @@
     .sidebar-logo {
       display: flex;
       align-items: center;
-      height: 36px;
+      height: 40px;
     }
 
     .sidebar-logo a {
@@ -256,7 +270,7 @@
     }
 
     .sidebar-logo img {
-      height: 24px;
+      height: 32px;
       width: auto;
     }
 
@@ -951,8 +965,8 @@
     }
 
     .darvis-logo-wrapper-bottom img {
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       border-radius: var(--radius-sm);
       transition: transform var(--transition);
     }
@@ -1492,13 +1506,15 @@
       <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
     </button>
     
-    <!-- Spacer -->
-    <div class="rail-spacer"></div>
-    
     <!-- Sessions in Rail -->
     <div class="rail-sessions" id="rail-sessions">
       <!-- Session icons loaded dynamically -->
     </div>
+    
+    <!-- User Profile -->
+    <button class="icon-btn" id="user-profile-btn" title="Profile">
+      <span id="user-avatar">?</span>
+    </button>
   </div>
 
   <!-- Expanded Sidebar -->
@@ -2312,9 +2328,11 @@
                 const user = await userResponse.json();
                 console.log('User loaded:', user.username);
                 document.getElementById('username-display').innerHTML = '👤 <strong>' + user.username + '</strong>';
+                document.getElementById('user-avatar').textContent = user.username.charAt(0).toUpperCase();
             } else {
                 console.error('User API failed');
                 document.getElementById('username-display').textContent = 'Not logged in';
+                document.getElementById('user-avatar').textContent = '?';
             }
             
             // Load sessions
