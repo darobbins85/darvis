@@ -996,8 +996,8 @@
     }
 
     .send-button {
-      background: var(--text-muted);
-      color: var(--bg-primary);
+      background: var(--bg-300);
+      color: var(--text-muted);
       border: none;
       width: 40px;
       height: 40px;
@@ -1015,9 +1015,23 @@
       background: var(--text-secondary);
     }
 
+    .send-button.active {
+      background: var(--accent);
+      color: var(--bg-primary);
+    }
+
+    .send-button.active:hover {
+      background: #33d4ff;
+    }
+
     .send-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+
+    .send-button svg {
+      width: 24px;
+      height: 24px;
     }
 
     .listening-toggle {
@@ -1618,13 +1632,23 @@
       <script>
         /* =============================================================================
            Initialization - Socket connection and DOM element references
-           ============================================================================= */
+            ============================================================================= */
         const socket = io();
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const messageForm = document.getElementById('message-form');
         const listeningToggle = document.getElementById('mic-btn');
         const micBtn = document.getElementById('mic-btn');
+        const sendButton = document.querySelector('.send-button');
+
+        // Toggle send button active state based on input content
+        messageInput.addEventListener('input', function() {
+          if (messageInput.value.trim().length > 0) {
+            sendButton.classList.add('active');
+          } else {
+            sendButton.classList.remove('active');
+          }
+        });
 
         /* =============================================================================
            State Variables - Track application state
