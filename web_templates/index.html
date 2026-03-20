@@ -49,6 +49,7 @@
       --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
 
       --sidebar-width: 18rem;
+      --icon-rail-width: 48px;
     }
 
     /* =============================================================================
@@ -89,71 +90,163 @@
       flex-direction: column;
       overflow: hidden;
       min-width: 0;
+      margin-left: var(--icon-rail-width);
     }
 
     /* =============================================================================
-       Sidebar - Claude Style
+       Icon Rail - Always visible sidebar
        ============================================================================= */
-    .sessions-sidebar {
+    .icon-rail {
       position: fixed;
       left: 0;
       top: 0;
       bottom: 0;
-      width: var(--sidebar-width);
+      width: var(--icon-rail-width);
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border-300);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      z-index: 51;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .icon-rail::-webkit-scrollbar {
+      display: none;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all var(--transition);
+      margin-bottom: 4px;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .rail-spacer {
+      flex: 1;
+      min-height: 8px;
+    }
+
+    .rail-sessions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      padding: 0 6px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .rail-sessions::-webkit-scrollbar {
+      display: none;
+    }
+
+    .session-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      transition: all var(--transition);
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+
+    .session-icon:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .session-icon.active {
+      background: var(--bg-active);
+      color: var(--text-primary);
+    }
+
+    .session-icon .delete-session {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--bg-300);
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.6rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .session-icon:hover .delete-session {
+      display: flex;
+    }
+
+    /* =============================================================================
+       Sidebar - Claude Style (Expanded View)
+       ============================================================================= */
+    .sessions-sidebar {
+      position: fixed;
+      left: var(--icon-rail-width);
+      top: 0;
+      bottom: 0;
+      width: calc(var(--sidebar-width) - var(--icon-rail-width));
       background: var(--bg-primary);
       border-right: 1px solid var(--border-300);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
       z-index: 50;
-      transition: transform 0.2s ease, background-color 35ms;
+      transition: transform 0.2s ease, width 0.2s ease;
     }
 
     .sessions-sidebar.collapsed {
       transform: translateX(-100%);
+      width: 0;
+      overflow: hidden;
     }
 
     #sidebar-toggle {
-      position: fixed;
-      top: 16px;
-      left: calc(var(--sidebar-width) + 12px);
-      z-index: 100;
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all var(--transition);
-    }
-
-    #sidebar-toggle:hover {
-      background: var(--bg-hover);
-      color: var(--text-primary);
-    }
-
-    body.sidebar-collapsed #sidebar-toggle {
-      left: 12px;
+      display: none;
     }
 
     .sidebar-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       padding: 8px;
       padding-top: 12px;
+      min-height: 52px;
     }
 
     .sidebar-logo {
       display: flex;
       align-items: center;
-      padding-left: 8px;
-      height: 32px;
+      height: 36px;
     }
 
     .sidebar-logo a {
@@ -162,10 +255,12 @@
       gap: 8px;
       text-decoration: none;
       color: var(--text-primary);
+      font-weight: 600;
+      font-size: 1rem;
     }
 
     .sidebar-logo img {
-      height: 20px;
+      height: 24px;
       width: auto;
     }
 
@@ -226,14 +321,14 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 16px 8px 8px;
+      padding: 8px;
     }
 
     .sessions-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 8px 8px;
+      padding: 8px 4px;
       font-size: 0.75rem;
       color: var(--text-muted);
     }
@@ -257,7 +352,7 @@
       justify-content: space-between;
       align-items: center;
       height: 32px;
-      padding: 0 12px;
+      padding: 0 8px;
       border-radius: var(--radius-md);
       cursor: pointer;
       transition: background var(--transition);
@@ -271,6 +366,14 @@
       background: var(--bg-active);
     }
 
+    .session-item .session-number {
+      width: 20px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      flex-shrink: 0;
+    }
+
     .session-item .session-name {
       flex: 1;
       overflow: hidden;
@@ -278,14 +381,7 @@
       white-space: nowrap;
       font-size: 0.875rem;
       color: var(--text-primary);
-      /* Claude-style gradient mask on hover */
-      -webkit-mask-image: linear-gradient(to right, black 78%, transparent 95%);
-      mask-image: linear-gradient(to right, black 78%, transparent 95%);
-    }
-
-    .session-item:hover .session-name {
-      -webkit-mask-image: linear-gradient(to right, black 78%, transparent 95%);
-      mask-image: linear-gradient(to right, black 78%, transparent 95%);
+      margin-left: 8px;
     }
 
     .session-item .delete-session {
@@ -293,7 +389,7 @@
       border: none;
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       padding: 4px;
       border-radius: var(--radius-sm);
       opacity: 0;
@@ -347,11 +443,6 @@
 
       .sessions-sidebar.open {
         transform: translateX(0);
-      }
-
-      .sessions-sidebar.collapsed {
-        width: var(--sidebar-width);
-        transform: translateX(-100%);
       }
 
       .sidebar-overlay {
@@ -555,11 +646,10 @@
         position: fixed;
         inset: 0;
         background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 1001;
+        z-index: 100;
         opacity: 0;
         pointer-events: none;
-        transition: opacity var(--transition-normal);
+        transition: opacity 0.2s ease;
       }
 
       .sidebar-overlay.active {
@@ -1322,6 +1412,25 @@
       }
     }
 
+      .message-bubble {
+        max-width: 90%;
+        font-size: 0.875rem;
+        padding: 10px 14px;
+      }
+
+      .welcome-title {
+        font-size: 1.25rem;
+      }
+
+      .header {
+        padding: 12px 16px;
+      }
+
+      .input-container {
+        padding: 12px 0 16px;
+      }
+    }
+
       .header {
         padding: 0.75rem 1rem;
       }
@@ -1412,54 +1521,73 @@
 
 <body>
 
-  <button id="sidebar-toggle" title="Toggle Sessions">
-    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4.5A.5.5 0 0 1 2.5 4h15a.5.5 0 0 1 0 1H2.5a.5.5 0 0 1-.5-.5M2 10a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15A.5.5 0 0 1 2 10m.5 5.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-15"/></svg>
-  </button>
+  <!-- Icon Rail - Always Visible -->
+  <div class="icon-rail" id="icon-rail">
+    <!-- Toggle button -->
+    <button class="icon-btn" id="sidebar-toggle" title="Toggle Sidebar">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4.5A.5.5 0 0 1 2.5 4h15a.5.5 0 0 1 0 1H2.5a.5.5 0 0 1-.5-.5M2 10a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15A.5.5 0 0 1 2 10m.5 5.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-15"/></svg>
+    </button>
+    
+    <!-- Search -->
+    <button class="icon-btn" id="search-btn" title="Search">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 2a6.5 6.5 0 0 1 4.935 10.728l4.419 4.419.064.078a.5.5 0 0 1-.693.693l-.079-.064-4.419-4.42A6.5 6.5 0 1 1 8.5 2m0 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11"/></svg>
+    </button>
+    
+    <!-- New Chat -->
+    <button class="icon-btn" id="new-session-btn" title="New Chat">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
+    </button>
+    
+    <!-- Spacer -->
+    <div class="rail-spacer"></div>
+    
+    <!-- Sessions in Rail -->
+    <div class="rail-sessions" id="rail-sessions">
+      <!-- Session icons loaded dynamically -->
+    </div>
+  </div>
 
-  <div class="app-container">
-    <!-- Session Sidebar - Claude Style -->
-    <aside class="sessions-sidebar" id="sessions-sidebar">
-      <!-- Sidebar Header with Logo -->
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <a href="/">
-            <img src="/static/darvis-logo.png" alt="Darvis">
-          </a>
-        </div>
-        <button id="new-session-btn" title="New Chat">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
-        </button>
-      </div>
-
-      <!-- Navigation -->
-      <nav class="sidebar-nav">
-        <a href="#" class="sidebar-nav-item">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 2a6.5 6.5 0 0 1 4.935 10.728l4.419 4.419.064.078a.5.5 0 0 1-.693.693l-.079-.064-4.419-4.42A6.5 6.5 0 1 1 8.5 2m0 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11"/></svg>
-          Search
+  <!-- Expanded Sidebar -->
+  <aside class="sessions-sidebar collapsed" id="sessions-sidebar">
+    <!-- Sidebar Header with Logo -->
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <a href="/">
+          <img src="/static/darvis-logo.png" alt="Darvis">
+          <span>Darvis</span>
         </a>
-      </nav>
-
-      <!-- Sessions List -->
-      <div class="sessions-list-container">
-        <div class="sessions-header">
-          <span>Recents</span>
-        </div>
-        <div id="sessions-list" class="sessions-list">
-          <!-- Sessions loaded dynamically -->
-        </div>
       </div>
+    </div>
 
-      <!-- Sidebar Footer -->
-      <div class="sidebar-footer">
-        <span id="username-display" class="username">Loading...</span>
-        <a href="/logout">Logout</a>
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <a href="#" class="sidebar-nav-item">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 2a6.5 6.5 0 0 1 4.935 10.728l4.419 4.419.064.078a.5.5 0 0 1-.693.693l-.079-.064-4.419-4.42A6.5 6.5 0 1 1 8.5 2m0 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11"/></svg>
+        Search
+      </a>
+    </nav>
+
+    <!-- Sessions List -->
+    <div class="sessions-list-container">
+      <div class="sessions-header">
+        <span>Recents</span>
       </div>
-    </aside>
+      <div id="sessions-list" class="sessions-list">
+        <!-- Sessions loaded dynamically -->
+      </div>
+    </div>
 
-    <!-- Mobile sidebar overlay -->
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <span id="username-display" class="username">Loading...</span>
+      <a href="/logout">Logout</a>
+    </div>
+  </aside>
 
-    <!-- Chat Area -->
+  <!-- Mobile sidebar overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- Chat Area -->
     <div class="chat-wrapper">
       <!-- Header -->
       <header class="header">
@@ -2101,14 +2229,21 @@
             
             const sessions = await response.json();
             const list = document.getElementById('sessions-list');
+            const railSessions = document.getElementById('rail-sessions');
             list.innerHTML = '';
+            railSessions.innerHTML = '';
             
-            sessions.forEach(session => {
+            sessions.forEach((session, index) => {
+                const sessionNum = index + 1;
+                const isActive = session.id === currentSessionId;
+                
+                // Create sidebar item
                 const div = document.createElement('div');
-                div.className = 'session-item' + (session.id === currentSessionId ? ' active' : '');
+                div.className = 'session-item' + (isActive ? ' active' : '');
                 div.innerHTML = `
-                    <span class="session-name" data-id="${session.id}" ondblclick="renameSession(${session.id}, '${session.name}')">${session.name}</span>
-                    <button class="delete-session" data-id="${session.id}">🗑️</button>
+                    <span class="session-number">${sessionNum}</span>
+                    <span class="session-name" data-id="${session.id}" ondblclick="renameSession(${session.id}, '${session.name.replace(/'/g, "\\'")}')">${session.name}</span>
+                    <button class="delete-session" data-id="${session.id}">×</button>
                 `;
                 div.onclick = (e) => {
                     if (e.target.classList.contains('delete-session')) {
@@ -2118,6 +2253,15 @@
                     }
                 };
                 list.appendChild(div);
+                
+                // Create rail icon
+                const iconBtn = document.createElement('button');
+                iconBtn.className = 'session-icon' + (isActive ? ' active' : '');
+                iconBtn.setAttribute('title', session.name);
+                iconBtn.setAttribute('data-id', session.id);
+                iconBtn.textContent = sessionNum;
+                iconBtn.onclick = () => switchSession(session.id);
+                railSessions.appendChild(iconBtn);
             });
         } catch (err) {
             console.error('Failed to load sessions:', err);
@@ -2166,7 +2310,6 @@
                 sidebar.classList.add('collapsed');
                 overlay.classList.remove('active');
                 document.body.classList.add('sidebar-collapsed');
-                document.getElementById('sidebar-toggle').textContent = '→';
             }
         }
     }
