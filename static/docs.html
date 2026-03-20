@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darvis Documentation</title>
+  <style>
+    :root {
+      --bg-primary: #09090b;
+      --bg-secondary: #111113;
+      --bg-tertiary: #18181b;
+      --bg-hover: rgba(255, 255, 255, 0.04);
+      --bg-active: rgba(255, 255, 255, 0.06);
+      --bg-000: #0a0a0c;
+      --bg-100: #111113;
+      --bg-200: #18181b;
+      --bg-300: #27272a;
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --accent: #13c4ff;
+      --accent-dim: rgba(19, 196, 255, 0.15);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-300: rgba(255, 255, 255, 0.15);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      padding: 2rem 0 3rem;
+      border-bottom: 1px solid var(--border-300);
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-secondary);
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--bg-primary);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+      z-index: 100;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.15s ease;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    section {
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--accent);
+    }
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 1rem 0 0.5rem;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+
+    pre {
+      background: var(--bg-000);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    code {
+      background: var(--bg-200);
+      padding: 0.2rem 0.4rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text-primary);
+      font-weight: 600;
+      background: var(--bg-secondary);
+    }
+
+    td {
+      color: var(--text-secondary);
+    }
+
+    .diagram {
+      background: var(--bg-000);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 1rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.4;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .test-table {
+      margin: 1rem 0;
+    }
+
+    .test-id {
+      color: var(--accent);
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+
+      nav ul {
+        gap: 1rem;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      pre {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Darvis Documentation</h1>
+      <p>Voice Assistant with Web UI, Multi-User Support, and Session Management</p>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#database">Database</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#flows">Flows</a></li>
+        <li><a href="#api">API</a></li>
+        <li><a href="#testing">Testing</a></li>
+      </ul>
+    </nav>
+
+    <section id="overview">
+      <h2>Overview</h2>
+      <p>Darvis is a voice assistant that provides both a desktop GUI and web interface. It supports multiple users with isolated sessions and real-time AI-powered conversations.</p>
+      
+      <h3>Key Features</h3>
+      <ul>
+        <li>Voice activation ("Hey Darvis" / "Computer")</li>
+        <li>Text input via web UI</li>
+        <li>Multi-user support with session isolation</li>
+        <li>Real-time message updates via Socket.IO</li>
+        <li>AI responses via OpenCode CLI</li>
+        <li>Desktop app launching</li>
+        <li>Waybar status integration (Linux)</li>
+      </ul>
+
+      <h3>Technology Stack</h3>
+      <table>
+        <tr><th>Component</th><th>Technology</th></tr>
+        <tr><td>Web Server</td><td>Flask + Flask-SocketIO</td></tr>
+        <tr><td>Database</td><td>SQLite</td></tr>
+        <tr><td>Authentication</td><td>Flask-Login</td></tr>
+        <tr><td>AI Provider</td><td>OpenCode CLI</td></tr>
+        <tr><td>Speech Recognition</td><td>Web Speech API (browser) / Google SR</td></tr>
+        <tr><td>Text-to-Speech</td><td>pyttsx3</td></tr>
+        <tr><td>Desktop GUI</td><td>Tkinter</td></tr>
+      </table>
+    </section>
+
+    <section id="database">
+      <h2>Database Models</h2>
+      
+      <h3>Schema Diagram</h3>
+      <div class="diagram">┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+│     users        │       │    sessions     │       │    messages     │
+├─────────────────┤       ├─────────────────┤       ├─────────────────┤
+│ id (PK)         │──┐    │ id (PK)         │──┐    │ id (PK)         │
+│ username         │  │    │ user_id (FK)   │◄─┤    │ session_id (FK) │◄─┤
+│ password_hash    │  │    │ name           │  │    │ role            │
+│ created_at       │  └──►│ session_number  │  │    │ content         │
+└─────────────────┘       │ ai_session_id   │  │    │ created_at       │
+                         │ created_at       │  │    └─────────────────┘
+                         │ updated_at       │  │
+                         └─────────────────┘</div>
+
+      <h3>users</h3>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Constraints</th></tr>
+        <tr><td>id</td><td>INTEGER</td><td>PRIMARY KEY AUTOINCREMENT</td></tr>
+        <tr><td>username</td><td>TEXT</td><td>UNIQUE, NOT NULL</td></tr>
+        <tr><td>password_hash</td><td>TEXT</td><td>NOT NULL</td></tr>
+        <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT CURRENT_TIMESTAMP</td></tr>
+      </table>
+
+      <h3>sessions</h3>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Constraints</th></tr>
+        <tr><td>id</td><td>INTEGER</td><td>PRIMARY KEY AUTOINCREMENT</td></tr>
+        <tr><td>user_id</td><td>INTEGER</td><td>NOT NULL, FK → users(id)</td></tr>
+        <tr><td>name</td><td>TEXT</td><td>NOT NULL</td></tr>
+        <tr><td>session_number</td><td>INTEGER</td><td>NOT NULL</td></tr>
+        <tr><td>ai_session_id</td><td>TEXT</td><td>AI provider session reference</td></tr>
+        <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT CURRENT_TIMESTAMP</td></tr>
+        <tr><td>updated_at</td><td>TIMESTAMP</td><td>DEFAULT CURRENT_TIMESTAMP</td></tr>
+      </table>
+
+      <h3>messages</h3>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Constraints</th></tr>
+        <tr><td>id</td><td>INTEGER</td><td>PRIMARY KEY AUTOINCREMENT</td></tr>
+        <tr><td>session_id</td><td>INTEGER</td><td>NOT NULL, FK → sessions(id)</td></tr>
+        <tr><td>role</td><td>TEXT</td><td>NOT NULL, CHECK IN ('user', 'assistant')</td></tr>
+        <tr><td>content</td><td>TEXT</td><td>NOT NULL</td></tr>
+        <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT CURRENT_TIMESTAMP</td></tr>
+      </table>
+    </section>
+
+    <section id="architecture">
+      <h2>Module Architecture</h2>
+
+      <table>
+        <tr><th>Module</th><th>Path</th><th>Purpose</th></tr>
+        <tr><td>database.py</td><td>darvis/database.py</td><td>SQLite CRUD operations for users, sessions, messages</td></tr>
+        <tr><td>ai.py</td><td>darvis/ai.py</td><td>AI integration via OpenCode CLI</td></tr>
+        <tr><td>speech.py</td><td>darvis/speech.py</td><td>Text-to-Speech (pyttsx3) and Speech Recognition</td></tr>
+        <tr><td>apps.py</td><td>darvis/apps.py</td><td>Application detection and launching</td></tr>
+        <tr><td>ui.py</td><td>darvis/ui.py</td><td>Tkinter desktop GUI</td></tr>
+        <tr><td>config.py</td><td>darvis/config.py</td><td>Configuration constants and environment variables</td></tr>
+        <tr><td>waybar_status.py</td><td>darvis/waybar_status.py</td><td>Waybar integration via FIFO pipe</td></tr>
+        <tr><td>web_chat.py</td><td>web_chat.py</td><td>Flask-SocketIO web server</td></tr>
+      </table>
+
+      <h3>Component Diagram</h3>
+      <div class="diagram">┌─────────────────────────────────────────────────────────────────┐
+│                         Clients                                    │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
+│  │   Desktop   │  │   Web UI    │  │   Mobile    │              │
+│  │  (Tkinter)  │  │  (Browser)  │  │  (Browser)  │              │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘              │
+└─────────┼────────────────┼────────────────┼──────────────────────┘
+          │                │                │
+          └────────────────┼────────────────┘
+                          │ Socket.IO / HTTP
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     web_chat.py (Flask)                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐           │
+│  │   Routes    │  │  Socket.IO   │  │  Auth       │           │
+│  │  /login    │  │  Events     │  │  (Flask-    │           │
+│  │  /api/*   │  │             │  │   Login)    │           │
+│  └──────────────┘  └──────────────┘  └──────────────┘           │
+└─────────────────────────────────────────────────────────────────┘
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  database   │  │    ai.py    │  │   apps.py   │
+│  (SQLite)   │  │ (OpenCode)  │  │  (Launch)   │
+└─────────────┘  └─────────────┘  └─────────────┘</div>
+    </section>
+
+    <section id="flows">
+      <h2>Key Flows</h2>
+
+      <h3>1. Login Flow</h3>
+      <div class="diagram">Browser                    Flask                    Database
+    ┌─────────┐             ┌─────────┐            ┌───────────┐
+    │ POST    │────────────►│ Route   │──────────►│ get_user  │
+    │ /login  │             │ /login  │            │ _by_username
+    └─────────┘             └────┬────┘            └───────────┘
+                                  │
+                                  ▼
+                            ┌───────────┐
+                            │ check_    │
+                            │ password  │
+                            └─────┬─────┘
+                                  │
+                                  ▼
+                            ┌───────────┐            ┌───────────┐
+                            │ login_    │──────────► │ create_   │
+                            │ user      │            │ default_  │
+                            └───────────┘            │ session   │
+                                                    └───────────┘</div>
+
+      <h3>2. Send Message Flow</h3>
+      <div class="diagram">Browser              Socket.IO              Background Thread
+    ┌─────────┐         ┌─────────────┐       ┌─────────────────┐
+    │ emit    │────────►│ handle_     │─────►│ process_       │
+    │ chat_   │         │ message()   │       │ message_async()│
+    │ message │         └─────────────┘       └────────┬────────┘
+    └─────────┘                                       │
+                                                       ▼
+                                             ┌─────────────────┐
+                                             │ 1. add_message  │
+                                             │    (user role)  │
+                                             └────────┬────────┘
+                                                       │
+                                                       ▼
+                                             ┌─────────────────┐
+                                             │ 2. Check local  │
+                                             │    commands     │
+                                             │    (open app)  │
+                                             └────────┬────────┘
+                                                       │
+                                                       ▼
+                                             ┌─────────────────┐
+                                             │ 3. process_     │
+                                             │    ai_query()  │
+                                             │    (OpenCode)  │
+                                             └────────┬────────┘
+                                                       │
+                                                       ▼
+                                             ┌─────────────────┐
+                                             │ 4. add_message  │
+                                             │    (assistant)  │
+                                             └────────┬────────┘
+                                                       │
+                                                       ▼
+    ┌─────────┐         ┌─────────────┐       ┌─────────────────┐
+    │ receive │◄────────│ emit to     │◄─────│ socketio.emit  │
+    │ ai_msg  │         │ user_{id}   │       │ ('ai_message') │
+    └─────────┘         └─────────────┘       └─────────────────┘</div>
+
+      <h3>3. Session Isolation (Multi-User)</h3>
+      <div class="diagram">User A (id=1)                    User B (id=2)
+    ┌─────────────┐                   ┌─────────────┐
+    │ Browser A   │                   │ Browser B   │
+    │ Room:      │                   │ Room:      │
+    │ user_1     │                   │ user_2     │
+    └──────┬──────┘                   └──────┬──────┘
+           │                                 │
+           │ emit(chat_message)              │ emit(chat_message)
+           ▼                                 ▼
+    ┌─────────────────────────────────────────────────┐
+    │              web_chat.py (Flask)                │
+    │                                                 │
+    │  1. Get user_id from session (NOT socket!)       │
+    │  2. Verify session belongs to user               │
+    │  3. Emit ONLY to user_{user_id} room            │
+    │                                                 │
+    │  emit('ai_message', to=f"user_{user_id}")      │
+    └─────────────────────────────────────────────────┘
+           │                                 │
+           ▼                                 (never receives)
+    User A sees response              User B does NOT see
+    in session 1                      User A's messages</div>
+
+      <h3>4. Voice Recognition Flow (Browser)</h3>
+      <div class="diagram">Microphone ──► Web Speech API ──► Socket.IO ──► AI ──► Response
+                  (browser)              │             │
+                                         ▼             ▼
+                                   emit speech_   emit to
+                                   recognized     user room</div>
+    </section>
+
+    <section id="api">
+      <h2>API Reference</h2>
+
+      <h3>HTTP Routes</h3>
+      <table>
+        <tr><th>Route</th><th>Method</th><th>Auth</th><th>Description</th></tr>
+        <tr><td>/</td><td>GET</td><td>Required</td><td>Main chat interface</td></tr>
+        <tr><td>/login</td><td>GET/POST</td><td>No</td><td>Login page and authentication</td></tr>
+        <tr><td>/signup</td><td>GET/POST</td><td>No</td><td>Registration page and signup</td></tr>
+        <tr><td>/logout</td><td>GET</td><td>Required</td><td>Logout and clear session</td></tr>
+        <tr><td>/api/sessions</td><td>GET</td><td>Required</td><td>Get all sessions for current user</td></tr>
+        <tr><td>/api/sessions</td><td>POST</td><td>Required</td><td>Create new session</td></tr>
+        <tr><td>/api/sessions/:id</td><td>PUT</td><td>Required</td><td>Update session (rename)</td></tr>
+        <tr><td>/api/sessions/:id</td><td>DELETE</td><td>Required</td><td>Delete session</td></tr>
+        <tr><td>/api/sessions/:id/messages</td><td>GET</td><td>Required</td><td>Get messages for session</td></tr>
+      </table>
+
+      <h3>Socket.IO Events</h3>
+      <h4>Client → Server</h4>
+      <table>
+        <tr><th>Event</th><th>Payload</th><th>Description</th></tr>
+        <tr><td>connect</td><td>-</td><td>Client connection</td></tr>
+        <tr><td>chat_message</td><td>{message, session_id}</td><td>Send message</td></tr>
+        <tr><td>toggle_listening</td><td>{enabled}</td><td>Toggle voice mode</td></tr>
+        <tr><td>speech_recognized</td><td>{text}</td><td>Browser speech result</td></tr>
+        <tr><td>disconnect</td><td>-</td><td>Client disconnect</td></tr>
+      </table>
+
+      <h4>Server → Client</h4>
+      <table>
+        <tr><th>Event</th><th>Payload</th><th>Description</th></tr>
+        <tr><td>user_message</td><td>{message, session_id}</td><td>User message received (to user's room)</td></tr>
+        <tr><td>ai_message</td><td>{message, session_id}</td><td>AI response (to user's room)</td></tr>
+        <tr><td>ai_processing</td><td>{}</td><td>AI processing started (to user's room)</td></tr>
+        <tr><td>ai_cancelled</td><td>{}</td><td>AI request cancelled</td></tr>
+        <tr><td>wake_word</td><td>{}</td><td>Wake word detected</td></tr>
+      </table>
+
+      <h3>Socket Room Isolation</h3>
+      <p>Each user is assigned to a room named <code>user_{user_id}</code>. All messages are emitted only to the user's room:</p>
+      <pre><code>socketio.emit('ai_message', {'message': response, 'session_id': session_id}, to=f"user_{user_id}")</code></pre>
+    </section>
+
+    <section id="testing">
+      <h2>User Journeys & Test Cases</h2>
+      <p>Use these test cases to verify Darvis functionality, especially multi-user session isolation.</p>
+
+      <h3>1. Authentication Tests</h3>
+      <table class="test-table">
+        <tr><th>Test ID</th><th>Description</th><th>Pre-conditions</th><th>Steps</th><th>Expected Result</th></tr>
+        <tr>
+          <td class="test-id">AUTH-001</td>
+          <td>Valid login</td>
+          <td>User exists in database</td>
+          <td>1. Navigate to /login<br>2. Enter username/password<br>3. Click Submit</td>
+          <td>Redirect to / with chat interface, default session created</td>
+        </tr>
+        <tr>
+          <td class="test-id">AUTH-002</td>
+          <td>Invalid login</td>
+          <td>-</td>
+          <td>1. Enter wrong password<br>2. Submit</td>
+          <td>Error message displayed, stay on login page</td>
+        </tr>
+        <tr>
+          <td class="test-id">AUTH-003</td>
+          <td>Signup new user</td>
+          <td>Username not taken</td>
+          <td>1. Navigate to /signup<br>2. Fill form<br>3. Submit</td>
+          <td>Auto-login, redirected to /, default session created</td>
+        </tr>
+        <tr>
+          <td class="test-id">AUTH-004</td>
+          <td>Logout</td>
+          <td>Logged in</td>
+          <td>1. Click Logout</td>
+          <td>Redirect to /login, session cleared</td>
+        </tr>
+      </table>
+
+      <h3>2. Messaging Tests</h3>
+      <table class="test-table">
+        <tr><th>Test ID</th><th>Description</th><th>Steps</th><th>Expected Result</th></tr>
+        <tr>
+          <td class="test-id">MSG-001</td>
+          <td>Send text message</td>
+          <td>1. Type message<br>2. Click send button</td>
+          <td>Message appears in chat, AI responds with "ai_message" event</td>
+        </tr>
+        <tr>
+          <td class="test-id">MSG-002</td>
+          <td>Switch sessions</td>
+          <td>1. Expand sidebar<br>2. Click different session</td>
+          <td>Messages for selected session load, session icon highlights</td>
+        </tr>
+        <tr>
+          <td class="test-id">MSG-003</td>
+          <td>Create new session</td>
+          <td>1. Click New Chat icon/button</td>
+          <td>New empty session created, appears in list</td>
+        </tr>
+        <tr>
+          <td class="test-id">MSG-004</td>
+          <td>Delete session</td>
+          <td>1. Hover over session<br>2. Click delete icon</td>
+          <td>Session removed from list, switched to next available</td>
+        </tr>
+        <tr>
+          <td class="test-id">MSG-005</td>
+          <td>Message persistence</td>
+          <td>1. Send message<br>2. Refresh page<br>3. Switch back to session</td>
+          <td>Messages remain after page refresh</td>
+        </tr>
+      </table>
+
+      <h3>3. Multi-User Isolation Tests (CRITICAL)</h3>
+      <table class="test-table">
+        <tr><th>Test ID</th><th>Description</th><th>Steps</th><th>Expected Result</th></tr>
+        <tr>
+          <td class="test-id">MULTI-001</td>
+          <td>Session visibility between users</td>
+          <td>
+            1. User A logs in on Browser A<br>
+            2. User B logs in on Browser B (different browser/device)<br>
+            3. User A sends message in Session 1<br>
+            4. User B observes their chat
+          </td>
+          <td>User B sees ONLY their own messages and sessions, NOT User A's</td>
+        </tr>
+        <tr>
+          <td class="test-id">MULTI-002</td>
+          <td>Concurrent messages</td>
+          <td>
+            1. User A sends message on Browser A<br>
+            2. User B sends message on Browser B simultaneously<br>
+            3. Both watch for responses
+          </td>
+          <td>Each user receives ONLY their own AI response</td>
+        </tr>
+        <tr>
+          <td class="test-id">MULTI-003</td>
+          <td>Same username different sessions</td>
+          <td>
+            1. User logs in twice on different browsers<br>
+            2. Creates different sessions on each
+          </td>
+          <td>Each browser instance maintains its own session state</td>
+        </tr>
+        <tr>
+          <td class="test-id">MULTI-004</td>
+          <td>Session ownership verification</td>
+          <td>
+            1. User A has Session 1<br>
+            2. Try to access User B's session directly via API
+          </td>
+          <td>API returns error - sessions are filtered by user_id</td>
+        </tr>
+      </table>
+
+      <h3>4. Voice Feature Tests</h3>
+      <table class="test-table">
+        <tr><th>Test ID</th><th>Description</th><th>Steps</th><th>Expected Result</th></tr>
+        <tr>
+          <td class="test-id">VOICE-001</td>
+          <td>Toggle microphone</td>
+          <td>1. Click mic button</td>
+          <td>Mic icon changes to indicate listening mode active</td>
+        </tr>
+        <tr>
+          <td class="test-id">VOICE-002</td>
+          <td>Voice command</td>
+          <td>1. Enable mic<br>2. Speak a message<br>3. Wait for recognition</td>
+          <td>Speech recognized and sent as text message</td>
+        </tr>
+        <tr>
+          <td class="test-id">VOICE-003</td>
+          <td>Voice with AI response</td>
+          <td>1. Speak command<br>2. Wait for AI</td>
+          <td>Voice command sent, AI responds, listening can restart</td>
+        </tr>
+      </table>
+
+      <h3>5. UI/Responsive Tests</h3>
+      <table class="test-table">
+        <tr><th>Test ID</th><th>Description</th><th>Steps</th><th>Expected Result</th></tr>
+        <tr>
+          <td class="test-id">UI-001</td>
+          <td>Mobile sidebar</td>
+          <td>Resize browser to 480px or less</td>
+          <td>Icon rail shrinks to 36px</td>
+        </tr>
+        <tr>
+          <td class="test-id">UI-002</td>
+          <td>Sidebar toggle</td>
+          <td>1. Click hamburger icon</td>
+          <td>Expanded sidebar slides in/out</td>
+        </tr>
+        <tr>
+          <td class="test-id">UI-003</td>
+          <td>AI processing indicator</td>
+          <td>1. Send message</td>
+          <td>Processing indicator shows with timer while AI is thinking</td>
+        </tr>
+        <tr>
+          <td class="test-id">UI-004</td>
+          <td>Cancel AI request</td>
+          <td>1. Send message<br>2. Click Cancel during AI processing</td>
+          <td>Processing stopped, indicator hidden</td>
+        </tr>
+      </table>
+
+      <h3>6. E2E Test Database Queries</h3>
+      <p>Verify test data in database:</p>
+      <pre><code>-- Verify correct user isolation
+SELECT s.id, s.name, u.username 
+FROM sessions s 
+JOIN users u ON s.user_id = u.id 
+ORDER BY u.username, s.created_at;
+
+-- Check message counts per session
+SELECT session_id, COUNT(*) as msg_count 
+FROM messages 
+GROUP BY session_id;
+
+-- Verify no orphaned messages
+SELECT m.* FROM messages m
+LEFT JOIN sessions s ON m.session_id = s.id
+WHERE s.id IS NULL;</code></pre>
+    </section>
+
+    <a href="/" class="back-link">← Back to Darvis</a>
+  </div>
+</body>
+</html>
