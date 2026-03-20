@@ -8,33 +8,47 @@
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <style>
     /* =============================================================================
-       CSS Variables - Modern theming system
+       CSS Variables - Claude Dark Theme
        ============================================================================= */
     :root {
-      --bg-primary: #0f0f23;
-      --bg-secondary: #1a1a2e;
-      --bg-tertiary: #252542;
-      --bg-glass: rgba(26, 26, 46, 0.8);
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0b0;
-      --text-muted: #666680;
-      --accent-blue: #00d4ff;
-      --accent-blue-dim: rgba(0, 212, 255, 0.15);
-      --accent-green: #00ff88;
-      --accent-red: #ff4444;
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-glass: rgba(255, 255, 255, 0.12);
-      --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.3);
-      --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.3);
-      --radius-sm: 8px;
-      --radius-md: 12px;
+      /* Claude Dark Theme Colors */
+      --bg-primary: #09090b;
+      --bg-secondary: #111113;
+      --bg-tertiary: #18181b;
+      --bg-hover: rgba(255, 255, 255, 0.04);
+      --bg-active: rgba(255, 255, 255, 0.06);
+      --bg-000: #0a0a0c;
+      --bg-100: #111113;
+      --bg-200: #18181b;
+      --bg-300: #27272a;
+
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --text-500: #71717a;
+      --text-200: #e4e4e7;
+      --text-300: #a1a1aa;
+      --text-400: #a1a1aa;
+
+      --border: rgba(255, 255, 255, 0.08);
+      --border-300: rgba(255, 255, 255, 0.15);
+      --border-400: rgba(255, 255, 255, 0.2);
+      --always-black: #000;
+
+      --accent: #13c4ff;
+      --accent-dim: rgba(19, 196, 255, 0.15);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
       --radius-lg: 16px;
+      --radius-xl: 20px;
       --radius-full: 9999px;
-      --transition-fast: 150ms ease;
-      --transition-normal: 250ms ease;
-      --transition-slow: 400ms ease;
+
+      --transition: 150ms ease;
       --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+
+      --sidebar-width: 18rem;
     }
 
     /* =============================================================================
@@ -52,24 +66,12 @@
 
     body {
       font-family: var(--font-sans);
-      background: linear-gradient(145deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
-      background-attachment: fixed;
+      background: var(--bg-primary);
       color: var(--text-primary);
       min-height: 100vh;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* Subtle noise texture overlay */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      opacity: 0.02;
-      pointer-events: none;
-      z-index: 0;
     }
 
     /* =============================================================================
@@ -79,7 +81,6 @@
       display: flex;
       height: 100vh;
       position: relative;
-      z-index: 1;
     }
 
     .chat-wrapper {
@@ -87,20 +88,286 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 0;
     }
 
     /* =============================================================================
-       Sidebar - Glassmorphism sessions panel
+       Sidebar - Claude Style
        ============================================================================= */
     .sessions-sidebar {
-      width: 280px;
-      background: var(--bg-glass);
-      backdrop-filter: blur(20px) saturate(180%);
-      border-right: 1px solid var(--border-glass);
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border-300);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      transition: transform var(--transition-slow), width var(--transition-slow);
+      z-index: 50;
+      transition: transform 0.2s ease, background-color 35ms;
+    }
+
+    .sessions-sidebar.collapsed {
+      transform: translateX(-100%);
+    }
+
+    #sidebar-toggle {
+      position: fixed;
+      top: 16px;
+      left: calc(var(--sidebar-width) + 12px);
+      z-index: 100;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+    }
+
+    #sidebar-toggle:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    body.sidebar-collapsed #sidebar-toggle {
+      left: 12px;
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      padding-top: 12px;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      padding-left: 8px;
+      height: 32px;
+    }
+
+    .sidebar-logo a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .sidebar-logo img {
+      height: 20px;
+      width: auto;
+    }
+
+    #new-session-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition);
+    }
+
+    #new-session-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .sidebar-nav {
+      padding: 0 8px;
+      margin-top: 4px;
+    }
+
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background var(--transition);
+      text-decoration: none;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+
+    .sidebar-nav-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .sidebar-nav-item.active {
+      background: var(--bg-active);
+    }
+
+    .sidebar-nav-item svg {
+      width: 16px;
+      height: 16px;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .sessions-list-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 8px 8px;
+    }
+
+    .sessions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .sessions-header span {
+      cursor: pointer;
+    }
+
+    .sessions-header span:hover {
+      color: var(--text-400);
+    }
+
+    .sessions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .session-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .session-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .session-item.active {
+      background: var(--bg-active);
+    }
+
+    .session-item .session-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      /* Claude-style gradient mask on hover */
+      -webkit-mask-image: linear-gradient(to right, black 78%, transparent 95%);
+      mask-image: linear-gradient(to right, black 78%, transparent 95%);
+    }
+
+    .session-item:hover .session-name {
+      -webkit-mask-image: linear-gradient(to right, black 78%, transparent 95%);
+      mask-image: linear-gradient(to right, black 78%, transparent 95%);
+    }
+
+    .session-item .delete-session {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      opacity: 0;
+      transition: all var(--transition);
+    }
+
+    .session-item:hover .delete-session {
+      opacity: 1;
+    }
+
+    .session-item .delete-session:hover {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+    }
+
+    .sidebar-footer {
+      padding: 8px;
+      border-top: 1px solid var(--border-300);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-footer .username {
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .sidebar-footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      transition: color var(--transition);
+    }
+
+    .sidebar-footer a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Mobile sidebar */
+    @media (max-width: 768px) {
+      .sessions-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 100;
+        transform: translateX(-100%);
+      }
+
+      .sessions-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sessions-sidebar.collapsed {
+        width: var(--sidebar-width);
+        transform: translateX(-100%);
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 99;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
 
     .sessions-sidebar.collapsed {
@@ -305,49 +572,134 @@
        Header - Clean top bar
        ============================================================================= */
     .header {
-      background: var(--bg-glass);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.875rem 1.5rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      font-size: 1.25rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--accent-blue), #007aff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
     }
 
     .logo img {
-      height: 36px;
+      height: 28px;
       width: auto;
-      transition: transform var(--transition-normal);
     }
 
     /* =============================================================================
-       Chat Container - Modern message area
+       Chat Container - Claude Style
        ============================================================================= */
     .chat-container {
       flex: 1;
       display: flex;
       flex-direction: column;
-      max-width: 900px;
+      max-width: 672px;
       width: 100%;
       margin: 0 auto;
-      padding: 1.5rem;
+      padding: 0 16px;
       overflow: hidden;
       min-height: 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 0;
+      scroll-behavior: smooth;
+      min-height: 0;
+    }
+
+    /* Scrollbar styling */
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* =============================================================================
+       Messages - Claude Style
+       ============================================================================= */
+    .message {
+      margin-bottom: 24px;
+      animation: messageIn 0.2s ease-out;
+    }
+
+    @keyframes messageIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .message.ai {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .message.system {
+      display: flex;
+      justify-content: center;
+    }
+
+    .message-bubble {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      position: relative;
+      word-wrap: break-word;
+      line-height: 1.6;
+      font-size: 0.9375rem;
+      transition: transform var(--transition);
+    }
+
+    .message.user .message-bubble {
+      background: var(--bg-300);
+      color: var(--text-primary);
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.user .message-bubble:hover {
+      transform: scale(1.01);
+    }
+
+    .message.ai .message-bubble {
+      background: transparent;
+      color: var(--text-primary);
+    }
+
+    .message.system .message-bubble {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 8px 16px;
     }
 
     .chat-messages {
@@ -521,12 +873,140 @@
       }
     }
 
-        /* =============================================================================
-       Input Area - Modern floating bar
+    /* =============================================================================
+       Input Area - Claude Style
        ============================================================================= */
     .input-container {
-      padding: 1rem 0 1.5rem;
+      padding: 16px 0 24px;
       margin-top: auto;
+    }
+
+    .input-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--bg-000);
+      border: 1px solid transparent;
+      border-radius: var(--radius-xl);
+      padding: 8px 8px 8px 16px;
+      transition: box-shadow 0.2s ease;
+      /* Claude's multi-layer shadow */
+      box-shadow: 
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.35),
+        0 0 0 0.5px rgba(255, 255, 255, 0.08);
+    }
+
+    .input-form:focus-within {
+      box-shadow: 
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.75),
+        0 0 0 0.5px rgba(255, 255, 255, 0.15);
+    }
+
+    .darvis-logo-wrapper-bottom {
+      flex-shrink: 0;
+    }
+
+    .darvis-logo-wrapper-bottom img {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      transition: transform var(--transition);
+    }
+
+    .darvis-logo-wrapper-bottom img.ai-thinking {
+      animation: think 1s ease-in-out infinite;
+    }
+
+    @keyframes think {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .message-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      padding: 8px 0;
+    }
+
+    .message-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .send-button {
+      background: var(--text-muted);
+      color: var(--bg-primary);
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+
+    .send-button:hover {
+      background: var(--text-secondary);
+    }
+
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .listening-toggle {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      transition: all var(--transition);
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .listening-toggle:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .listening-toggle.active {
+      background: rgba(255, 68, 68, 0.15);
+      color: #ff4545;
+    }
+
+    /* Recording indicator */
+    .recording-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ff4545;
+      font-size: 0.8rem;
+      margin-top: 8px;
+    }
+
+    .recording-dot {
+      width: 6px;
+      height: 6px;
+      background: #ff4545;
+      border-radius: 50%;
+      animation: pulse-dot 1s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4;
     }
 
     .input-form {
@@ -760,8 +1240,29 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
       text-align: center;
+      padding: 10vh 24px;
+    }
+
+    .welcome-logo {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+
+    .welcome-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .welcome-subtitle {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      max-width: 360px;
+      line-height: 1.6;
     }
 
     .welcome-logo {
@@ -795,12 +1296,31 @@
     }
 
     /* =============================================================================
-       Mobile Responsive
+       Responsive Design
        ============================================================================= */
     @media (max-width: 768px) {
       .chat-container {
-        padding: 1rem;
+        padding: 0 16px;
       }
+
+      .message-bubble {
+        max-width: 90%;
+        font-size: 0.875rem;
+        padding: 10px 14px;
+      }
+
+      .welcome-title {
+        font-size: 1.25rem;
+      }
+
+      .header {
+        padding: 12px 16px;
+      }
+
+      .input-container {
+        padding: 12px 0 16px;
+      }
+    }
 
       .header {
         padding: 0.75rem 1rem;
@@ -892,18 +1412,44 @@
 
 <body>
 
-  <button id="sidebar-toggle" title="Toggle Sessions">←</button>
+  <button id="sidebar-toggle" title="Toggle Sessions">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M16.5 4A1.5 1.5 0 0 1 18 5.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 2 14.5v-9A1.5 1.5 0 0 1 3.5 4zM7 15h9.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H7z"/></svg>
+  </button>
 
   <div class="app-container">
-    <!-- Session Sidebar -->
+    <!-- Session Sidebar - Claude Style -->
     <aside class="sessions-sidebar" id="sessions-sidebar">
+      <!-- Sidebar Header with Logo -->
       <div class="sidebar-header">
-        <h3>Sessions</h3>
-        <button id="new-session-btn" title="New Session">+</button>
+        <div class="sidebar-logo">
+          <a href="/">
+            <img src="/static/darvis-logo.png" alt="Darvis">
+          </a>
+        </div>
+        <button id="new-session-btn" title="New Chat">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
+        </button>
       </div>
-      <div id="sessions-list" class="sessions-list">
-        <!-- Sessions loaded dynamically -->
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-nav-item">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 2a6.5 6.5 0 0 1 4.935 10.728l4.419 4.419.064.078a.5.5 0 0 1-.693.693l-.079-.064-4.419-4.42A6.5 6.5 0 1 1 8.5 2m0 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11"/></svg>
+          Search
+        </a>
+      </nav>
+
+      <!-- Sessions List -->
+      <div class="sessions-list-container">
+        <div class="sessions-header">
+          <span>Recents</span>
+        </div>
+        <div id="sessions-list" class="sessions-list">
+          <!-- Sessions loaded dynamically -->
+        </div>
       </div>
+
+      <!-- Sidebar Footer -->
       <div class="sidebar-footer">
         <span id="username-display" class="username">Loading...</span>
         <a href="/logout">Logout</a>
@@ -1536,7 +2082,11 @@
         document.body.classList.toggle('sidebar-collapsed');
         overlay.classList.toggle('active');
         const toggleBtn = document.getElementById('sidebar-toggle');
-        toggleBtn.textContent = sidebar.classList.contains('collapsed') ? '→' : '←';
+        if (sidebar.classList.contains('collapsed')) {
+            toggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4.5A.5.5 0 0 1 2.5 4h15a.5.5 0 0 1 0 1H2.5a.5.5 0 0 1-.5-.5M2 10a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15A.5.5 0 0 1 2 10m.5 5.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-15"/></svg>';
+        } else {
+            toggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M16.5 4A1.5 1.5 0 0 1 18 5.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 2 14.5v-9A1.5 1.5 0 0 1 3.5 4zM7 15h9.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H7z"/></svg>';
+        }
     }
 
     // Close sidebar when clicking overlay on mobile
