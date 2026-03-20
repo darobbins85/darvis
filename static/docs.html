@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Darvis Documentation</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root {
       --bg-primary: #09090b;
@@ -171,17 +172,13 @@
       color: var(--text-secondary);
     }
 
-    .diagram {
+    .mermaid {
       background: var(--bg-000);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 1.5rem;
       margin: 1rem 0;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      line-height: 1.4;
-      white-space: pre;
-      overflow-x: auto;
+      text-align: center;
     }
 
     .test-table {
@@ -241,6 +238,27 @@
       }
     }
   </style>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#18181b',
+        primaryTextColor: '#fafafa',
+        primaryBorderColor: '#27272a',
+        lineColor: '#71717a',
+        secondaryColor: '#111113',
+        tertiaryColor: '#0a0a0c',
+        background: '#09090b',
+        mainBkg: '#18181b',
+        secondBkg: '#111113',
+        border1: '#27272a',
+        border2: '#18181b',
+        arrowheadColor: '#71717a',
+        fontFamily: 'apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif'
+      }
+    });
+  </script>
 </head>
 
 <body>
@@ -293,17 +311,33 @@
       <h2>Database Models</h2>
       
       <h3>Schema Diagram</h3>
-      <div class="diagram">┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
-│     users        │       │    sessions     │       │    messages     │
-├─────────────────┤       ├─────────────────┤       ├─────────────────┤
-│ id (PK)         │──┐    │ id (PK)         │──┐    │ id (PK)         │
-│ username         │  │    │ user_id (FK)   │◄─┤    │ session_id (FK) │◄─┤
-│ password_hash    │  │    │ name           │  │    │ role            │
-│ created_at       │  └──►│ session_number  │  │    │ content         │
-└─────────────────┘       │ ai_session_id   │  │    │ created_at       │
-                         │ created_at       │  │    └─────────────────┘
-                         │ updated_at       │  │
-                         └─────────────────┘</div>
+      <div class="mermaid">
+erDiagram
+    USERS {
+        int id PK
+        string username
+        string password_hash
+        timestamp created_at
+    }
+    SESSIONS {
+        int id PK
+        int user_id FK
+        string name
+        int session_number
+        string ai_session_id
+        timestamp created_at
+        timestamp updated_at
+    }
+    MESSAGES {
+        int id PK
+        int session_id FK
+        string role
+        string content
+        timestamp created_at
+    }
+    USERS ||--o{ SESSIONS : "has"
+    SESSIONS ||--o{ MESSAGES : "contains"
+      </div>
 
       <h3>users</h3>
       <table>
@@ -353,126 +387,113 @@
       </table>
 
       <h3>Component Diagram</h3>
-      <div class="diagram">┌─────────────────────────────────────────────────────────────────┐
-│                         Clients                                    │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
-│  │   Desktop   │  │   Web UI    │  │   Mobile    │              │
-│  │  (Tkinter)  │  │  (Browser)  │  │  (Browser)  │              │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘              │
-└─────────┼────────────────┼────────────────┼──────────────────────┘
-          │                │                │
-          └────────────────┼────────────────┘
-                          │ Socket.IO / HTTP
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     web_chat.py (Flask)                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐           │
-│  │   Routes    │  │  Socket.IO   │  │  Auth       │           │
-│  │  /login    │  │  Events     │  │  (Flask-    │           │
-│  │  /api/*   │  │             │  │   Login)    │           │
-│  └──────────────┘  └──────────────┘  └──────────────┘           │
-└─────────────────────────────────────────────────────────────────┘
-                          │
-          ┌───────────────┼───────────────┐
-          ▼               ▼               ▼
-┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-│  database   │  │    ai.py    │  │   apps.py   │
-│  (SQLite)   │  │ (OpenCode)  │  │  (Launch)   │
-└─────────────┘  └─────────────┘  └─────────────┘</div>
+      <div class="mermaid">
+flowchart TB
+    subgraph Clients
+        Desktop[Tkinter Desktop]
+        WebUI[Web Browser]
+        Mobile[Mobile Browser]
+    end
+    subgraph Server
+        Flask[Flask-SocketIO<br/>web_chat.py]
+        Routes[HTTP Routes<br/>/login, /api/*]
+        SocketEvents[Socket.IO Events]
+        Auth[Flask-Login Auth]
+    end
+    subgraph Services
+        DB[(SQLite<br/>database)]
+        AI[ai.py<br/>OpenCode]
+        Apps[apps.py<br/>App Launching]
+    end
+    Desktop -->|Socket.IO| Flask
+    WebUI -->|Socket.IO/HTTP| Flask
+    Mobile -->|Socket.IO/HTTP| Flask
+    Flask --> Routes
+    Flask --> SocketEvents
+    Flask --> Auth
+    Flask --> DB
+    Flask --> AI
+    Flask --> Apps
+      </div>
     </section>
 
     <section id="flows">
       <h2>Key Flows</h2>
 
       <h3>1. Login Flow</h3>
-      <div class="diagram">Browser                    Flask                    Database
-    ┌─────────┐             ┌─────────┐            ┌───────────┐
-    │ POST    │────────────►│ Route   │──────────►│ get_user  │
-    │ /login  │             │ /login  │            │ _by_username
-    └─────────┘             └────┬────┘            └───────────┘
-                                  │
-                                  ▼
-                            ┌───────────┐
-                            │ check_    │
-                            │ password  │
-                            └─────┬─────┘
-                                  │
-                                  ▼
-                            ┌───────────┐            ┌───────────┐
-                            │ login_    │──────────► │ create_   │
-                            │ user      │            │ default_  │
-                            └───────────┘            │ session   │
-                                                    └───────────┘</div>
+      <div class="mermaid">
+sequenceDiagram
+    participant B as Browser
+    participant F as Flask
+    participant D as Database
+    
+    B->>F: POST /login (username, password)
+    F->>D: get_user_by_username()
+    D-->>F: User record
+    F->>F: check_password_hash()
+    alt Valid credentials
+        F->>F: login_user()
+        F->>D: get_or_create_default_session()
+        D-->>F: Session created
+        F-->>B: 302 Redirect to /
+    else Invalid
+        F-->>B: Error message
+    end
+      </div>
 
       <h3>2. Send Message Flow</h3>
-      <div class="diagram">Browser              Socket.IO              Background Thread
-    ┌─────────┐         ┌─────────────┐       ┌─────────────────┐
-    │ emit    │────────►│ handle_     │─────►│ process_       │
-    │ chat_   │         │ message()   │       │ message_async()│
-    │ message │         └─────────────┘       └────────┬────────┘
-    └─────────┘                                       │
-                                                       ▼
-                                             ┌─────────────────┐
-                                             │ 1. add_message  │
-                                             │    (user role)  │
-                                             └────────┬────────┘
-                                                       │
-                                                       ▼
-                                             ┌─────────────────┐
-                                             │ 2. Check local  │
-                                             │    commands     │
-                                             │    (open app)  │
-                                             └────────┬────────┘
-                                                       │
-                                                       ▼
-                                             ┌─────────────────┐
-                                             │ 3. process_     │
-                                             │    ai_query()  │
-                                             │    (OpenCode)  │
-                                             └────────┬────────┘
-                                                       │
-                                                       ▼
-                                             ┌─────────────────┐
-                                             │ 4. add_message  │
-                                             │    (assistant)  │
-                                             └────────┬────────┘
-                                                       │
-                                                       ▼
-    ┌─────────┐         ┌─────────────┐       ┌─────────────────┐
-    │ receive │◄────────│ emit to     │◄─────│ socketio.emit  │
-    │ ai_msg  │         │ user_{id}   │       │ ('ai_message') │
-    └─────────┘         └─────────────┘       └─────────────────┘</div>
+      <div class="mermaid">
+sequenceDiagram
+    participant B as Browser
+    participant S as Socket.IO Server
+    participant T as Background Thread
+    participant D as Database
+    participant A as OpenCode AI
+    
+    B->>S: chat_message event
+    S->>T: spawn process_message_async()
+    T->>D: add_message(user role)
+    T->>T: Check local commands
+    alt Local command (open app)
+        T->>T: open_app()
+        T->>S: emit(ai_message)
+    else AI query
+        T->>A: process_ai_query()
+        A-->>T: AI response
+        T->>D: add_message(assistant role)
+        T->>S: emit(ai_message to user_{id} room)
+        S-->>B: ai_message event
+    end
+      </div>
 
       <h3>3. Session Isolation (Multi-User)</h3>
-      <div class="diagram">User A (id=1)                    User B (id=2)
-    ┌─────────────┐                   ┌─────────────┐
-    │ Browser A   │                   │ Browser B   │
-    │ Room:      │                   │ Room:      │
-    │ user_1     │                   │ user_2     │
-    └──────┬──────┘                   └──────┬──────┘
-           │                                 │
-           │ emit(chat_message)              │ emit(chat_message)
-           ▼                                 ▼
-    ┌─────────────────────────────────────────────────┐
-    │              web_chat.py (Flask)                │
-    │                                                 │
-    │  1. Get user_id from session (NOT socket!)       │
-    │  2. Verify session belongs to user               │
-    │  3. Emit ONLY to user_{user_id} room            │
-    │                                                 │
-    │  emit('ai_message', to=f"user_{user_id}")      │
-    └─────────────────────────────────────────────────┘
-           │                                 │
-           ▼                                 (never receives)
-    User A sees response              User B does NOT see
-    in session 1                      User A's messages</div>
+      <div class="mermaid">
+sequenceDiagram
+    participant A as User A (Browser A)<br/>Room: user_1
+    participant B as User B (Browser B)<br/>Room: user_2
+    participant S as Flask-SocketIO
+    
+    A->>S: chat_message (session_id=1)
+    B->>S: chat_message (session_id=2)
+    Note over S: Get user_id from Flask session<br/>(NOT from socket!)
+    Note over S: Verify session belongs to user
+    S->>S: emit ONLY to user_{user_id} room
+    S-->>A: ai_message to user_1
+    S--xB: (never receives user_1's message)
+    Note over A: User A sees response<br/>in Session 1
+    Note over B: User B does NOT see<br/>User A's messages
+      </div>
 
       <h3>4. Voice Recognition Flow (Browser)</h3>
-      <div class="diagram">Microphone ──► Web Speech API ──► Socket.IO ──► AI ──► Response
-                  (browser)              │             │
-                                         ▼             ▼
-                                   emit speech_   emit to
-                                   recognized     user room</div>
+      <div class="mermaid">
+flowchart LR
+    A([Microphone]) --> B[Web Speech API<br/>Browser]
+    B --> C[Socket.IO emit<br/>speech_recognized]
+    C --> D[Server]
+    D --> E[OpenCode AI]
+    E --> F[emit to user room]
+    F --> G([Response to Browser])
+      </div>
     </section>
 
     <section id="api">
