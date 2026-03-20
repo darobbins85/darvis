@@ -635,6 +635,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--bg-primary);
+      z-index: 10;
     }
 
     .logo {
@@ -765,13 +769,9 @@
     }
 
     .message-actions {
-      display: none;
+      display: flex;
       gap: 4px;
       margin-top: 8px;
-    }
-
-    .message.ai:hover .message-actions {
-      display: flex;
     }
 
     .msg-action-btn {
