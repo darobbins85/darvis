@@ -280,6 +280,34 @@
       padding: 0 8px;
     }
 
+    .sidebar-nav-text {
+      display: flex;
+      align-items: center;
+      height: 36px;
+      padding: 0 12px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .sidebar-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .sidebar-action-btn:hover {
+      background: var(--bg-hover);
+    }
+
     .sidebar-nav-item {
       display: flex;
       align-items: center;
@@ -1549,8 +1577,24 @@
 
   <!-- Expanded Sidebar -->
   <aside class="sessions-sidebar collapsed" id="sessions-sidebar">
-    <!-- Sidebar Header (empty - aligns with toggle button) -->
-    <div class="sidebar-header" style="min-height: 44px; padding: 4px 8px;">
+    <!-- Sidebar Header (aligns with toggle button, has New Session button) -->
+    <div class="sidebar-header" style="min-height: 44px; padding: 4px 8px; justify-content: flex-start;">
+      <button class="sidebar-action-btn" id="new-session-btn-expanded" onclick="createNewSession()" title="New Chat">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
+        <span>New Chat</span>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <span class="sidebar-nav-text">Search</span>
+    </nav>
+
+    <!-- sessions List -->
+    <div class="sessions-list-container">
+      <div id="sessions-list" class="sessions-list">
+        <!-- Sessions loaded dynamically -->
+      </div>
     </div>
 
     <!-- Navigation -->
@@ -2291,11 +2335,10 @@
                 const sessionNum = index + 1;
                 const isActive = session.id === currentSessionId;
                 
-                // Create sidebar item
+                // Create sidebar item (no number, just name)
                 const div = document.createElement('div');
                 div.className = 'session-item' + (isActive ? ' active' : '');
                 div.innerHTML = `
-                    <span class="session-number">${sessionNum}</span>
                     <span class="session-name" data-id="${session.id}" ondblclick="renameSession(${session.id}, '${session.name.replace(/'/g, "\\'")}')">${session.name}</span>
                     <button class="delete-session" data-id="${session.id}">×</button>
                 `;
