@@ -68,6 +68,7 @@
 
     html {
       scroll-behavior: smooth;
+      overflow-x: hidden;
     }
 
     body {
@@ -78,6 +79,7 @@
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
     }
 
     /* =============================================================================
@@ -444,6 +446,41 @@
       .sidebar-overlay.active {
         opacity: 1;
         pointer-events: auto;
+      }
+
+      .icon-rail {
+        width: 44px;
+      }
+
+      .chat-wrapper {
+        margin-left: 44px;
+      }
+
+      .input-container {
+        left: 44px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .icon-rail {
+        width: 36px;
+      }
+
+      .chat-wrapper {
+        margin-left: 36px;
+      }
+
+      .input-container {
+        left: 36px;
+      }
+
+      .icon-btn {
+        width: 32px;
+        height: 32px;
+      }
+
+      #sidebar-toggle {
+        display: flex;
       }
     }
 
