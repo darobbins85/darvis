@@ -1577,35 +1577,25 @@
 
   <!-- Expanded Sidebar -->
   <aside class="sessions-sidebar collapsed" id="sessions-sidebar">
-    <!-- Sidebar Header (aligns with toggle button, has New Session button) -->
-    <div class="sidebar-header" style="min-height: 44px; padding: 4px 8px; justify-content: flex-start;">
+    <!-- Header spacer to align with toggle button -->
+    <div style="height: 44px; padding: 4px 8px; display: flex; align-items: center;">
+      <!-- Empty - aligns with toggle button -->
+    </div>
+
+    <!-- New Chat button (aligns with new chat icon in rail) -->
+    <div style="padding: 0 8px; margin-bottom: 4px;">
       <button class="sidebar-action-btn" id="new-session-btn-expanded" onclick="createNewSession()" title="New Chat">
         <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
         <span>New Chat</span>
       </button>
     </div>
 
-    <!-- Navigation -->
-    <nav class="sidebar-nav">
+    <!-- Search label (aligns with search icon in rail) -->
+    <div style="padding: 0 8px;">
       <span class="sidebar-nav-text">Search</span>
-    </nav>
-
-    <!-- sessions List -->
-    <div class="sessions-list-container">
-      <div id="sessions-list" class="sessions-list">
-        <!-- Sessions loaded dynamically -->
-      </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="sidebar-nav">
-      <a href="#" class="sidebar-nav-item">
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 2a6.5 6.5 0 0 1 4.935 10.728l4.419 4.419.064.078a.5.5 0 0 1-.693.693l-.079-.064-4.419-4.42A6.5 6.5 0 1 1 8.5 2m0 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11"/></svg>
-        Search
-      </a>
-    </nav>
-
-    <!-- Sessions List -->
+    <!-- Sessions list container -->
     <div class="sessions-list-container">
       <div id="sessions-list" class="sessions-list">
         <!-- Sessions loaded dynamically -->
