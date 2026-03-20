@@ -1523,7 +1523,7 @@
     <div class="sidebar-header">
       <div class="sidebar-logo">
         <a href="/">
-          <img src="/static/darvis-logo.png" alt="Darvis">
+          <img class="darvis-logo" src="/static/darvis-logo.png" alt="Darvis">
           <span>Darvis</span>
         </a>
       </div>
@@ -1562,7 +1562,7 @@
       <!-- Header -->
       <header class="header">
         <div class="logo">
-          <img src="/static/darvis-logo.png" alt="Darvis">
+          <img class="darvis-logo" src="/static/darvis-logo.png" alt="Darvis">
           <span>Darvis</span>
         </div>
         <div id="current-session-name" style="color: var(--text-secondary); font-size: 0.9rem;"></div>
@@ -1597,7 +1597,7 @@
         <div class="input-container">
           <form id="message-form" class="input-form">
             <div class="darvis-logo-wrapper-bottom">
-              <img id="darvis-logo-img" src="/static/darvis-logo.png">
+              <img id="darvis-logo-img" class="darvis-logo" src="/static/darvis-logo.png">
             </div>
             <input type="text" id="message-input" class="message-input" placeholder="Type your message..."
               autocomplete="off">
@@ -1641,20 +1641,22 @@
         // Eye control functions
         function setEyeState(state) {
           console.log('👁️ setEyeState called with:', state);
-          const logoImg = document.getElementById('darvis-logo-img');
+          const logoImgs = document.querySelectorAll('.darvis-logo');
           const timestamp = Date.now();
 
-          // Change the logo image based on state
-          if (state === 'wake') {
-            console.log('👁️ Setting logo to green eyes');
-            logoImg.src = '/static/darvis-logo-hires-green-eyes.png?v=' + timestamp;
-          } else if (state === 'ai') {
-            console.log('👁️ Setting logo to red eyes');
-            logoImg.src = '/static/darvis-logo-hires-red-eyes.png?v=' + timestamp;
-          } else {
-            console.log('👁️ Setting logo to base');
-            logoImg.src = '/static/darvis-logo.png?v=' + timestamp;
-          }
+          // Change all logo images based on state
+          logoImgs.forEach(logoImg => {
+            if (state === 'wake') {
+              console.log('👁️ Setting logo to green eyes');
+              logoImg.src = '/static/darvis-logo-hires-green-eyes.png?v=' + timestamp;
+            } else if (state === 'ai') {
+              console.log('👁️ Setting logo to red eyes');
+              logoImg.src = '/static/darvis-logo-hires-red-eyes.png?v=' + timestamp;
+            } else {
+              console.log('👁️ Setting logo to base');
+              logoImg.src = '/static/darvis-logo.png?v=' + timestamp;
+            }
+          });
 
           currentEyeState = state;
         }
