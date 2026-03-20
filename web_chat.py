@@ -312,11 +312,23 @@ def get_session_messages_api(session_id):
 @socketio.on("connect")
 def handle_connect():
     """Handle client connection."""
-    print("Client connected")
+    user_id = session.get("user_id")
+    if user_id:
+        # Join user-specific room for isolated messaging
+        socketio.emit("join_room", {"room": f"user_{user_id}"}, to=request.sid)
+        print(f"Client connected and joined room: user_{user_id}")
+    else:
+        print("Client connected (no user session)")
 
 
 @socketio.on("disconnect")
 def handle_disconnect():
+    """Handle client disconnection."""
+    print("Client disconnected")
+
+
+@socketio.on("disconnect")
+def handle_disconnect_wrapper():
     """Handle client disconnection."""
     print("Client disconnected")
 
@@ -335,14 +347,27 @@ def handle_message(data):
     # Capture user_id BEFORE spawning thread (Flask session doesn't work in background threads)
     user_id = session.get("user_id")
     if not user_id:
-        emit("ai_message", {"message": "Error: User not logged in"})
+        emit("ai_message", {"message": "Error: User not logged in", "session_id": None})
         return
 
-    # Emit the user message to all clients
-    emit("user_message", {"message": message}, broadcast=True)
+    # Verify session belongs to user
+    if session_id:
+        session_obj = get_session_by_id(session_id)
+        if not session_obj or session_obj["user_id"] != user_id:
+            emit(
+                "ai_message", {"message": "Error: Invalid session", "session_id": None}
+            )
+            return
 
-    # Signal AI processing start (red eyes)
-    emit("ai_processing", {}, broadcast=True)
+    # Emit the user message ONLY to this user's room
+    socketio.emit(
+        "user_message",
+        {"message": message, "session_id": session_id},
+        to=f"user_{user_id}",
+    )
+
+    # Signal AI processing start (red eyes) - ONLY to this user
+    socketio.emit("ai_processing", {"session_id": session_id}, to=f"user_{user_id}")
 
     # Process the message (this will be done asynchronously)
     def process_message_async(user_id):
@@ -353,6 +378,16 @@ def handle_message(data):
             if not session_id:
                 session_obj = get_or_create_default_session(user_id)
                 session_id = session_obj["id"]
+
+            # Verify session belongs to this user
+            session_obj = get_session_by_id(session_id)
+            if not session_obj or session_obj["user_id"] != user_id:
+                socketio.emit(
+                    "ai_message",
+                    {"message": "Error: Invalid session", "session_id": None},
+                    to=f"user_{user_id}",
+                )
+                return
 
             # Get current AI session ID before processing
             current_ai_id = get_session_ai_id(session_id)
@@ -365,7 +400,11 @@ def handle_message(data):
             if command_lower.startswith("open "):
                 app_name = command_lower.split("open")[-1].strip()
                 response = open_app(app_name)
-                socketio.emit("ai_message", {"message": f"Opening: {response}"})
+                socketio.emit(
+                    "ai_message",
+                    {"message": f"Opening: {response}", "session_id": session_id},
+                    to=f"user_{user_id}",
+                )
                 return
 
             # Check for other local commands
@@ -385,12 +424,15 @@ def handle_message(data):
                         update_session_ai_id(session_id, ai_session_id)
                     update_waybar_status("success", "Response delivered")
                     socketio.emit(
-                        "ai_message", {"message": response, "session_id": session_id}
+                        "ai_message",
+                        {"message": response, "session_id": session_id},
+                        to=f"user_{user_id}",
                     )
                 else:
                     socketio.emit(
                         "ai_message",
                         {"message": f"Result: {response}", "session_id": session_id},
+                        to=f"user_{user_id}",
                     )
                 return
 
@@ -407,11 +449,20 @@ def handle_message(data):
             # Save assistant message
             add_message(session_id, "assistant", response)
 
-            socketio.emit("ai_message", {"message": response, "session_id": session_id})
+            # Emit ONLY to this user's room
+            socketio.emit(
+                "ai_message",
+                {"message": response, "session_id": session_id},
+                to=f"user_{user_id}",
+            )
 
         except Exception as e:
             error_msg = f"Error: {str(e)}"
-            socketio.emit("ai_message", {"message": error_msg})
+            socketio.emit(
+                "ai_message",
+                {"message": error_msg, "session_id": None},
+                to=f"user_{user_id}",
+            )
             update_waybar_status("error", f"Error: {str(e)[:50]}")
 
     # Start processing in a background thread

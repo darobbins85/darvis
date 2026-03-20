@@ -482,6 +482,38 @@
       #sidebar-toggle {
         display: flex;
       }
+
+      .input-form {
+        max-width: 100%;
+        padding: 6px 10px;
+        gap: 8px;
+      }
+
+      .darvis-logo-wrapper-bottom img {
+        width: 36px;
+        height: 36px;
+      }
+
+      .message-input {
+        font-size: 0.9rem;
+        padding: 6px 4px;
+      }
+
+      .send-button {
+        width: 36px;
+        height: 36px;
+      }
+
+      .send-button svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .listening-toggle {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+      }
     }
 
     .sessions-sidebar.collapsed {
@@ -1108,8 +1140,10 @@
     }
 
     .send-button svg {
-      width: 32px;
-      height: 32px;
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
     }
 
     .listening-toggle {
@@ -1127,6 +1161,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .listening-toggle svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
     }
 
     .listening-toggle:hover {
@@ -1766,13 +1807,18 @@
         <input type="text" id="message-input" class="message-input" placeholder="Type your message..."
           autocomplete="off">
         <button type="submit" class="send-button" title="Send message">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="19" x2="12" y2="5"></line>
-            <polyline points="5 12 12 5 19 12"></polyline>
+            <polyline points="19 12 12 5 5 12"></polyline>
           </svg>
         </button>
-        <button id="mic-btn" onclick="toggleMic()" title="Click to talk" class="listening-toggle">🎤</button>
+        <button id="mic-btn" onclick="toggleMic()" title="Click to talk" class="listening-toggle">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" x2="12" y1="19" y2="22"/>
+          </svg>
+        </button>
       </form>
       <span id="voice-status"></span>
     </div>
@@ -2045,25 +2091,31 @@
       /* =============================================================================
          Socket Event Handlers - Server-to-client communication
          ============================================================================= */
-      // Handle incoming user messages
+      // Handle incoming user messages (only if belongs to current session)
       socket.on('user_message', (data) => {
-        addMessage(data.message, 'user');
+        // Only display if no session selected or matches current session
+        if (!currentSessionId || data.session_id === currentSessionId) {
+          addMessage(data.message, 'user');
+        }
       });
 
-      // Handle incoming AI messages
+      // Handle incoming AI messages (only if belongs to current session)
       socket.on('ai_message', (data) => {
-        stopAiProcessing();
-        // If listening mode is still enabled, restart speech recognition for next command
-        if (listeningEnabled) {
-          console.log('🔄 Restarting speech recognition after AI response...');
-          setEyeState('wake'); // Green eyes while waiting for next command
-          setTimeout(() => {
-            if (listeningEnabled) {
-              startListening();
-            }
-          }, 1000);
+        // Only display if no session selected or matches current session
+        if (!currentSessionId || data.session_id === currentSessionId) {
+          stopAiProcessing();
+          // If listening mode is still enabled, restart speech recognition for next command
+          if (listeningEnabled) {
+            console.log('🔄 Restarting speech recognition after AI response...');
+            setEyeState('wake'); // Green eyes while waiting for next command
+            setTimeout(() => {
+              if (listeningEnabled) {
+                startListening();
+              }
+            }, 1000);
+          }
+          addMessage(data.message, 'ai');
         }
-        addMessage(data.message, 'ai');
       });
 
       // Handle wake word detection
