@@ -1,0 +1,4050 @@
+<body class="bg-bg-100 text-text-100 font-ui min-h-screen" style="pointer-events: auto;">
+  <div id="root">
+    <div class="root">
+      <div class="grid w-full overflow-hidden"
+        style="height: calc(100vh - var(--app-install-banner-height, 0px) - var(--dev-dashboard-height, 0px)); grid-template-rows: 0px 1fr; transition: grid-template-rows 0.15s ease-out;">
+        <div></div>
+        <div class="flex min-h-0 w-full overflow-x-clip overflow-y-auto relative">
+          <div
+            class="pointer-events-none absolute inset-0 bg-bg-100 [background-image:linear-gradient(to_right,hsl(var(--bg-200))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--bg-200))_1px,transparent_1px)] [background-size:32px_32px]"
+            aria-hidden="true" style="clip-path: circle(150% at 50% 50%); opacity: 0;"></div>
+          <div class="shrink-0" style="overflow: hidden; width: auto; opacity: 1;">
+            <div class="fixed lg:sticky z-sidebar" style="width: 18rem;">
+              <nav
+                class="flex flex-col px-0 fixed left-0 border-r-0.5 h-screen shadow-lg lg:shadow-none border-border-300 bg-bg-100 transition-[background-color,border-color,box-shadow] duration-[35ms]"
+                aria-label="Sidebar"
+                style="width: 18rem; top: 0px; padding-top: var(--app-install-banner-height, 0px); padding-bottom: var(--dev-dashboard-height, 0px);">
+                <div class="relative flex w-full items-center p-2 pointer-events-auto pt-2">
+                  <div
+                    class="flex items-center gap-1.5 pl-2 h-8 overflow-hidden transition-opacity duration-150 opacity-100">
+                    <a href="/new" class="flex flex-col justify-start items-top" aria-label="Home" tabindex="0"><svg
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 16" class="h-4 flex-shrink-0 text-text-100"
+                        height="16" fill="currentColor" aria-label="Claude">
+                        <path
+                          d="M7.98 15.73C6.50667 15.73 5.17667 15.4367 3.99 14.85C2.81 14.2567 1.88 13.4167 1.2 12.33C0.526669 11.2367 0.190002 9.96334 0.190002 8.51001C0.190002 7.01001 0.526669 5.67334 1.2 4.50001C1.87334 3.32668 2.8 2.41668 3.98 1.77001C5.16667 1.11668 6.49334 0.790009 7.96 0.790009C8.88667 0.790009 9.81667 0.896676 10.75 1.11001C11.69 1.32334 12.5033 1.64001 13.19 2.06001V5.36001H12.29C12.05 4.22668 11.5867 3.36334 10.9 2.77001C10.2133 2.17668 9.24 1.88001 7.98 1.88001C6.85334 1.88001 5.91334 2.15334 5.16 2.70001C4.40667 3.24001 3.84667 3.98334 3.48 4.93001C3.12 5.87001 2.94 6.94668 2.94 8.16001C2.94 9.37334 3.14667 10.4733 3.56 11.46C3.97334 12.44 4.57667 13.2167 5.37 13.79C6.16334 14.3567 7.11 14.64 8.21 14.64C8.97667 14.64 9.63667 14.4733 10.19 14.14C10.75 13.8 11.2167 13.3533 11.59 12.8C11.97 12.2467 12.3367 11.5667 12.69 10.76H13.63L12.99 14.43C12.35 14.8567 11.5733 15.18 10.66 15.4C9.75334 15.62 8.86 15.73 7.98 15.73ZM15.15 14.63C15.4833 14.5833 15.7433 14.53 15.93 14.47C16.1167 14.41 16.2633 14.3167 16.37 14.19C16.4767 14.0567 16.53 13.8733 16.53 13.64V2.96001L15.15 2.31001V1.65001L18.12 0.26001H18.91V13.64C18.91 13.8733 18.9633 14.0567 19.07 14.19C19.1767 14.3167 19.3233 14.41 19.51 14.47C19.6967 14.53 19.96 14.5833 20.3 14.63V15.5H15.15V14.63ZM24.44 15.73C23.8867 15.73 23.39 15.6167 22.95 15.39C22.51 15.1567 22.1667 14.8367 21.92 14.43C21.68 14.0233 21.56 13.5567 21.56 13.03C21.56 12.2633 21.7967 11.6233 22.27 11.11C22.75 10.5967 23.47 10.2033 24.43 9.93001L27.87 8.96001V7.56001C27.87 6.85334 27.7033 6.31668 27.37 5.95001C27.0433 5.58334 26.5633 5.40001 25.93 5.40001C25.37 5.40001 24.93 5.57668 24.61 5.93001C24.2967 6.27668 24.14 6.75668 24.14 7.37001V8.35001H22.47C22.2833 8.23001 22.1367 8.06334 22.03 7.85001C21.93 7.63668 21.88 7.40334 21.88 7.15001C21.88 6.67668 22.06 6.24001 22.42 5.84001C22.78 5.43334 23.2633 5.11334 23.87 4.88001C24.4833 4.64668 25.16 4.53001 25.9 4.53001C26.8133 4.53001 27.5933 4.67334 28.24 4.96001C28.8933 5.24668 29.39 5.66668 29.73 6.22001C30.0767 6.77334 30.25 7.43668 30.25 8.21001V13.5C30.25 13.7333 30.29 13.9133 30.37 14.04C30.45 14.1667 30.5867 14.2667 30.78 14.34C30.98 14.4133 31.2633 14.4767 31.63 14.53V15.39C31.0967 15.5967 30.5633 15.7 30.03 15.7C29.4367 15.7 28.9567 15.56 28.59 15.28C28.23 15 28.0067 14.6 27.92 14.08C27.44 14.62 26.9067 15.03 26.32 15.31C25.7333 15.59 25.1067 15.73 24.44 15.73ZM25.62 14.13C26.0067 14.13 26.3967 14.0433 26.79 13.87C27.1833 13.69 27.5433 13.4433 27.87 13.13V9.87001L25.43 10.61C24.9233 10.7567 24.5433 10.99 24.29 11.31C24.0433 11.6233 23.92 12.0267 23.92 12.52C23.92 12.8267 23.9933 13.1033 24.14 13.35C24.2867 13.59 24.49 13.78 24.75 13.92C25.01 14.06 25.3 14.13 25.62 14.13ZM36.56 15.73C35.48 15.73 34.68 15.4467 34.16 14.88C33.6467 14.3133 33.39 13.53 33.39 12.53V6.91001L32.01 6.37001V5.70001L34.98 4.53001H35.77V12.12C35.77 12.7533 35.9233 13.2233 36.23 13.53C36.5433 13.8367 37.0133 13.99 37.64 13.99C38.0533 13.99 38.4833 13.8967 38.93 13.71C39.3833 13.5167 39.8 13.27 40.18 12.97V6.91001L38.8 6.37001V5.70001L41.77 4.53001H42.56V12.91C42.56 13.17 42.6133 13.37 42.72 13.51C42.8333 13.65 42.9833 13.7533 43.17 13.82C43.3567 13.88 43.6167 13.9333 43.95 13.98V14.84L40.97 15.69H40.18V13.96C39.6667 14.4933 39.0867 14.9233 38.44 15.25C37.8 15.57 37.1733 15.73 36.56 15.73ZM49.61 15.73C48.7367 15.73 47.9567 15.51 47.27 15.07C46.5833 14.6233 46.0467 14.02 45.66 13.26C45.28 12.5 45.09 11.66 45.09 10.74C45.09 9.56668 45.3167 8.51001 45.77 7.57001C46.2233 6.63001 46.8733 5.89001 47.72 5.35001C48.5733 4.80334 49.5767 4.53001 50.73 4.53001C51.0767 4.53001 51.43 4.56668 51.79 4.64001C52.15 4.70668 52.4967 4.81001 52.83 4.95001V2.96001L51.45 2.31001V1.65001L54.42 0.26001H55.21V12.91C55.21 13.17 55.2633 13.37 55.37 13.51C55.4833 13.65 55.6333 13.7533 55.82 13.82C56.0067 13.88 56.2667 13.9333 56.6 13.98V14.84L53.62 15.69H52.83V14.39C52.3833 14.8167 51.8867 15.1467 51.34 15.38C50.7933 15.6133 50.2167 15.73 49.61 15.73ZM50.6 14.12C50.9867 14.12 51.3733 14.0467 51.76 13.9C52.1467 13.7467 52.5033 13.5367 52.83 13.27V6.38001C52.2567 5.92001 51.6167 5.69001 50.91 5.69001C50.1767 5.69001 49.5567 5.89001 49.05 6.29001C48.55 6.68334 48.1767 7.21334 47.93 7.88001C47.69 8.54668 47.57 9.28334 47.57 10.09C47.57 10.8567 47.6767 11.5433 47.89 12.15C48.11 12.7567 48.4467 13.2367 48.9 13.59C49.3533 13.9433 49.92 14.12 50.6 14.12ZM62.93 15.73C61.9433 15.73 61.0533 15.4967 60.26 15.03C59.4733 14.5567 58.8567 13.9033 58.41 13.07C57.9633 12.2367 57.74 11.3 57.74 10.26C57.74 9.18001 57.9667 8.20334 58.42 7.33001C58.88 6.45668 59.51 5.77334 60.31 5.28001C61.1167 4.78001 62.0167 4.53001 63.01 4.53001C63.77 4.53001 64.4667 4.68668 65.1 5.00001C65.7333 5.31334 66.2567 5.76001 66.67 6.34001C67.09 6.92001 67.37 7.59001 67.51 8.35001L60.14 10.66C60.3333 11.62 60.7267 12.38 61.32 12.94C61.92 13.4933 62.67 13.77 63.57 13.77C64.31 13.77 64.9767 13.5733 65.57 13.18C66.17 12.78 66.7 12.18 67.16 11.38L67.93 11.63C67.7633 12.4433 67.44 13.16 66.96 13.78C66.4867 14.4 65.9 14.88 65.2 15.22C64.5067 15.56 63.75 15.73 62.93 15.73ZM64.95 8.03001C64.8567 7.55668 64.6933 7.14001 64.46 6.78001C64.2267 6.42001 63.94 6.14001 63.6 5.94001C63.2667 5.74001 62.9033 5.64001 62.51 5.64001C62.01 5.64001 61.57 5.79334 61.19 6.10001C60.8167 6.40001 60.5267 6.83001 60.32 7.39001C60.1133 7.95001 60.01 8.60001 60.01 9.34001C60.01 9.46668 60.0133 9.56334 60.02 9.63001L64.95 8.03001Z">
+                        </path>
+                      </svg></a></div>
+                  <div class="absolute right-2 top-2"><button class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 w-8 rounded-md group _fill_56vq7_9 _ghost_56vq7_96" type="button"
+                      data-testid="pin-sidebar-toggle" aria-label="Close sidebar" aria-pressed="true"
+                      data-state="closed">
+                      <div class="relative size-4 flex items-center justify-center">
+                        <div class="transition text-text-400 group-hover:text-text-100"
+                          style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="transition text-text-400 group-hover:text-text-100" aria-hidden="true"
+                            style="flex-shrink: 0;">
+                            <path
+                              d="M16.5 4A1.5 1.5 0 0 1 18 5.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 2 14.5v-9A1.5 1.5 0 0 1 3.5 4zM7 15h9.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H7zM3.5 5a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5H6V5z">
+                            </path>
+                          </svg></div>
+                      </div>
+                    </button></div>
+                </div>
+                <div
+                  class="flex flex-col flex-grow align-center overflow-hidden min-h-0 opacity-100 transition-opacity ease-out duration-150"
+                  aria-hidden="false">
+                  <div class="flex flex-col gap-px pt-2">
+                    <div class="px-2">
+                      <div class="relative group" data-state="closed"><a href="/new"
+                          class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                          aria-label="New chat" data-dd-action-name="sidebar-new-item">
+                          <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                            <div class="flex items-center justify-center text-text-100">
+                              <div
+                                class="flex items-center justify-center rounded-full transition-all ease-in-out group-hover:-rotate-3 group-hover:scale-110 group-active:rotate-6 group-active:scale-[0.98]">
+                                <div
+                                  class="flex items-center justify-center rounded-full size-[1.4rem] -mx-[0.2rem] bg-text-500/15 active:bg-text-200 group-hover:bg-text-500/25">
+                                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg" class="text-text-300 group-hover:text-text-000"
+                                    aria-hidden="true" style="flex-shrink: 0;">
+                                    <path
+                                      d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3">
+                                    </path>
+                                  </svg></div>
+                              </div>
+                            </div><span class="truncate text-sm whitespace-nowrap flex-1">
+                              <div class="opacity-100 transition-opacity ease-out duration-150">New chat</div>
+                            </span><span
+                              class="flex items-center flex-shrink-0 -mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-75"><span
+                                class="text-text-500 text-xs px-0.5">Ctrl+⇧+O</span></span>
+                          </div>
+                        </a></div>
+                    </div>
+                    <div class="px-2">
+                      <div class="relative group" data-state="closed"><a href="#"
+                          class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                          aria-label="Search" data-dd-action-name="sidebar-nav-item">
+                          <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                            <div class="flex items-center justify-center text-text-100">
+                              <div
+                                style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                                  xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink: 0;">
+                                  <path
+                                    d="M8.5 2a6.5 6.5 0 0 1 4.935 10.728l4.419 4.419.064.078a.5.5 0 0 1-.693.693l-.079-.064-4.419-4.42A6.5 6.5 0 1 1 8.5 2m0 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11">
+                                  </path>
+                                </svg></div>
+                            </div><span class="truncate text-sm whitespace-nowrap flex-1">
+                              <div class="opacity-100 transition-opacity ease-out duration-150">Search</div>
+                            </span><span
+                              class="flex items-center flex-shrink-0 -mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-75"><span
+                                class="text-text-500 text-xs px-0.5">Ctrl+K</span></span>
+                          </div>
+                        </a></div>
+                      <div class="relative group" data-state="closed"><a href="/customize"
+                          class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                          aria-label="Customize" data-dd-action-name="sidebar-nav-item">
+                          <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                            <div class="flex items-center justify-center text-text-100">
+                              <div
+                                class="flex items-center justify-center transition-all ease-in-out group-hover:-rotate-3 group-hover:scale-110 group-active:rotate-6 group-active:scale-[0.98]">
+                                <div
+                                  style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink: 0;">
+                                    <path
+                                      d="M12.5 3A1.5 1.5 0 0 1 14 4.5V6h.5A3.5 3.5 0 0 1 18 9.5v6a1.5 1.5 0 0 1-1.5 1.5h-13a1.5 1.5 0 0 1-1.492-1.347L2 15.5v-6A3.5 3.5 0 0 1 5.5 6H6V4.5A1.5 1.5 0 0 1 7.5 3zM3 15.5l.01.1a.5.5 0 0 0 .49.4h13a.5.5 0 0 0 .5-.5V12h-4v.5a.5.5 0 0 1-1 0V12H8v.5a.5.5 0 0 1-1 0V12H3zM5.5 7A2.5 2.5 0 0 0 3 9.5V11h4v-.5a.5.5 0 0 1 1 0v.5h4v-.5a.5.5 0 0 1 1 0v.5h4V9.5A2.5 2.5 0 0 0 14.5 7zm2-3a.5.5 0 0 0-.5.5V6h6V4.5a.5.5 0 0 0-.5-.5z">
+                                    </path>
+                                  </svg></div>
+                              </div>
+                            </div><span class="truncate text-sm whitespace-nowrap flex-1">
+                              <div class="opacity-100 transition-opacity ease-out duration-150">Customize</div>
+                            </span>
+                          </div>
+                        </a></div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-grow flex-col overflow-x-hidden relative transition-[border-color] !outline-none overflow-y-auto border-t-0.5 border-transparent"
+                    tabindex="-1">
+                    <div class="flex flex-col px-2 pt-4 gap-px">
+                      <div class="relative group" data-state="closed"><a href="/recents"
+                          class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                          aria-label="Chats" data-dd-action-name="sidebar-nav-item">
+                          <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                            <div class="flex items-center justify-center text-text-100">
+                              <div class="group"
+                                style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                                  xmlns="http://www.w3.org/2000/svg" class="group" aria-hidden="true"
+                                  style="flex-shrink: 0;">
+                                  <path class="group-hover:-translate-x-[0.5px] transition group-active:translate-x-0"
+                                    d="M8.99962 2C12.3133 2 14.9996 4.68629 14.9996 8C14.9996 11.3137 12.3133 14 8.99962 14H2.49962C2.30105 13.9998 2.12113 13.8821 2.04161 13.7002C1.96224 13.5181 1.99835 13.3058 2.1334 13.1602L3.93516 11.2178C3.34317 10.2878 2.99962 9.18343 2.99962 8C2.99962 4.68643 5.68609 2.00022 8.99962 2ZM8.99962 3C6.23838 3.00022 3.99961 5.23871 3.99961 8C3.99961 9.11212 4.36265 10.1386 4.97618 10.9688C5.11884 11.1621 5.1035 11.4293 4.94004 11.6055L3.64512 13H8.99962C11.761 13 13.9996 10.7614 13.9996 8C13.9996 5.23858 11.761 3 8.99962 3Z">
+                                  </path>
+                                  <path class="group-hover:translate-x-[0.5px] transition group-active:translate-x-0"
+                                    d="M16.5445 9.72754C16.4182 9.53266 16.1678 9.44648 15.943 9.53418C15.7183 9.62215 15.5932 9.85502 15.6324 10.084L15.7369 10.3955C15.9073 10.8986 16.0006 11.438 16.0006 12C16.0006 13.1123 15.6376 14.1386 15.024 14.9687C14.8811 15.1621 14.8956 15.4302 15.0592 15.6064L16.3531 17H11.0006C9.54519 17 8.23527 16.3782 7.32091 15.3848L7.07091 15.1103C6.88996 14.9645 6.62535 14.9606 6.43907 15.1143C6.25267 15.2682 6.20668 15.529 6.31603 15.7344L6.58458 16.0625C7.68048 17.253 9.25377 18 11.0006 18H17.5006C17.6991 17.9998 17.8791 17.8822 17.9586 17.7002C18.038 17.5181 18.0018 17.3058 17.8668 17.1602L16.0631 15.2178C16.6554 14.2876 17.0006 13.1837 17.0006 12C17.0006 11.3271 16.8891 10.6792 16.6842 10.0742L16.5445 9.72754Z">
+                                  </path>
+                                </svg></div>
+                            </div><span class="truncate text-sm whitespace-nowrap flex-1">
+                              <div class="opacity-100 transition-opacity ease-out duration-150"><span>Chats</span></div>
+                            </span>
+                          </div>
+                        </a></div>
+                      <div class="relative group" data-state="closed"><a href="/projects"
+                          class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                          aria-label="Projects" data-dd-action-name="sidebar-nav-item">
+                          <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                            <div class="flex items-center justify-center text-text-100">
+                              <div class="group"
+                                style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                                  xmlns="http://www.w3.org/2000/svg" class="group" aria-hidden="true"
+                                  style="flex-shrink: 0;">
+                                  <path class="group-hover:scale-95 origin-center"
+                                    d="M15.8198 7C16.6885 7.00025 17.3624 7.73158 17.3178 8.57617L17.2993 8.74707L16.1332 15.7471C16.0126 16.4699 15.3865 16.9996 14.6538 17H5.34711C4.6142 16.9998 3.98833 16.47 3.86762 15.7471L2.7016 8.74707C2.54922 7.83277 3.25418 7 4.18109 7H15.8198ZM4.18109 8C3.87216 8 3.63722 8.27731 3.68793 8.58203L4.85394 15.582C4.89413 15.8229 5.10291 15.9998 5.34711 16H14.6538C14.8978 15.9996 15.1068 15.8228 15.1469 15.582L16.3129 8.58203L16.3188 8.46973C16.3036 8.21259 16.0899 8.00023 15.8198 8H4.18109Z">
+                                  </path>
+                                  <path
+                                    class="group-hover:-translate-y-[1.4px] group-hover:translate-x-[0.5px] group-hover:rotate-3 transition group-active:translate-y-0"
+                                    d="M16.0004 5.5C16.0004 5.224 15.7764 5.00024 15.5004 5H4.50043C4.22428 5 4.00043 5.22386 4.00043 5.5C4.00043 5.77614 4.22428 6 4.50043 6H15.5004C15.7764 5.99976 16.0004 5.776 16.0004 5.5Z">
+                                  </path>
+                                  <path
+                                    class="group-hover:-translate-y-[2.8px] group-hover:translate-x-px group-hover:rotate-6 transition group-active:translate-y-0"
+                                    d="M14.5004 3.5C14.5004 3.224 14.2764 3.00024 14.0004 3H6.00043C5.72428 3 5.50043 3.22386 5.50043 3.5C5.50043 3.77614 5.72428 4 6.00043 4H14.0004C14.2764 3.99976 14.5004 3.776 14.5004 3.5Z">
+                                  </path>
+                                </svg></div>
+                            </div><span class="truncate text-sm whitespace-nowrap flex-1">
+                              <div class="opacity-100 transition-opacity ease-out duration-150"><span>Projects</span>
+                              </div>
+                            </span>
+                          </div>
+                        </a></div>
+                      <div>
+                        <div class="relative group" data-state="closed"><a href="/artifacts"
+                            class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                            aria-label="Artifacts" data-dd-action-name="sidebar-nav-item">
+                            <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                              <div class="flex items-center justify-center text-text-100">
+                                <div class="group backface-hidden"
+                                  style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg" class="group backface-hidden" aria-hidden="true"
+                                    style="flex-shrink: 0;">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M6.35352 3.1464L9.35352 6.14642C9.43935 6.25103 9.5 6.36003 9.5 6.50091C9.4998 6.6332 9.44704 6.75988 9.35352 6.85346L6.35352 9.85347C6.14584 10.0609 5.85611 10.0243 5.64648 9.85347L2.64648 6.85346C2.55296 6.75988 2.5002 6.6332 2.5 6.50091C2.5 6.36841 2.55285 6.24017 2.64648 6.14642L5.64648 3.1464C5.8552 2.97421 6.14635 2.93936 6.35352 3.1464ZM6 8.79194L3.70703 6.49994L6 4.20696L8.29297 6.49994L6 8.79194Z">
+                                    </path>
+                                    <path
+                                      class="group-hover:-rotate-90 transition-transform duration-200 ease-snappy-out"
+                                      d="M16.8984 3.7509C16.9875 3.90632 16.986 4.09826 16.8955 4.25286L15.5791 6.49994L16.8955 8.74702C16.986 8.90159 16.9874 9.09354 16.8984 9.24898C16.8093 9.40436 16.643 9.49996 16.4638 9.49996H11.5C11.3198 9.49996 11.1532 9.4028 11.0644 9.24605C10.976 9.08949 10.9789 8.89736 11.0713 8.74312L12.417 6.49994L11.0713 4.25676C10.9789 4.1025 10.976 3.91037 11.0644 3.75383C11.1532 3.59717 11.3199 3.49992 11.5 3.49992H16.4638C16.6429 3.51309 16.8055 3.58909 16.8984 3.7509ZM13.4287 6.2431C13.5152 6.4107 13.5166 6.58638 13.4287 6.75678L12.3828 8.49995H15.5918L14.5683 6.75287C14.477 6.59683 14.477 6.40303 14.5683 6.24701L15.5918 4.49993H12.3828L13.4287 6.2431Z"
+                                      style="transform-origin: 14px 6.5px;"></path>
+                                    <path
+                                      class="group-hover:rotate-[120deg] transition-transform duration-200 ease-snappy-out"
+                                      fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M7.25293 10.9668C7.40708 10.8793 7.59647 10.8801 7.75 10.9687C7.90356 11.0574 7.99869 11.2211 8 11.3984L8.01074 12.8388L9.30762 13.6054C9.42811 13.6994 9.49994 13.8448 9.5 14C9.5 14.1773 9.40587 14.3418 9.25293 14.4316L8.01074 15.1601L7.99512 16.667C7.97406 16.8184 7.88446 16.9536 7.75 17.0312C7.59642 17.1199 7.40713 17.1207 7.25293 17.0332L6 16.3203L4.74707 17.0332C4.59287 17.1207 4.40358 17.1199 4.25 17.0312C4.09643 16.9425 4.00124 16.7789 4 16.6015L3.99023 15.1601L2.74707 14.4316C2.59413 14.3418 2.5 14.1773 2.5 14C2.50006 13.8448 2.57188 13.6994 2.69238 13.6054L3.99023 12.8388L4 11.3984C4.00131 11.2211 4.09644 11.0574 4.25 10.9687C4.40353 10.8801 4.59292 10.8793 4.74707 10.9668L6 11.6787L7.25293 10.9668ZM4.99512 12.2568L5.75293 12.6884C5.90608 12.7754 6.09392 12.7754 6.24707 12.6884L7.00586 12.2568L7.01172 13.1308C7.01308 13.3068 7.10706 13.4695 7.25879 13.5586L8.01172 14L7.25879 14.4414C7.10706 14.5304 7.01315 14.6932 7.01172 14.8691L7.00586 15.7422L6.24707 15.3115C6.09397 15.2246 5.90603 15.2246 5.75293 15.3115L4.99512 15.7422L4.98828 14.8691C4.98703 14.7152 4.91459 14.5716 4.79492 14.4785L3.98926 14L4.74121 13.5586C4.87421 13.4805 4.96267 13.3457 4.9834 13.1953L4.99512 12.2568Z"
+                                      style="transform-origin: 6px 14px;"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M14 11C15.6568 11 16.9999 12.3432 17 14C17 15.6568 15.6569 17 14 17C12.3431 17 11 15.6568 11 14C11.0001 12.3432 12.3432 11 14 11ZM12 14C12.0001 12.8955 12.8955 12 14 12C15.1045 12 15.9999 12.8955 16 14C16 15.1045 15.1046 16 14 16C12.8954 16 12 15.1045 12 14Z">
+                                    </path>
+                                  </svg></div>
+                              </div><span class="truncate text-sm whitespace-nowrap flex-1">
+                                <div class="opacity-100 transition-opacity ease-out duration-150 flex flex-col">
+                                  <div class="flex items-center gap-2">Artifacts</div>
+                                </div>
+                              </span>
+                            </div>
+                          </a></div>
+                      </div>
+                      <div class="relative group" data-state="closed"><a href="/upgrade"
+                          class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                          aria-label="Claude Code" data-dd-action-name="sidebar-nav-item">
+                          <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                            <div
+                              class="flex items-center justify-center text-text-100 text-text-400/40 group-hover:!text-text-100/40">
+                              <div class="group"
+                                style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                                  xmlns="http://www.w3.org/2000/svg" class="group" aria-hidden="true"
+                                  style="flex-shrink: 0;">
+                                  <path class="transition"
+                                    d="M11.6318 4.01757C11.898 4.09032 12.055 4.36555 11.9824 4.63183L8.98242 15.6318C8.90966 15.8981 8.63449 16.0551 8.36816 15.9824C8.10193 15.9097 7.94495 15.6345 8.01758 15.3682L11.0176 4.36816C11.0904 4.102 11.3656 3.94497 11.6318 4.01757Z">
+                                  </path>
+                                  <path class="group-hover:translate-x-[1px] transition"
+                                    d="M13.124 6.17089C13.3059 5.96325 13.6213 5.9423 13.8291 6.12402L17.8291 9.62402L17.9014 9.70215C17.9647 9.78754 18 9.89182 18 10C18 10.1441 17.9375 10.281 17.8291 10.376L13.8291 13.876L13.7471 13.9346C13.5449 14.0498 13.2833 14.011 13.124 13.8291C12.9649 13.6472 12.9606 13.3824 13.1016 13.1973L13.1709 13.124L16.7412 10L13.1709 6.87597C12.9632 6.69411 12.9422 6.37866 13.124 6.17089Z">
+                                  </path>
+                                  <path class="group-hover:-translate-x-[1px] transition"
+                                    d="M6.25293 6.06542C6.45509 5.95025 6.71675 5.98908 6.87598 6.17089C7.03513 6.35279 7.03933 6.6176 6.89844 6.80273L6.8291 6.87597L3.25879 10L6.8291 13.124C7.03682 13.3059 7.05771 13.6213 6.87598 13.8291C6.69413 14.0369 6.37869 14.0578 6.1709 13.876L2.1709 10.376L2.09863 10.2979C2.03528 10.2124 2 10.1082 2 10C2.00005 9.85591 2.06247 9.71893 2.1709 9.62402L6.1709 6.12402L6.25293 6.06542Z">
+                                  </path>
+                                </svg></div>
+                            </div><span class="truncate text-sm whitespace-nowrap flex-1 text-text-000/40">
+                              <div>
+                                <div class="opacity-100 transition-opacity ease-out duration-150"><span>Claude
+                                    Code</span></div>
+                              </div>
+                            </span>
+                          </div><span
+                            class="border-0.5 border-border-400 text-accent-000 px-1.5 py-px rounded-3xl font-small absolute right-2 top-1/2 -translate-y-1/2">Upgrade</span>
+                        </a></div>
+                    </div>
+                    <div class="flex-1 relative">
+                      <div class="" aria-hidden="false">
+                        <div class="px-2 mt-4">
+                          <div class="flex flex-col flex-grow">
+                            <div class="flex items-center justify-between">
+                              <h2 aria-hidden="false" role="button" aria-expanded="true"
+                                class="text-text-500 pb-2 mt-1 text-xs select-none pl-2 pr-2 group/header cursor-pointer flex items-center justify-between gap-2"
+                                tabindex="0">Recents<span
+                                  class="text-text-400 opacity-0 group-hover/header:opacity-75 transition-opacity">Hide</span>
+                              </h2>
+                            </div>
+                            <ul class="flex flex-col gap-px">
+                              <li style="opacity: 1;">
+                                <div class="relative group" data-state="closed"><a
+                                    href="/chat/ca3692d0-b7f2-455f-810d-35383ddb65fc"
+                                    class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                                    data-dd-action-name="sidebar-chat-item">
+                                    <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                                      <span
+                                        class="truncate text-sm whitespace-nowrap flex-1 group-hover:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] group-focus-within:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] [mask-size:100%_100%]">Biden's
+                                        progressive legislative accomplishments</span></div>
+                                  </a></div>
+                              </li>
+                              <li style="opacity: 1;">
+                                <div class="relative group" data-state="closed"><a
+                                    href="/chat/26dec3de-fe8e-4994-b1cc-6f93420c7eef"
+                                    class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                                    data-dd-action-name="sidebar-chat-item">
+                                    <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                                      <span
+                                        class="truncate text-sm whitespace-nowrap flex-1 group-hover:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] group-focus-within:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] [mask-size:100%_100%]">Initial
+                                        greeting</span></div>
+                                  </a></div>
+                              </li>
+                              <li style="opacity: 1;">
+                                <div class="relative group" data-state="closed"><a
+                                    href="/chat/2277f5b1-aa64-4290-9f2b-6745af71b025"
+                                    class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                                    data-dd-action-name="sidebar-chat-item">
+                                    <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                                      <span
+                                        class="truncate text-sm whitespace-nowrap flex-1 group-hover:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] group-focus-within:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] [mask-size:100%_100%]">Initial
+                                        greeting</span></div>
+                                  </a></div>
+                              </li>
+                              <li style="opacity: 1;">
+                                <div class="relative group" data-state="closed"><a
+                                    href="/chat/e4fbc245-953c-489e-b067-ad82d798d372"
+                                    class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs w-full !min-w-0 group py-1.5 rounded-lg px-4 !duration-75 overflow-hidden active:bg-bg-300 active:scale-[1.0] _fill_56vq7_9 _ghost_56vq7_96"
+                                    data-dd-action-name="sidebar-chat-item">
+                                    <div class="-translate-x-2 w-full flex flex-row items-center justify-start gap-3">
+                                      <span
+                                        class="truncate text-sm whitespace-nowrap flex-1 group-hover:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] group-focus-within:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)] [mask-size:100%_100%]">Create
+                                        API documentation</span></div>
+                                  </a></div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 transition border-t-0.5 border-border-300">
+                    <div class="flex-1 min-w-0"><button
+                        class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-9 px-4 py-2 rounded-lg min-w-[5rem] whitespace-nowrap !scale-100 flex-row !min-w-0 w-full rounded-none group px-2 !-outline-offset-2 transition-[gap] duration-150 ease-out gap-3 !py-8 my-0 [&amp;:has(.downloads-link:hover)]:!bg-transparent _fill_56vq7_9 _ghost_56vq7_96"
+                        type="button" data-testid="user-menu-button" aria-label="David, Settings" id="radix-_r_53_"
+                        aria-haspopup="menu" aria-expanded="false" data-state="closed">
+                        <div class="relative flex-shrink-0">
+                          <div
+                            class="flex items-center justify-center rounded-full text-text-200 border-0.5 border-transparent group-hover:border-border-200 transition group-hover:opacity-90">
+                            <div
+                              class="flex shrink-0 items-center justify-center rounded-full font-bold select-none h-9 w-9 text-[16px] bg-text-200 text-bg-100">
+                              D</div>
+                          </div>
+                        </div>
+                        <div
+                          class="opacity-100 transition-opacity ease-out duration-150 flex flex-1 text-sm justify-between items-center font-medium min-w-0">
+                          <div class="flex flex-col items-start min-w-0 flex-1 pr-1"><span
+                              class="w-full text-start block truncate">David</span><span
+                              class="w-full truncate text-xs text-text-500 font-normal text-start">Free plan</span>
+                          </div>
+                          <div class="flex items-center gap-2 flex-shrink-0 overflow-visible">
+                            <div class="relative overflow-visible">
+                              <div role="button" tabindex="0"
+                                class="downloads-link inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none font-base-bold
+          border-0.5
+          overflow-hidden
+          transition
+          duration-100
+          backface-hidden h-8 w-8 rounded-md !rounded-lg bg-transparent text-text-000 border-border-200/30 hover:bg-bg-400 hover:text-text-000 hover:border-transparent cursor-pointer"
+                                aria-label="Get apps and extensions" data-state="closed">
+                                <div class="text-text-300"
+                                  style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg" class="text-text-300" aria-hidden="true"
+                                    style="flex-shrink: 0;">
+                                    <path
+                                      d="M16.5 13a.5.5 0 0 1 .5.5v2a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 15.5v-2a.5.5 0 0 1 1 0v2a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 .5-.5M10 3a.5.5 0 0 1 .5.5v8.686l3.126-3.518a.5.5 0 0 1 .748.664l-4 4.5-.08.071a.5.5 0 0 1-.668-.071l-4-4.5-.059-.082A.5.5 0 0 1 6.3 8.6l.075.068L9.5 12.186V3.5A.5.5 0 0 1 10 3">
+                                    </path>
+                                  </svg></div>
+                              </div>
+                            </div><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
+                              viewBox="0 0 256 256" class="flex-shrink-0">
+                              <path
+                                d="M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z">
+                              </path>
+                            </svg>
+                          </div>
+                        </div>
+                      </button></div>
+                  </div>
+                </div>
+              </nav>
+            </div>
+            <div class="fixed bg-transparent z-sidebar top-0 bottom-0 right-0" aria-hidden="true" style="left: 18rem;">
+            </div>
+          </div>
+          <div id="main-content" class="w-full relative min-w-0 h-full" style="padding: 0px;">
+            <main
+              class="mx-auto mt-4 w-full flex-1 px-4 md:px-8 lg:mt-6 max-w-7xl h-full !mt-0 flex flex-col items-center gap-8 md:px-14 3xl:px-20 pt-[10vh] md:pt-[20vh] max-sm:!px-1 relative">
+              <div class="mx-auto flex w-full flex-col items-center gap-7 max-md:pt-4 max-w-2xl">
+                <div
+                  class="ml-0.5 inline-flex items-center gap-1.5 rounded-lg h-8 pl-2 pr-2.5 text-center font-small sm:font-base bg-bg-300 text-text-500 select-none">
+                  Free plan<div class="size-[3px] bg-text-500/30 rounded-full mt-0.5"></div><a href="/upgrade"
+                    class="inline underline underline-offset-[3px] [&amp;:not(:is(:hover,:focus))]:decoration-[color-mix(in_srgb,currentColor,transparent_60%)] cursor-pointer">Upgrade</a>
+                </div>
+                <div class="w-full flex justify-center">
+                  <div class="text-text-200 flex items-center gap-3 font-display"
+                    style="line-height: 1.5; font-size: clamp(1.875rem, 1.2rem + 2vw, 2.5rem);">
+                    <div class="flex-shrink-0">
+                      <div aria-hidden="true">
+                        <div class="w-8 w-8 text-accent-brand inline-block select-none" data-state="closed"><svg
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-full fill-current">
+                            <path
+                              d="m19.6 66.5 19.7-11 .3-1-.3-.5h-1l-3.3-.2-11.2-.3L14 53l-9.5-.5-2.4-.5L0 49l.2-1.5 2-1.3 2.9.2 6.3.5 9.5.6 6.9.4L38 49.1h1.6l.2-.7-.5-.4-.4-.4L29 41l-10.6-7-5.6-4.1-3-2-1.5-2-.6-4.2 2.7-3 3.7.3.9.2 3.7 2.9 8 6.1L37 36l1.5 1.2.6-.4.1-.3-.7-1.1L33 25l-6-10.4-2.7-4.3-.7-2.6c-.3-1-.4-2-.4-3l3-4.2L28 0l4.2.6L33.8 2l2.6 6 4.1 9.3L47 29.9l2 3.8 1 3.4.3 1h.7v-.5l.5-7.2 1-8.7 1-11.2.3-3.2 1.6-3.8 3-2L61 2.6l2 2.9-.3 1.8-1.1 7.7L59 27.1l-1.5 8.2h.9l1-1.1 4.1-5.4 6.9-8.6 3-3.5L77 13l2.3-1.8h4.3l3.1 4.7-1.4 4.9-4.4 5.6-3.7 4.7-5.3 7.1-3.2 5.7.3.4h.7l12-2.6 6.4-1.1 7.6-1.3 3.5 1.6.4 1.6-1.4 3.4-8.2 2-9.6 2-14.3 3.3-.2.1.2.3 6.4.6 2.8.2h6.8l12.6 1 3.3 2 1.9 2.7-.3 2-5.1 2.6-6.8-1.6-16-3.8-5.4-1.3h-.8v.4l4.6 4.5 8.3 7.5L89 80.1l.5 2.4-1.3 2-1.4-.2-9.2-7-3.6-3-8-6.8h-.5v.7l1.8 2.7 9.8 14.7.5 4.5-.7 1.4-2.6 1-2.7-.6-5.8-8-6-9-4.7-8.2-.5.4-2.9 30.2-1.3 1.5-3 1.2-2.5-2-1.4-3 1.4-6.2 1.6-8 1.3-6.4 1.2-7.9.7-2.6v-.2H49L43 72l-9 12.3-7.2 7.6-1.7.7-3-1.5.3-2.8L24 86l10-12.8 6-7.9 4-4.6-.1-.5h-.3L17.2 77.4l-4.7.6-2-2 .2-3 1-1 8-5.5Z">
+                            </path>
+                          </svg></div>
+                      </div>
+                    </div><span class="whitespace-nowrap select-none">David returns!</span>
+                  </div>
+                </div>
+              </div>
+              <div class="top-5 z-10 mx-auto w-full max-w-2xl">
+                <div class="relative">
+                  <div class="absolute -top-2 left-4 w-0 h-0"></div>
+                </div>
+                <div class="">
+                  <div class="mx-auto">
+                    <div class="grid" data-testid="chat-input-grid-container">
+                      <div class="[grid-area:1/1] min-w-0" data-testid="chat-input-grid-area">
+                        <fieldset class="flex w-full min-w-0 flex-col"><input id="chat-input-file-upload-onpage"
+                            data-testid="file-upload" aria-hidden="true" tabindex="-1"
+                            class="absolute -z-10 h-0 w-0 overflow-hidden opacity-0 select-none" accept="" multiple=""
+                            aria-label="Upload files" type="file">
+                          <div class="relative">
+                            <div
+                              class="absolute bottom-0 left-1/2 -translate-x-1/2 z-0 pointer-events-none transition-opacity duration-500"
+                              style="width: 150%; aspect-ratio: 4 / 1; opacity: 0;"></div>
+                            <div
+                              class="!box-content flex flex-col bg-bg-000 mx-2 md:mx-0 items-stretch transition-all duration-200 relative z-10 rounded-[20px] cursor-text relative z-[1] border border-transparent md:w-full shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/3.5%),0_0_0_0.5px_hsla(var(--border-300)/0.15)] hover:shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/3.5%),0_0_0_0.5px_hsla(var(--border-200)/0.3)] focus-within:shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/7.5%),0_0_0_0.5px_hsla(var(--border-200)/0.3)] hover:focus-within:shadow-[0_0.25rem_1.25rem_hsl(var(--always-black)/7.5%),0_0_0_0.5px_hsla(var(--border-200)/0.3)]">
+                              <div class="flex flex-col m-3.5 gap-3">
+                                <div class="relative">
+                                  <div
+                                    class="w-full overflow-y-auto font-large break-words transition-opacity duration-200 max-h-96 min-h-[3rem] pl-[6px] pt-[6px] [&amp;_.is-editor-empty]:before:!content-['']">
+                                    <div contenteditable="true" role="textbox" enterkeyhint="enter"
+                                      data-testid="chat-input" aria-label="Write your prompt to Claude"
+                                      aria-multiline="true" aria-required="false" aria-invalid="false" translate="no"
+                                      class="tiptap ProseMirror" tabindex="0">
+                                      <p data-placeholder="How can I help you today?"
+                                        class="is-empty is-editor-empty before:!text-text-500 before:whitespace-nowrap">
+                                        <br class="ProseMirror-trailingBreak"></p>
+                                    </div>
+                                  </div>
+                                  <div class="absolute inset-0 pointer-events-none overflow-hidden pl-1.5 pt-[5px]">
+                                    <span class="block text-text-500" style="opacity: 1;">How can I help you
+                                      today?</span></div>
+                                </div>
+                                <div class="relative flex gap-2 w-full items-center">
+                                  <div class="relative flex-1 flex items-center shrink min-w-0 gap-1">
+                                    <div><button
+                                        class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 w-8 rounded-md !rounded-lg hover:!bg-bg-200 aria-expanded:!bg-bg-300 active:!scale-100 ml-[2px] _fill_56vq7_9 _ghost_56vq7_96"
+                                        type="button" tabindex="0" aria-haspopup="menu" aria-expanded="false"
+                                        id="_r_1c_" aria-label="Toggle menu" data-state="closed">
+                                        <div
+                                          style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                                          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+                                            style="flex-shrink: 0;">
+                                            <path
+                                              d="M10 3a.5.5 0 0 1 .5.5v6h6l.1.01a.5.5 0 0 1 0 .98l-.1.01h-6v6a.5.5 0 0 1-1 0v-6h-6a.5.5 0 0 1 0-1h6v-6A.5.5 0 0 1 10 3">
+                                            </path>
+                                          </svg></div>
+                                      </button></div>
+                                    <div class="flex flex-row items-center min-w-0 gap-1"></div>
+                                    <div class="text-text-400 text-xs ml-2"></div>
+                                  </div>
+                                  <div class="transition-all duration-200 ease-out">
+                                    <div class="overflow-hidden shrink-0 p-1 -m-1" style="opacity: 1; transform: none;">
+                                      <button
+                                        class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 rounded-md px-3 min-w-[4rem] whitespace-nowrap !text-xs pl-2.5 pr-2 gap-1 hover:!bg-bg-200 _fill_56vq7_9 _ghost_56vq7_96"
+                                        type="button" data-testid="model-selector-dropdown" tabindex="0"
+                                        aria-haspopup="menu" aria-expanded="false" id="_r_1g_">
+                                        <div
+                                          class="inline-flex gap-1.5 text-[14px] h-[14px] leading-none items-baseline">
+                                          <div class="flex items-center gap-[4px]">
+                                            <div class="whitespace-nowrap select-none"> Sonnet 4.6</div>
+                                          </div>
+                                        </div>
+                                        <div class="opacity-75"
+                                          style="width: 12px; height: 12px; display: flex; align-items: center; justify-content: center;">
+                                          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"
+                                            xmlns="http://www.w3.org/2000/svg" class="opacity-75" aria-hidden="true"
+                                            style="flex-shrink: 0;">
+                                            <path
+                                              d="M14.128 7.165a.502.502 0 0 1 .744.67l-4.5 5-.078.07a.5.5 0 0 1-.666-.07l-4.5-5-.06-.082a.501.501 0 0 1 .729-.656l.075.068L10 11.752z">
+                                            </path>
+                                          </svg></div>
+                                      </button></div>
+                                  </div>
+                                  <div class="shrink-0 flex items-center w-8 z-10 justify-end">
+                                    <div style="opacity: 1; transform: none;">
+                                      <div class="flex items-center gap-1 shrink-0">
+                                        <div class="flex items-center rounded-lg transition-colors duration-200"></div>
+                                        <button
+                                          class="h-8 rounded-lg overflow-hidden flex items-center justify-center font-base-bold transition-colors duration-200 hover:bg-bg-300"
+                                          data-state="closed" tabindex="0"
+                                          style="padding-left: 6px; padding-right: 6px;"><span
+                                            class="h-5 relative flex items-center justify-center"
+                                            style="width: 20px;"><span
+                                              class="absolute inset-0 flex items-center justify-center"
+                                              style="opacity: 1; filter: blur(0px); transform: none;"><svg width="20"
+                                                height="20" viewBox="0 0 21 21" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="inline-block overflow-visible">
+                                                <rect x="0" y="7.5" height="6px" fill="currentColor" fill-opacity="1"
+                                                  width="1px" rx="0.5" ry="0.5"></rect>
+                                                <rect x="4" y="5.5" height="10px" fill="currentColor" fill-opacity="1"
+                                                  width="1px" rx="0.5" ry="0.5"></rect>
+                                                <rect x="8" y="2.5" height="16px" fill="currentColor" fill-opacity="1"
+                                                  width="1px" rx="0.5" ry="0.5"></rect>
+                                                <rect x="12" y="5.5" height="10px" fill="currentColor" fill-opacity="1"
+                                                  width="1px" rx="0.5" ry="0.5"></rect>
+                                                <rect x="16" y="2.5" height="16px" fill="currentColor" fill-opacity="1"
+                                                  width="1px" rx="0.5" ry="0.5"></rect>
+                                                <rect x="20" y="7.5" height="6px" fill="currentColor" fill-opacity="1"
+                                                  width="1px" rx="0.5" ry="0.5"></rect>
+                                              </svg></span></span><span
+                                            class="absolute invisible whitespace-nowrap pl-2"
+                                            aria-hidden="true"></span><span class="overflow-hidden"
+                                            style="width: 0px;"></span></button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div></div>
+                            </div>
+                          </div>
+                          <div class="px-3 md:px-2">
+                            <div style="opacity: 1; height: auto;"><button
+                                class="w-full border-0.5 relative z-0 px-3.5 -mb-1 -mt-1 rounded-b-xl border-t-0 pb-2 pt-2.5 bg-bg-200 border-transparent hover:bg-bg-300 transition-colors">
+                                <div
+                                  class="font-normal text-[0.65rem] sm:text-xs w-full flex gap-1.5 items-center justify-between">
+                                  <p class="text-[13px] text-text-200">Connect your tools to Claude</p>
+                                  <div class="flex flex-row items-center gap-2">
+                                    <div class="flex flex-row">
+                                      <div class="w-3">
+                                        <div
+                                          class="shrink-0 bg-bg-000 border-border-300 border-0.5 shadow-sm flex items-center justify-center"
+                                          style="width: 18px; height: 18px; border-radius: 4.86px;"><img alt=""
+                                            width="13" height="13" loading="lazy"
+                                            class="transition duration-500 opacity-1 object-contain"
+                                            src="https://www.google.com/s2/favicons?domain=notion.com&amp;sz=32"
+                                            style="max-width: 13px; max-height: 13px;"></div>
+                                      </div>
+                                      <div class="w-3">
+                                        <div
+                                          class="shrink-0 bg-bg-000 border-border-300 border-0.5 shadow-sm flex items-center justify-center"
+                                          style="width: 18px; height: 18px; border-radius: 4.86px;"><img alt=""
+                                            width="13" height="13" loading="lazy"
+                                            class="transition duration-500 opacity-1 object-contain"
+                                            src="https://www.google.com/s2/favicons?domain=canva.com&amp;sz=32"
+                                            style="max-width: 13px; max-height: 13px;"></div>
+                                      </div>
+                                      <div class="w-3">
+                                        <div
+                                          class="shrink-0 bg-bg-000 border-border-300 border-0.5 shadow-sm flex items-center justify-center"
+                                          style="width: 18px; height: 18px; border-radius: 4.86px;"><img alt=""
+                                            width="13" height="13" loading="lazy"
+                                            class="transition duration-500 opacity-1 object-contain"
+                                            src="https://www.google.com/s2/favicons?domain=linear.app&amp;sz=32"
+                                            style="max-width: 13px; max-height: 13px;"></div>
+                                      </div>
+                                      <div class="w-3">
+                                        <div
+                                          class="shrink-0 bg-bg-000 border-border-300 border-0.5 shadow-sm flex items-center justify-center"
+                                          style="width: 18px; height: 18px; border-radius: 4.86px;"><img alt=""
+                                            width="13" height="13" loading="lazy"
+                                            class="transition duration-500 opacity-1 object-contain"
+                                            src="https://www.google.com/s2/favicons?domain=atlassian.com&amp;sz=32"
+                                            style="max-width: 13px; max-height: 13px;"></div>
+                                      </div>
+                                      <div class="w-3">
+                                        <div
+                                          class="shrink-0 bg-bg-000 border-border-300 border-0.5 shadow-sm flex items-center justify-center"
+                                          style="width: 18px; height: 18px; border-radius: 4.86px;"><img alt=""
+                                            width="13" height="13" loading="lazy"
+                                            class="transition duration-500 opacity-1 object-contain"
+                                            src="https://www.google.com/s2/favicons?domain=asana.com&amp;sz=32"
+                                            style="max-width: 13px; max-height: 13px;"></div>
+                                      </div>
+                                      <div class="w-3">
+                                        <div
+                                          class="shrink-0 bg-bg-000 border-border-300 border-0.5 shadow-sm flex items-center justify-center"
+                                          style="width: 18px; height: 18px; border-radius: 4.86px;"><img
+                                            class="transition duration-500 opacity-1 object-contain" width="13"
+                                            height="13" alt=" icon" src="/images/icons/messages-app.svg"
+                                            style="max-width: 13px; max-height: 13px;"></div>
+                                      </div>
+                                      <div class="w-3">
+                                        <div
+                                          class="shrink-0 bg-bg-000 border-border-300 border-0.5 shadow-sm flex items-center justify-center"
+                                          style="width: 18px; height: 18px; border-radius: 4.86px;"><img
+                                            class="transition duration-500 opacity-1 object-contain" width="13"
+                                            height="13" alt=" icon" src="/images/icons/notes-app.svg"
+                                            style="max-width: 13px; max-height: 13px;"></div>
+                                      </div>
+                                      <div class="w-3">
+                                        <div
+                                          class="shrink-0 bg-bg-000 border-border-300 border-0.5 shadow-sm flex items-center justify-center"
+                                          style="width: 18px; height: 18px; border-radius: 4.86px;"><img
+                                            class="transition duration-500 opacity-1 object-contain" width="13"
+                                            height="13" alt=" icon" src="/images/icons/chrome-app.svg"
+                                            style="max-width: 13px; max-height: 13px;"></div>
+                                      </div>
+                                    </div><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                      fill="currentColor" viewBox="0 0 256 256" class="text-text-500">
+                                      <path
+                                        d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z">
+                                      </path>
+                                    </svg>
+                                  </div>
+                                </div>
+                              </button></div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-full max-w-2xl px-1 md:px-2"></div>
+            </main>
+            <div class="fixed right-3 z-header draggable-none flex items-center gap-3.5"
+              style="top: calc(var(--app-install-banner-height, 0px) + 0.625rem);">
+              <div>
+                <div data-state="closed"><button class="inline-flex
+  items-center
+  justify-center
+  relative
+  isolate
+  shrink-0
+  can-focus
+  select-none
+  disabled:pointer-events-none
+  disabled:opacity-50
+  disabled:shadow-none
+  disabled:drop-shadow-none border-transparent
+          transition
+          font-base
+          duration-300
+          ease-[cubic-bezier(0.165,0.85,0.45,1)] h-8 w-8 rounded-md group _fill_56vq7_9 _ghost_56vq7_96" type="button"
+                    aria-label="Use incognito">
+                    <div class="group"
+                      style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg" class="group" aria-hidden="true" style="flex-shrink: 0;">
+                        <g
+                          class="group-hover:animate-[look-around_2.4s_ease-in-out_infinite] group-active:animate-none">
+                          <path
+                            d="M6.99951 8.66672C7.5518 8.66672 7.99951 9.11443 7.99951 9.66672C7.9993 10.2188 7.55166 10.6667 6.99951 10.6667C6.44736 10.6667 5.99973 10.2188 5.99951 9.66672C5.99951 9.11443 6.44723 8.66672 6.99951 8.66672Z">
+                          </path>
+                          <path
+                            d="M12.9995 8.66672C13.5518 8.66672 13.9995 9.11443 13.9995 9.66672C13.9993 10.2188 13.5517 10.6667 12.9995 10.6667C12.4474 10.6667 11.9997 10.2188 11.9995 9.66672C11.9995 9.11443 12.4472 8.66672 12.9995 8.66672Z">
+                          </path>
+                        </g>
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M10 2C14.326 2.00018 17.9998 5.67403 18 10V17.3123C17.9997 17.5427 17.8411 17.8079 17.6172 17.8623C17.3932 17.9165 17.1614 17.7456 17.0557 17.5408C16.7805 17.007 16.3658 16.5937 16.062 16.2878C15.7793 16.0034 15.4503 15.8338 14.9771 15.8337C14.2092 15.8339 13.4371 16.3862 12.9487 17.53C12.8701 17.7138 12.6887 17.8621 12.4888 17.8623C12.2888 17.8623 12.1076 17.7138 12.0288 17.53C11.5404 16.386 10.7674 15.8339 9.99951 15.8337C9.23161 15.8339 8.45959 16.386 7.97119 17.53C7.89253 17.7138 7.71118 17.8621 7.51123 17.8623C7.31122 17.8623 7.13006 17.7138 7.05127 17.53C6.56296 16.3862 5.78982 15.834 5.02197 15.8337C4.54861 15.8338 4.21974 16.0032 3.93701 16.2878C3.63309 16.5937 3.21952 17.0715 2.94434 17.6055C2.83865 17.8103 2.60589 17.9165 2.38184 17.8623C2.15801 17.8079 2.00033 17.6073 2 17.377V10C2.00018 5.67403 5.67403 2.00018 10 2ZM10 3C6.22631 3.00018 3.00018 6.22631 3 10V15.8633C3.0205 15.8414 3.20696 15.6049 3.22803 15.5837C3.67524 15.1336 4.251 14.8338 5.02197 14.8337C6.03838 14.8341 6.90232 15.4025 7.51025 16.2937C8.11828 15.4018 8.9824 14.8338 9.99951 14.8337C11.0163 14.8338 11.8798 15.4022 12.4878 16.2937C13.0959 15.4018 13.9601 14.8339 14.9771 14.8337C15.7481 14.8338 16.3247 15.1336 16.772 15.5837C16.772 15.5837 16.9796 15.812 17 15.8337V10C16.9998 6.22631 13.7737 3.00018 10 3Z">
+                        </path>
+                        <style>
+                          @keyframes look-around {
+
+                            0%,
+                            16.6%,
+                            100% {
+                              transform: translateX(-1.5px) translateY(0);
+                            }
+
+                            25%,
+                            41.6% {
+                              transform: translateX(1.5px) translateY(0);
+                            }
+
+                            50%,
+                            66.6% {
+                              transform: translateX(0) translateY(-1.5px);
+                            }
+
+                            75%,
+                            91.6% {
+                              transform: translateX(0) translateY(0);
+                            }
+                          }
+                        </style>
+                      </svg></div>
+                  </button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div role="region" aria-label="Notifications (F8)" tabindex="-1" style="pointer-events: none;">
+      <ol tabindex="-1" class="fixed top-0 z-toast flex flex-col gap-3 p-4 draggable-none"
+        style="right: var(--launch-drawer-width, 0px);"></ol>
+    </div><iframe src="https://a.claude.ai/isolated-segment.html?v=1c9d84f011" referrerpolicy="no-referrer"
+      sandbox="allow-scripts allow-same-origin" title="" style="display: none;"></iframe>
+  </div>
+  <script src="https://s-cdn.anthropic.com/s.js" async=""></script><browser-mcp-container
+    data-wxt-shadow-root=""><template shadowrootmode="open">
+      <html>
+
+      <head>
+        <style>
+          /*! tailwindcss v4.0.17 | MIT License | https://tailwindcss.com */
+          @layer theme {
+
+            :host,
+            :host {
+              --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+              --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+              --color-red-700: oklch(.505 .213 27.518);
+              --color-blue-300: oklch(.809 .105 251.813);
+              --color-blue-700: oklch(.488 .243 264.376);
+              --color-gray-50: oklch(.985 .002 247.839);
+              --color-gray-100: oklch(.967 .003 264.542);
+              --color-gray-300: oklch(.872 .01 258.338);
+              --color-gray-400: oklch(.707 .022 261.325);
+              --color-gray-500: oklch(.551 .027 264.364);
+              --color-gray-700: oklch(.373 .034 259.733);
+              --color-gray-800: oklch(.278 .033 256.848);
+              --color-gray-900: oklch(.21 .034 264.665);
+              --color-black: #000;
+              --color-white: #fff;
+              --spacing: 4px;
+              --container-lg: 512px;
+              --text-xs: 12px;
+              --text-xs--line-height: calc(1/.75);
+              --text-sm: 14px;
+              --text-sm--line-height: calc(1.25/.875);
+              --text-base: 16px;
+              --text-base--line-height: 1.5;
+              --text-lg: 18px;
+              --text-lg--line-height: calc(1.75/1.125);
+              --font-weight-medium: 500;
+              --font-weight-semibold: 600;
+              --tracking-tight: -.025em;
+              --tracking-widest: .1em;
+              --leading-relaxed: 1.625;
+              --radius-xs: 2px;
+              --ease-in: cubic-bezier(.4, 0, 1, 1);
+              --animate-spin: spin 1s linear infinite;
+              --animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1)infinite;
+              --default-transition-duration: .15s;
+              --default-transition-timing-function: cubic-bezier(.4, 0, .2, 1)
+            }
+          }
+
+          @layer base {
+
+            *,
+            :after,
+            :before,
+            ::backdrop {
+              box-sizing: border-box;
+              border: 0 solid;
+              margin: 0;
+              padding: 0
+            }
+
+            ::file-selector-button {
+              box-sizing: border-box;
+              border: 0 solid;
+              margin: 0;
+              padding: 0
+            }
+
+            html,
+            :host {
+              -webkit-text-size-adjust: 100%;
+              -moz-tab-size: 4;
+              tab-size: 4;
+              font-feature-settings: initial;
+              font-variation-settings: initial;
+              -webkit-tap-highlight-color: transparent;
+              font-family: ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+              line-height: 1.5
+            }
+
+            hr {
+              height: 0;
+              color: inherit;
+              border-top-width: 1px
+            }
+
+            abbr:where([title]) {
+              -webkit-text-decoration: underline dotted;
+              text-decoration: underline dotted
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+              font-size: inherit;
+              font-weight: inherit
+            }
+
+            a {
+              color: inherit;
+              -webkit-text-decoration: inherit;
+              text-decoration: inherit
+            }
+
+            b,
+            strong {
+              font-weight: bolder
+            }
+
+            code,
+            kbd,
+            samp,
+            pre {
+              font-feature-settings: initial;
+              font-variation-settings: initial;
+              font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+              font-size: 1em
+            }
+
+            small {
+              font-size: 80%
+            }
+
+            sub,
+            sup {
+              vertical-align: baseline;
+              font-size: 75%;
+              line-height: 0;
+              position: relative
+            }
+
+            sub {
+              bottom: -.25em
+            }
+
+            sup {
+              top: -.5em
+            }
+
+            table {
+              text-indent: 0;
+              border-color: inherit;
+              border-collapse: collapse
+            }
+
+            :-moz-focusring {
+              outline: auto
+            }
+
+            progress {
+              vertical-align: baseline
+            }
+
+            summary {
+              display: list-item
+            }
+
+            ol,
+            ul,
+            menu {
+              list-style: none
+            }
+
+            img,
+            svg,
+            video,
+            canvas,
+            audio,
+            iframe,
+            embed,
+            object {
+              vertical-align: middle;
+              display: block
+            }
+
+            img,
+            video {
+              max-width: 100%;
+              height: auto
+            }
+
+            button,
+            input,
+            select,
+            optgroup,
+            textarea {
+              font: inherit;
+              font-feature-settings: inherit;
+              font-variation-settings: inherit;
+              letter-spacing: inherit;
+              color: inherit;
+              opacity: 1;
+              background-color: #0000;
+              border-radius: 0
+            }
+
+            ::file-selector-button {
+              font: inherit;
+              font-feature-settings: inherit;
+              font-variation-settings: inherit;
+              letter-spacing: inherit;
+              color: inherit;
+              opacity: 1;
+              background-color: #0000;
+              border-radius: 0
+            }
+
+            :where(select:is([multiple], [size])) optgroup {
+              font-weight: bolder
+            }
+
+            :where(select:is([multiple], [size])) optgroup option {
+              padding-inline-start: 20px
+            }
+
+            ::file-selector-button {
+              margin-inline-end: 4px
+            }
+
+            ::placeholder {
+              opacity: 1
+            }
+
+            @supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px) {
+              ::placeholder {
+                color: color-mix(in oklab, currentColor 50%, transparent)
+              }
+            }
+
+            textarea {
+              resize: vertical
+            }
+
+            ::-webkit-search-decoration {
+              -webkit-appearance: none
+            }
+
+            ::-webkit-date-and-time-value {
+              min-height: 1lh;
+              text-align: inherit
+            }
+
+            ::-webkit-datetime-edit {
+              padding-block: 0
+            }
+
+            ::-webkit-datetime-edit-year-field {
+              padding-block: 0
+            }
+
+            ::-webkit-datetime-edit-month-field {
+              padding-block: 0
+            }
+
+            ::-webkit-datetime-edit-day-field {
+              padding-block: 0
+            }
+
+            ::-webkit-datetime-edit-hour-field {
+              padding-block: 0
+            }
+
+            ::-webkit-datetime-edit-minute-field {
+              padding-block: 0
+            }
+
+            ::-webkit-datetime-edit-second-field {
+              padding-block: 0
+            }
+
+            ::-webkit-datetime-edit-millisecond-field {
+              padding-block: 0
+            }
+
+            ::-webkit-datetime-edit-meridiem-field {
+              padding-block: 0
+            }
+
+            :-moz-ui-invalid {
+              box-shadow: none
+            }
+
+            button,
+            input:where([type=button], [type=reset], [type=submit]) {
+              -webkit-appearance: button;
+              -moz-appearance: button;
+              appearance: button
+            }
+
+            ::file-selector-button {
+              -webkit-appearance: button;
+              -moz-appearance: button;
+              appearance: button
+            }
+
+            ::-webkit-inner-spin-button {
+              height: auto
+            }
+
+            ::-webkit-outer-spin-button {
+              height: auto
+            }
+
+            [hidden]:where(:not([hidden=until-found])) {
+              display: none !important
+            }
+
+            * {
+              border-color: var(--border);
+              outline-color: color-mix(in oklab, var(--ring)50%, transparent)
+            }
+
+            body {
+              background-color: var(--background);
+              color: var(--foreground)
+            }
+
+            button:not(:disabled),
+            [role=button]:not(:disabled) {
+              cursor: pointer
+            }
+
+            :host {
+              all: initial !important;
+              font-family: var(--font-sans) !important;
+              font-size: var(--text-base) !important;
+              line-height: var(--tw-leading, var(--text-base--line-height)) !important
+            }
+
+            :host,
+            :host * {
+              border-color: var(--border)
+            }
+
+            :host {
+              background-color: var(--background) !important;
+              color: var(--foreground) !important
+            }
+
+            [type=text],
+            input:where(:not([type])),
+            [type=email],
+            [type=url],
+            [type=password],
+            [type=number],
+            [type=date],
+            [type=datetime-local],
+            [type=month],
+            [type=search],
+            [type=tel],
+            [type=time],
+            [type=week],
+            [multiple],
+            textarea,
+            select {
+              -webkit-appearance: none;
+              -moz-appearance: none;
+              appearance: none;
+              border-color: #6a7282;
+              --tw-shadow: 0 0 #0000;
+              background-color: #fff;
+              border-width: 1px;
+              border-radius: 0;
+              padding: 8px 12px;
+              font-size: 16px;
+              line-height: 24px
+            }
+
+            :is([type=text], input:where(:not([type])), [type=email], [type=url], [type=password], [type=number], [type=date], [type=datetime-local], [type=month], [type=search], [type=tel], [type=time], [type=week], [multiple], textarea, select):focus {
+              outline-offset: 2px;
+              --tw-ring-inset: var(--tw-empty, );
+              --tw-ring-offset-width: 0px;
+              --tw-ring-offset-color: #fff;
+              --tw-ring-color: oklch(.546 .245 262.881);
+              --tw-ring-offset-shadow: var(--tw-ring-inset)0 0 0 var(--tw-ring-offset-width)var(--tw-ring-offset-color);
+              --tw-ring-shadow: var(--tw-ring-inset)0 0 0 calc(1px + var(--tw-ring-offset-width))var(--tw-ring-color);
+              box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+              border-color: #155dfc;
+              outline: 2px solid #0000
+            }
+
+            input::placeholder,
+            textarea::placeholder {
+              color: #6a7282;
+              opacity: 1
+            }
+
+            ::-webkit-datetime-edit-fields-wrapper {
+              padding: 0
+            }
+
+            ::-webkit-date-and-time-value {
+              min-height: 1.5em
+            }
+
+            ::-webkit-date-and-time-value {
+              text-align: inherit
+            }
+
+            ::-webkit-datetime-edit {
+              display: inline-flex
+            }
+
+            ::-webkit-datetime-edit {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            ::-webkit-datetime-edit-year-field {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            ::-webkit-datetime-edit-month-field {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            ::-webkit-datetime-edit-day-field {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            ::-webkit-datetime-edit-hour-field {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            ::-webkit-datetime-edit-minute-field {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            ::-webkit-datetime-edit-second-field {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            ::-webkit-datetime-edit-millisecond-field {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            ::-webkit-datetime-edit-meridiem-field {
+              padding-top: 0;
+              padding-bottom: 0
+            }
+
+            select {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+              background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='oklch(0.551 0.027 264.364)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+              background-position: right 8px center;
+              background-repeat: no-repeat;
+              background-size: 1.5em 1.5em;
+              padding-right: 40px
+            }
+
+            [multiple],
+            [size]:where(select:not([size="1"])) {
+              background-image: initial;
+              background-position: initial;
+              background-repeat: unset;
+              background-size: initial;
+              -webkit-print-color-adjust: unset;
+              print-color-adjust: unset;
+              padding-right: 12px
+            }
+
+            [type=checkbox],
+            [type=radio] {
+              -webkit-appearance: none;
+              -moz-appearance: none;
+              appearance: none;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+              vertical-align: middle;
+              -webkit-user-select: none;
+              user-select: none;
+              width: 16px;
+              height: 16px;
+              color: #155dfc;
+              border-color: #6a7282;
+              --tw-shadow: 0 0 #0000;
+              background-color: #fff;
+              background-origin: border-box;
+              border-width: 1px;
+              flex-shrink: 0;
+              padding: 0;
+              display: inline-block
+            }
+
+            [type=checkbox] {
+              border-radius: 0
+            }
+
+            [type=radio] {
+              border-radius: 100%
+            }
+
+            [type=checkbox]:focus,
+            [type=radio]:focus {
+              outline-offset: 2px;
+              --tw-ring-inset: var(--tw-empty, );
+              --tw-ring-offset-width: 2px;
+              --tw-ring-offset-color: #fff;
+              --tw-ring-color: oklch(.546 .245 262.881);
+              --tw-ring-offset-shadow: var(--tw-ring-inset)0 0 0 var(--tw-ring-offset-width)var(--tw-ring-offset-color);
+              --tw-ring-shadow: var(--tw-ring-inset)0 0 0 calc(2px + var(--tw-ring-offset-width))var(--tw-ring-color);
+              box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+              outline: 2px solid #0000
+            }
+
+            [type=checkbox]:checked,
+            [type=radio]:checked {
+              background-color: currentColor;
+              background-position: 50%;
+              background-repeat: no-repeat;
+              background-size: 100% 100%;
+              border-color: #0000
+            }
+
+            [type=checkbox]:checked {
+              background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")
+            }
+
+            @media (forced-colors:active) {
+              [type=checkbox]:checked {
+                -webkit-appearance: auto;
+                -moz-appearance: auto;
+                appearance: auto
+              }
+            }
+
+            [type=radio]:checked {
+              background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e")
+            }
+
+            @media (forced-colors:active) {
+              [type=radio]:checked {
+                -webkit-appearance: auto;
+                -moz-appearance: auto;
+                appearance: auto
+              }
+            }
+
+            [type=checkbox]:checked:hover,
+            [type=checkbox]:checked:focus,
+            [type=radio]:checked:hover,
+            [type=radio]:checked:focus {
+              background-color: currentColor;
+              border-color: #0000
+            }
+
+            [type=checkbox]:indeterminate {
+              background-color: currentColor;
+              background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 16'%3e%3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8h8'/%3e%3c/svg%3e");
+              background-position: 50%;
+              background-repeat: no-repeat;
+              background-size: 100% 100%;
+              border-color: #0000
+            }
+
+            @media (forced-colors:active) {
+              [type=checkbox]:indeterminate {
+                -webkit-appearance: auto;
+                -moz-appearance: auto;
+                appearance: auto
+              }
+            }
+
+            [type=checkbox]:indeterminate:hover,
+            [type=checkbox]:indeterminate:focus {
+              background-color: currentColor;
+              border-color: #0000
+            }
+
+            [type=file] {
+              background: unset;
+              border-color: inherit;
+              font-size: unset;
+              line-height: inherit;
+              border-width: 0;
+              border-radius: 0;
+              padding: 0
+            }
+
+            [type=file]:focus {
+              outline: 1px solid buttontext;
+              outline: 1px auto -webkit-focus-ring-color
+            }
+          }
+
+          @layer components;
+
+          @layer utilities {
+            .pointer-events-none {
+              pointer-events: none
+            }
+
+            .visible {
+              visibility: visible
+            }
+
+            .sr-only {
+              clip: rect(0, 0, 0, 0);
+              white-space: nowrap;
+              border-width: 0;
+              width: 1px;
+              height: 1px;
+              margin: -1px;
+              padding: 0;
+              position: absolute;
+              overflow: hidden
+            }
+
+            .absolute {
+              position: absolute
+            }
+
+            .fixed {
+              position: fixed
+            }
+
+            .relative {
+              position: relative
+            }
+
+            .static {
+              position: static
+            }
+
+            .sticky {
+              position: sticky
+            }
+
+            .inset-0 {
+              inset: calc(var(--spacing)*0)
+            }
+
+            .-top-1 {
+              top: calc(var(--spacing)*-1)
+            }
+
+            .top-\(--line-offset\) {
+              top: var(--line-offset)
+            }
+
+            .top-\(--terminal-radius\) {
+              top: var(--terminal-radius)
+            }
+
+            .top-0 {
+              top: calc(var(--spacing)*0)
+            }
+
+            .top-2 {
+              top: calc(var(--spacing)*2)
+            }
+
+            .top-4 {
+              top: calc(var(--spacing)*4)
+            }
+
+            .top-\[50\%\] {
+              top: 50%
+            }
+
+            .right-\(--line-offset\) {
+              right: var(--line-offset)
+            }
+
+            .right-0 {
+              right: calc(var(--spacing)*0)
+            }
+
+            .right-2 {
+              right: calc(var(--spacing)*2)
+            }
+
+            .right-4 {
+              right: calc(var(--spacing)*4)
+            }
+
+            .bottom-\(--line-offset\) {
+              bottom: var(--line-offset)
+            }
+
+            .bottom-0 {
+              bottom: calc(var(--spacing)*0)
+            }
+
+            .-left-1 {
+              left: calc(var(--spacing)*-1)
+            }
+
+            .left-\(--line-offset\) {
+              left: var(--line-offset)
+            }
+
+            .left-\(--terminal-radius\) {
+              left: var(--terminal-radius)
+            }
+
+            .left-0 {
+              left: calc(var(--spacing)*0)
+            }
+
+            .left-2 {
+              left: calc(var(--spacing)*2)
+            }
+
+            .left-\[50\%\] {
+              left: 50%
+            }
+
+            .z-10 {
+              z-index: 10
+            }
+
+            .z-20 {
+              z-index: 20
+            }
+
+            .z-30 {
+              z-index: 30
+            }
+
+            .z-50 {
+              z-index: 50
+            }
+
+            .z-2147483647 {
+              z-index: 2147483647
+            }
+
+            .col-start-2 {
+              grid-column-start: 2
+            }
+
+            .container {
+              width: 100%
+            }
+
+            @media (width>=40rem) {
+              .container {
+                max-width: 640px
+              }
+            }
+
+            @media (width>=48rem) {
+              .container {
+                max-width: 768px
+              }
+            }
+
+            @media (width>=64rem) {
+              .container {
+                max-width: 1024px
+              }
+            }
+
+            @media (width>=80rem) {
+              .container {
+                max-width: 1280px
+              }
+            }
+
+            @media (width>=96rem) {
+              .container {
+                max-width: 1536px
+              }
+            }
+
+            .-mx-1 {
+              margin-inline: calc(var(--spacing)*-1)
+            }
+
+            .mx-4 {
+              margin-inline: calc(var(--spacing)*4)
+            }
+
+            .my-1 {
+              margin-block: calc(var(--spacing)*1)
+            }
+
+            .my-4 {
+              margin-block: calc(var(--spacing)*4)
+            }
+
+            .mt-2 {
+              margin-top: calc(var(--spacing)*2)
+            }
+
+            .mt-4 {
+              margin-top: calc(var(--spacing)*4)
+            }
+
+            .mr-1 {
+              margin-right: calc(var(--spacing)*1)
+            }
+
+            .mr-2 {
+              margin-right: calc(var(--spacing)*2)
+            }
+
+            .mb-0 {
+              margin-bottom: calc(var(--spacing)*0)
+            }
+
+            .ml-auto {
+              margin-left: auto
+            }
+
+            .box-border {
+              box-sizing: border-box
+            }
+
+            .line-clamp-1 {
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              display: -webkit-box;
+              overflow: hidden
+            }
+
+            .block {
+              display: block
+            }
+
+            .contents {
+              display: contents
+            }
+
+            .flex {
+              display: flex
+            }
+
+            .grid {
+              display: grid
+            }
+
+            .inline {
+              display: inline
+            }
+
+            .inline-flex {
+              display: inline-flex
+            }
+
+            .table {
+              display: table
+            }
+
+            .table-caption {
+              display: table-caption
+            }
+
+            .table-cell {
+              display: table-cell
+            }
+
+            .table-row {
+              display: table-row
+            }
+
+            .field-sizing-content {
+              field-sizing: content
+            }
+
+            .size-2 {
+              width: calc(var(--spacing)*2);
+              height: calc(var(--spacing)*2)
+            }
+
+            .size-2\.5 {
+              width: calc(var(--spacing)*2.5);
+              height: calc(var(--spacing)*2.5)
+            }
+
+            .size-3\.5 {
+              width: calc(var(--spacing)*3.5);
+              height: calc(var(--spacing)*3.5)
+            }
+
+            .size-4 {
+              width: calc(var(--spacing)*4);
+              height: calc(var(--spacing)*4)
+            }
+
+            .size-5 {
+              width: calc(var(--spacing)*5);
+              height: calc(var(--spacing)*5)
+            }
+
+            .size-6 {
+              width: calc(var(--spacing)*6);
+              height: calc(var(--spacing)*6)
+            }
+
+            .size-8 {
+              width: calc(var(--spacing)*8);
+              height: calc(var(--spacing)*8)
+            }
+
+            .size-9 {
+              width: calc(var(--spacing)*9);
+              height: calc(var(--spacing)*9)
+            }
+
+            .size-full {
+              width: 100%;
+              height: 100%
+            }
+
+            .h-\(--line-thickness\) {
+              height: var(--line-thickness)
+            }
+
+            .h-4 {
+              height: calc(var(--spacing)*4)
+            }
+
+            .h-5 {
+              height: calc(var(--spacing)*5)
+            }
+
+            .h-6 {
+              height: calc(var(--spacing)*6)
+            }
+
+            .h-8 {
+              height: calc(var(--spacing)*8)
+            }
+
+            .h-9 {
+              height: calc(var(--spacing)*9)
+            }
+
+            .h-10 {
+              height: calc(var(--spacing)*10)
+            }
+
+            .h-\[22px\] {
+              height: 22px
+            }
+
+            .h-\[var\(--radix-select-trigger-height\)\] {
+              height: var(--radix-select-trigger-height)
+            }
+
+            .h-full {
+              height: 100%
+            }
+
+            .h-px {
+              height: 1px
+            }
+
+            .h-screen {
+              height: 100vh
+            }
+
+            .max-h-\(--radix-dropdown-menu-content-available-height\) {
+              max-height: var(--radix-dropdown-menu-content-available-height)
+            }
+
+            .max-h-80 {
+              max-height: calc(var(--spacing)*80)
+            }
+
+            .max-h-96 {
+              max-height: calc(var(--spacing)*96)
+            }
+
+            .min-h-4 {
+              min-height: calc(var(--spacing)*4)
+            }
+
+            .min-h-16 {
+              min-height: calc(var(--spacing)*16)
+            }
+
+            .w-\(--line-thickness\) {
+              width: var(--line-thickness)
+            }
+
+            .w-3\/4 {
+              width: 75%
+            }
+
+            .w-9 {
+              width: calc(var(--spacing)*9)
+            }
+
+            .w-72 {
+              width: calc(var(--spacing)*72)
+            }
+
+            .w-fit {
+              width: fit-content
+            }
+
+            .w-full {
+              width: 100%
+            }
+
+            .w-px {
+              width: 1px
+            }
+
+            .max-w-\[calc\(100\%-2rem\)\] {
+              max-width: calc(100% - 32px)
+            }
+
+            .min-w-0 {
+              min-width: calc(var(--spacing)*0)
+            }
+
+            .min-w-\[8rem\] {
+              min-width: 128px
+            }
+
+            .min-w-\[300px\] {
+              min-width: 300px
+            }
+
+            .min-w-\[var\(--radix-select-trigger-width\)\] {
+              min-width: var(--radix-select-trigger-width)
+            }
+
+            .flex-1 {
+              flex: 1
+            }
+
+            .shrink-0 {
+              flex-shrink: 0
+            }
+
+            .grow {
+              flex-grow: 1
+            }
+
+            .caption-bottom {
+              caption-side: bottom
+            }
+
+            .translate-x-\[-50\%\] {
+              --tw-translate-x: -50%;
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .translate-y-0\.5 {
+              --tw-translate-y: calc(var(--spacing)*.5);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .translate-y-\[-50\%\] {
+              --tw-translate-y: -50%;
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .translate-y-\[calc\(-50\%_-_2px\)\] {
+              --tw-translate-y: calc(-50% - 2px);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .rotate-45 {
+              rotate: 45deg
+            }
+
+            .transform {
+              transform: var(--tw-rotate-x)var(--tw-rotate-y)var(--tw-rotate-z)var(--tw-skew-x)var(--tw-skew-y)
+            }
+
+            .animate-caret-blink {
+              animation: 1.25s ease-out infinite caret-blink
+            }
+
+            .animate-pulse {
+              animation: var(--animate-pulse)
+            }
+
+            .animate-spin {
+              animation: var(--animate-spin)
+            }
+
+            .cursor-col-resize {
+              cursor: col-resize
+            }
+
+            .cursor-default {
+              cursor: default
+            }
+
+            .resize-none {
+              resize: none
+            }
+
+            .scroll-my-1 {
+              scroll-margin-block: calc(var(--spacing)*1)
+            }
+
+            .grid-cols-\[0_1fr\] {
+              grid-template-columns: 0 1fr
+            }
+
+            .flex-col {
+              flex-direction: column
+            }
+
+            .flex-col-reverse {
+              flex-direction: column-reverse
+            }
+
+            .flex-wrap {
+              flex-wrap: wrap
+            }
+
+            .items-center {
+              align-items: center
+            }
+
+            .items-start {
+              align-items: flex-start
+            }
+
+            .justify-between {
+              justify-content: space-between
+            }
+
+            .justify-center {
+              justify-content: center
+            }
+
+            .justify-items-start {
+              justify-items: start
+            }
+
+            .gap-1 {
+              gap: calc(var(--spacing)*1)
+            }
+
+            .gap-1\.5 {
+              gap: calc(var(--spacing)*1.5)
+            }
+
+            .gap-2 {
+              gap: calc(var(--spacing)*2)
+            }
+
+            .gap-4 {
+              gap: calc(var(--spacing)*4)
+            }
+
+            .gap-6 {
+              gap: calc(var(--spacing)*6)
+            }
+
+            :where(.space-y-1>:not(:last-child)) {
+              --tw-space-y-reverse: 0;
+              margin-block-start: calc(calc(var(--spacing)*1)*var(--tw-space-y-reverse));
+              margin-block-end: calc(calc(var(--spacing)*1)*calc(1 - var(--tw-space-y-reverse)))
+            }
+
+            :where(.space-y-2>:not(:last-child)) {
+              --tw-space-y-reverse: 0;
+              margin-block-start: calc(calc(var(--spacing)*2)*var(--tw-space-y-reverse));
+              margin-block-end: calc(calc(var(--spacing)*2)*calc(1 - var(--tw-space-y-reverse)))
+            }
+
+            :where(.space-y-4>:not(:last-child)) {
+              --tw-space-y-reverse: 0;
+              margin-block-start: calc(calc(var(--spacing)*4)*var(--tw-space-y-reverse));
+              margin-block-end: calc(calc(var(--spacing)*4)*calc(1 - var(--tw-space-y-reverse)))
+            }
+
+            :where(.space-x-0\.5>:not(:last-child)) {
+              --tw-space-x-reverse: 0;
+              margin-inline-start: calc(calc(var(--spacing)*.5)*var(--tw-space-x-reverse));
+              margin-inline-end: calc(calc(var(--spacing)*.5)*calc(1 - var(--tw-space-x-reverse)))
+            }
+
+            :where(.space-x-2>:not(:last-child)) {
+              --tw-space-x-reverse: 0;
+              margin-inline-start: calc(calc(var(--spacing)*2)*var(--tw-space-x-reverse));
+              margin-inline-end: calc(calc(var(--spacing)*2)*calc(1 - var(--tw-space-x-reverse)))
+            }
+
+            :where(.space-x-4>:not(:last-child)) {
+              --tw-space-x-reverse: 0;
+              margin-inline-start: calc(calc(var(--spacing)*4)*var(--tw-space-x-reverse));
+              margin-inline-end: calc(calc(var(--spacing)*4)*calc(1 - var(--tw-space-x-reverse)))
+            }
+
+            .gap-y-0\.5 {
+              row-gap: calc(var(--spacing)*.5)
+            }
+
+            .overflow-auto {
+              overflow: auto
+            }
+
+            .overflow-hidden {
+              overflow: hidden
+            }
+
+            .overflow-x-auto {
+              overflow-x: auto
+            }
+
+            .overflow-x-hidden {
+              overflow-x: hidden
+            }
+
+            .overflow-y-auto {
+              overflow-y: auto
+            }
+
+            .rounded-\[2px\] {
+              border-radius: 2px
+            }
+
+            .rounded-\[4px\] {
+              border-radius: 4px
+            }
+
+            .rounded-full {
+              border-radius: 3.40282e38px
+            }
+
+            .rounded-lg {
+              border-radius: var(--radius)
+            }
+
+            .rounded-md {
+              border-radius: calc(var(--radius) - 2px)
+            }
+
+            .rounded-sm {
+              border-radius: calc(var(--radius) - 4px)
+            }
+
+            .rounded-xl {
+              border-radius: calc(var(--radius) + 4px)
+            }
+
+            .rounded-xs {
+              border-radius: var(--radius-xs)
+            }
+
+            .border {
+              border-style: var(--tw-border-style);
+              border-width: 1px
+            }
+
+            .border-0 {
+              border-style: var(--tw-border-style);
+              border-width: 0
+            }
+
+            .border-2 {
+              border-style: var(--tw-border-style);
+              border-width: 2px
+            }
+
+            .border-y {
+              border-block-style: var(--tw-border-style);
+              border-block-width: 1px
+            }
+
+            .border-t {
+              border-top-style: var(--tw-border-style);
+              border-top-width: 1px
+            }
+
+            .border-r {
+              border-right-style: var(--tw-border-style);
+              border-right-width: 1px
+            }
+
+            .border-b {
+              border-bottom-style: var(--tw-border-style);
+              border-bottom-width: 1px
+            }
+
+            .border-l {
+              border-left-style: var(--tw-border-style);
+              border-left-width: 1px
+            }
+
+            .border-gray-300 {
+              border-color: var(--color-gray-300)
+            }
+
+            .border-input {
+              border-color: var(--input)
+            }
+
+            .border-transparent {
+              border-color: #0000
+            }
+
+            .bg-background {
+              background-color: var(--background)
+            }
+
+            .bg-background\/80 {
+              background-color: color-mix(in oklab, var(--background)80%, transparent)
+            }
+
+            .bg-black\/80 {
+              background-color: color-mix(in oklab, var(--color-black)80%, transparent)
+            }
+
+            .bg-blue-700 {
+              background-color: var(--color-blue-700)
+            }
+
+            .bg-border {
+              background-color: var(--border)
+            }
+
+            .bg-card {
+              background-color: var(--card)
+            }
+
+            .bg-destructive {
+              background-color: var(--destructive)
+            }
+
+            .bg-foreground {
+              background-color: var(--foreground)
+            }
+
+            .bg-gray-50 {
+              background-color: var(--color-gray-50)
+            }
+
+            .bg-gray-100 {
+              background-color: var(--color-gray-100)
+            }
+
+            .bg-gray-500 {
+              background-color: var(--color-gray-500)
+            }
+
+            .bg-gray-700 {
+              background-color: var(--color-gray-700)
+            }
+
+            .bg-muted {
+              background-color: var(--muted)
+            }
+
+            .bg-muted\/50 {
+              background-color: color-mix(in oklab, var(--muted)50%, transparent)
+            }
+
+            .bg-popover {
+              background-color: var(--popover)
+            }
+
+            .bg-primary {
+              background-color: var(--primary)
+            }
+
+            .bg-primary\/10 {
+              background-color: color-mix(in oklab, var(--primary)10%, transparent)
+            }
+
+            .bg-secondary {
+              background-color: var(--secondary)
+            }
+
+            .bg-transparent {
+              background-color: #0000
+            }
+
+            .bg-white {
+              background-color: var(--color-white)
+            }
+
+            .fill-black {
+              fill: var(--color-black)
+            }
+
+            .fill-current {
+              fill: currentColor
+            }
+
+            .fill-primary {
+              fill: var(--primary)
+            }
+
+            .stroke-white {
+              stroke: var(--color-white)
+            }
+
+            .stroke-\[1\.5\] {
+              stroke-width: 1.5px
+            }
+
+            .p-0 {
+              padding: calc(var(--spacing)*0)
+            }
+
+            .p-0\.5 {
+              padding: calc(var(--spacing)*.5)
+            }
+
+            .p-1 {
+              padding: calc(var(--spacing)*1)
+            }
+
+            .p-1\.5 {
+              padding: calc(var(--spacing)*1.5)
+            }
+
+            .p-2 {
+              padding: calc(var(--spacing)*2)
+            }
+
+            .p-3 {
+              padding: calc(var(--spacing)*3)
+            }
+
+            .p-4 {
+              padding: calc(var(--spacing)*4)
+            }
+
+            .p-6 {
+              padding: calc(var(--spacing)*6)
+            }
+
+            .px-1 {
+              padding-inline: calc(var(--spacing)*1)
+            }
+
+            .px-2 {
+              padding-inline: calc(var(--spacing)*2)
+            }
+
+            .px-3 {
+              padding-inline: calc(var(--spacing)*3)
+            }
+
+            .px-4 {
+              padding-inline: calc(var(--spacing)*4)
+            }
+
+            .px-6 {
+              padding-inline: calc(var(--spacing)*6)
+            }
+
+            .py-0 {
+              padding-block: calc(var(--spacing)*0)
+            }
+
+            .py-0\.5 {
+              padding-block: calc(var(--spacing)*.5)
+            }
+
+            .py-1 {
+              padding-block: calc(var(--spacing)*1)
+            }
+
+            .py-1\.5 {
+              padding-block: calc(var(--spacing)*1.5)
+            }
+
+            .py-2 {
+              padding-block: calc(var(--spacing)*2)
+            }
+
+            .py-3 {
+              padding-block: calc(var(--spacing)*3)
+            }
+
+            .py-4 {
+              padding-block: calc(var(--spacing)*4)
+            }
+
+            .py-6 {
+              padding-block: calc(var(--spacing)*6)
+            }
+
+            .py-\[1px\] {
+              padding-block: 1px
+            }
+
+            .pt-0 {
+              padding-top: calc(var(--spacing)*0)
+            }
+
+            .pt-2 {
+              padding-top: calc(var(--spacing)*2)
+            }
+
+            .pr-2 {
+              padding-right: calc(var(--spacing)*2)
+            }
+
+            .pr-8 {
+              padding-right: calc(var(--spacing)*8)
+            }
+
+            .pb-4 {
+              padding-bottom: calc(var(--spacing)*4)
+            }
+
+            .pl-2 {
+              padding-left: calc(var(--spacing)*2)
+            }
+
+            .pl-8 {
+              padding-left: calc(var(--spacing)*8)
+            }
+
+            .text-center {
+              text-align: center
+            }
+
+            .text-left {
+              text-align: left
+            }
+
+            .align-middle {
+              vertical-align: middle
+            }
+
+            .font-mono {
+              font-family: var(--font-mono)
+            }
+
+            .text-base {
+              font-size: var(--text-base);
+              line-height: var(--tw-leading, var(--text-base--line-height))
+            }
+
+            .text-lg {
+              font-size: var(--text-lg);
+              line-height: var(--tw-leading, var(--text-lg--line-height))
+            }
+
+            .text-sm {
+              font-size: var(--text-sm);
+              line-height: var(--tw-leading, var(--text-sm--line-height))
+            }
+
+            .text-xs {
+              font-size: var(--text-xs);
+              line-height: var(--tw-leading, var(--text-xs--line-height))
+            }
+
+            .leading-none {
+              --tw-leading: 1;
+              line-height: 1
+            }
+
+            .font-medium {
+              --tw-font-weight: var(--font-weight-medium);
+              font-weight: var(--font-weight-medium)
+            }
+
+            .font-semibold {
+              --tw-font-weight: var(--font-weight-semibold);
+              font-weight: var(--font-weight-semibold)
+            }
+
+            .tracking-tight {
+              --tw-tracking: var(--tracking-tight);
+              letter-spacing: var(--tracking-tight)
+            }
+
+            .tracking-widest {
+              --tw-tracking: var(--tracking-widest);
+              letter-spacing: var(--tracking-widest)
+            }
+
+            .text-balance {
+              text-wrap: balance
+            }
+
+            .break-all {
+              word-break: break-all
+            }
+
+            .whitespace-nowrap {
+              white-space: nowrap
+            }
+
+            .whitespace-pre-wrap {
+              white-space: pre-wrap
+            }
+
+            .text-black {
+              color: var(--color-black)
+            }
+
+            .text-card-foreground {
+              color: var(--card-foreground)
+            }
+
+            .text-current {
+              color: currentColor
+            }
+
+            .text-destructive-foreground {
+              color: var(--destructive-foreground)
+            }
+
+            .text-foreground {
+              color: var(--foreground)
+            }
+
+            .text-gray-500 {
+              color: var(--color-gray-500)
+            }
+
+            .text-gray-700 {
+              color: var(--color-gray-700)
+            }
+
+            .text-gray-900 {
+              color: var(--color-gray-900)
+            }
+
+            .text-muted-foreground {
+              color: var(--muted-foreground)
+            }
+
+            .text-popover-foreground {
+              color: var(--popover-foreground)
+            }
+
+            .text-primary {
+              color: var(--primary)
+            }
+
+            .text-primary-foreground {
+              color: var(--primary-foreground)
+            }
+
+            .text-red-700 {
+              color: var(--color-red-700)
+            }
+
+            .text-secondary-foreground {
+              color: var(--secondary-foreground)
+            }
+
+            .text-white {
+              color: var(--color-white)
+            }
+
+            .underline-offset-4 {
+              text-underline-offset: 4px
+            }
+
+            .opacity-0 {
+              opacity: 0
+            }
+
+            .opacity-25 {
+              opacity: .25
+            }
+
+            .opacity-50 {
+              opacity: .5
+            }
+
+            .opacity-70 {
+              opacity: .7
+            }
+
+            .opacity-75 {
+              opacity: .75
+            }
+
+            .shadow-lg {
+              --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, #0000001a), 0 4px 6px -4px var(--tw-shadow-color, #0000001a);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .shadow-md {
+              --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, #0000001a), 0 2px 4px -2px var(--tw-shadow-color, #0000001a);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .shadow-sm {
+              --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, #0000001a), 0 1px 2px -1px var(--tw-shadow-color, #0000001a);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .shadow-xs {
+              --tw-shadow: 0 1px 2px 0 var(--tw-shadow-color, #0000000d);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .ring-0 {
+              --tw-ring-shadow: var(--tw-ring-inset, )0 0 0 calc(0px + var(--tw-ring-offset-width))var(--tw-ring-color, currentColor);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .ring-1 {
+              --tw-ring-shadow: var(--tw-ring-inset, )0 0 0 calc(1px + var(--tw-ring-offset-width))var(--tw-ring-color, currentColor);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .ring-gray-500\/10 {
+              --tw-ring-color: color-mix(in oklab, var(--color-gray-500)10%, transparent)
+            }
+
+            .ring-offset-background {
+              --tw-ring-offset-color: var(--background)
+            }
+
+            .outline-hidden {
+              --tw-outline-style: none;
+              outline-style: none
+            }
+
+            @media (forced-colors:active) {
+              .outline-hidden {
+                outline-offset: 2px;
+                outline: 2px solid #0000
+              }
+            }
+
+            .outline {
+              outline-style: var(--tw-outline-style);
+              outline-width: 1px
+            }
+
+            .transition-\[color\,box-shadow\] {
+              transition-property: color, box-shadow;
+              transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+              transition-duration: var(--tw-duration, var(--default-transition-duration))
+            }
+
+            .transition-all {
+              transition-property: all;
+              transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+              transition-duration: var(--tw-duration, var(--default-transition-duration))
+            }
+
+            .transition-colors {
+              transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
+              transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+              transition-duration: var(--tw-duration, var(--default-transition-duration))
+            }
+
+            .transition-opacity {
+              transition-property: opacity;
+              transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+              transition-duration: var(--tw-duration, var(--default-transition-duration))
+            }
+
+            .transition-shadow {
+              transition-property: box-shadow;
+              transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+              transition-duration: var(--tw-duration, var(--default-transition-duration))
+            }
+
+            .transition-transform {
+              transition-property: transform, translate, scale, rotate;
+              transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+              transition-duration: var(--tw-duration, var(--default-transition-duration))
+            }
+
+            .transition-none {
+              transition-property: none
+            }
+
+            .duration-200 {
+              --tw-duration: .2s;
+              transition-duration: .2s
+            }
+
+            .duration-500 {
+              --tw-duration: .5s;
+              transition-duration: .5s
+            }
+
+            .duration-1000 {
+              --tw-duration: 1s;
+              transition-duration: 1s
+            }
+
+            .ease-in {
+              --tw-ease: var(--ease-in);
+              transition-timing-function: var(--ease-in)
+            }
+
+            .animate-in {
+              --tw-enter-opacity: initial;
+              --tw-enter-scale: initial;
+              --tw-enter-rotate: initial;
+              --tw-enter-translate-x: initial;
+              --tw-enter-translate-y: initial;
+              animation-name: enter;
+              animation-duration: .15s
+            }
+
+            .outline-none {
+              --tw-outline-style: none;
+              outline-style: none
+            }
+
+            .select-none {
+              -webkit-user-select: none;
+              user-select: none
+            }
+
+            .duration-200 {
+              animation-duration: .2s
+            }
+
+            .duration-500 {
+              animation-duration: .5s
+            }
+
+            .duration-1000 {
+              animation-duration: 1s
+            }
+
+            .ease-in {
+              animation-timing-function: cubic-bezier(.4, 0, 1, 1)
+            }
+
+            .fade-in-0 {
+              --tw-enter-opacity: 0
+            }
+
+            .ring-inset {
+              --tw-ring-inset: inset
+            }
+
+            .running {
+              animation-play-state: running
+            }
+
+            .zoom-in-95 {
+              --tw-enter-scale: .95
+            }
+
+            @media (hover:hover) {
+              .group-hover\:opacity-100:is(:where(.group):hover *) {
+                opacity: 1
+              }
+            }
+
+            .group-data-\[disabled\=true\]\:pointer-events-none:is(:where(.group)[data-disabled=true] *) {
+              pointer-events: none
+            }
+
+            .group-data-\[disabled\=true\]\:opacity-50:is(:where(.group)[data-disabled=true] *) {
+              opacity: .5
+            }
+
+            .group-\[\.toast\]\:bg-muted:is(:where(.group).toast *) {
+              background-color: var(--muted)
+            }
+
+            .group-\[\.toast\]\:bg-primary:is(:where(.group).toast *) {
+              background-color: var(--primary)
+            }
+
+            .group-\[\.toast\]\:text-muted-foreground:is(:where(.group).toast *) {
+              color: var(--muted-foreground)
+            }
+
+            .group-\[\.toast\]\:text-primary-foreground:is(:where(.group).toast *) {
+              color: var(--primary-foreground)
+            }
+
+            .group-\[\.toaster\]\:border-border:is(:where(.group).toaster *) {
+              border-color: var(--border)
+            }
+
+            .group-\[\.toaster\]\:bg-background:is(:where(.group).toaster *) {
+              background-color: var(--background)
+            }
+
+            .group-\[\.toaster\]\:text-foreground:is(:where(.group).toaster *) {
+              color: var(--foreground)
+            }
+
+            .group-\[\.toaster\]\:shadow-lg:is(:where(.group).toaster *) {
+              --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, #0000001a), 0 4px 6px -4px var(--tw-shadow-color, #0000001a);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .peer-disabled\:cursor-not-allowed:is(:where(.peer):disabled~*) {
+              cursor: not-allowed
+            }
+
+            .peer-disabled\:opacity-50:is(:where(.peer):disabled~*) {
+              opacity: .5
+            }
+
+            .selection\:bg-primary ::selection {
+              background-color: var(--primary)
+            }
+
+            .selection\:bg-primary::selection {
+              background-color: var(--primary)
+            }
+
+            .selection\:text-primary-foreground ::selection {
+              color: var(--primary-foreground)
+            }
+
+            .selection\:text-primary-foreground::selection {
+              color: var(--primary-foreground)
+            }
+
+            .file\:inline-flex::file-selector-button {
+              display: inline-flex
+            }
+
+            .file\:h-7::file-selector-button {
+              height: calc(var(--spacing)*7)
+            }
+
+            .file\:border-0::file-selector-button {
+              border-style: var(--tw-border-style);
+              border-width: 0
+            }
+
+            .file\:bg-transparent::file-selector-button {
+              background-color: #0000
+            }
+
+            .file\:text-sm::file-selector-button {
+              font-size: var(--text-sm);
+              line-height: var(--tw-leading, var(--text-sm--line-height))
+            }
+
+            .file\:font-medium::file-selector-button {
+              --tw-font-weight: var(--font-weight-medium);
+              font-weight: var(--font-weight-medium)
+            }
+
+            .file\:text-foreground::file-selector-button {
+              color: var(--foreground)
+            }
+
+            .placeholder\:text-muted-foreground::placeholder {
+              color: var(--muted-foreground)
+            }
+
+            .before\:absolute:before {
+              content: var(--tw-content);
+              position: absolute
+            }
+
+            .before\:top-\(--negative-terminal-size\):before {
+              content: var(--tw-content);
+              top: var(--negative-terminal-size)
+            }
+
+            .before\:top-\(--offset-terminal\):before {
+              content: var(--tw-content);
+              top: var(--offset-terminal)
+            }
+
+            .before\:right-\(--offset-terminal\):before {
+              content: var(--tw-content);
+              right: var(--offset-terminal)
+            }
+
+            .before\:bottom-\(--offset-terminal\):before {
+              content: var(--tw-content);
+              bottom: var(--offset-terminal)
+            }
+
+            .before\:left-\(--negative-terminal-size\):before {
+              content: var(--tw-content);
+              left: var(--negative-terminal-size)
+            }
+
+            .before\:left-\(--offset-terminal\):before {
+              content: var(--tw-content);
+              left: var(--offset-terminal)
+            }
+
+            .before\:h-\(--terminal-size\):before {
+              content: var(--tw-content);
+              height: var(--terminal-size)
+            }
+
+            .before\:w-\(--terminal-size\):before {
+              content: var(--tw-content);
+              width: var(--terminal-size)
+            }
+
+            .before\:rounded-full:before {
+              content: var(--tw-content);
+              border-radius: 3.40282e38px
+            }
+
+            .before\:border-\(length\:--line-thickness\):before {
+              content: var(--tw-content);
+              border-style: var(--tw-border-style);
+              border-width: var(--line-thickness)
+            }
+
+            .before\:border-solid:before {
+              content: var(--tw-content);
+              --tw-border-style: solid;
+              border-style: solid
+            }
+
+            .before\:border-blue-700:before {
+              content: var(--tw-content);
+              border-color: var(--color-blue-700)
+            }
+
+            .before\:content-\[\'\'\]:before {
+              --tw-content: "";
+              content: var(--tw-content)
+            }
+
+            .first\:rounded-l-md:first-child {
+              border-top-left-radius: calc(var(--radius) - 2px);
+              border-bottom-left-radius: calc(var(--radius) - 2px)
+            }
+
+            .first\:border-l:first-child {
+              border-left-style: var(--tw-border-style);
+              border-left-width: 1px
+            }
+
+            .last\:rounded-r-md:last-child {
+              border-top-right-radius: calc(var(--radius) - 2px);
+              border-bottom-right-radius: calc(var(--radius) - 2px)
+            }
+
+            .last\:border-b-0:last-child {
+              border-bottom-style: var(--tw-border-style);
+              border-bottom-width: 0
+            }
+
+            @media (hover:hover) {
+              .hover\:bg-accent:hover {
+                background-color: var(--accent)
+              }
+
+              .hover\:bg-background:hover {
+                background-color: var(--background)
+              }
+
+              .hover\:bg-destructive\/90:hover {
+                background-color: color-mix(in oklab, var(--destructive)90%, transparent)
+              }
+
+              .hover\:bg-gray-500:hover {
+                background-color: var(--color-gray-500)
+              }
+
+              .hover\:bg-gray-800:hover {
+                background-color: var(--color-gray-800)
+              }
+
+              .hover\:bg-muted\/50:hover {
+                background-color: color-mix(in oklab, var(--muted)50%, transparent)
+              }
+
+              .hover\:bg-primary\/90:hover {
+                background-color: color-mix(in oklab, var(--primary)90%, transparent)
+              }
+
+              .hover\:bg-secondary\/80:hover {
+                background-color: color-mix(in oklab, var(--secondary)80%, transparent)
+              }
+
+              .hover\:text-accent-foreground:hover {
+                color: var(--accent-foreground)
+              }
+
+              .hover\:text-gray-400:hover {
+                color: var(--color-gray-400)
+              }
+
+              .hover\:underline:hover {
+                text-decoration-line: underline
+              }
+
+              .hover\:opacity-100:hover {
+                opacity: 1
+              }
+            }
+
+            .focus\:bg-accent:focus {
+              background-color: var(--accent)
+            }
+
+            .focus\:bg-white:focus {
+              background-color: var(--color-white)
+            }
+
+            .focus\:text-accent-foreground:focus {
+              color: var(--accent-foreground)
+            }
+
+            .focus\:ring-2:focus {
+              --tw-ring-shadow: var(--tw-ring-inset, )0 0 0 calc(2px + var(--tw-ring-offset-width))var(--tw-ring-color, currentColor);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .focus\:ring-blue-300:focus {
+              --tw-ring-color: var(--color-blue-300)
+            }
+
+            .focus\:ring-ring:focus {
+              --tw-ring-color: var(--ring)
+            }
+
+            .focus\:ring-offset-2:focus {
+              --tw-ring-offset-width: 2px;
+              --tw-ring-offset-shadow: var(--tw-ring-inset, )0 0 0 var(--tw-ring-offset-width)var(--tw-ring-offset-color)
+            }
+
+            .focus\:outline-hidden:focus {
+              --tw-outline-style: none;
+              outline-style: none
+            }
+
+            @media (forced-colors:active) {
+              .focus\:outline-hidden:focus {
+                outline-offset: 2px;
+                outline: 2px solid #0000
+              }
+            }
+
+            .focus\:ring-inset:focus {
+              --tw-ring-inset: inset
+            }
+
+            .focus-visible\:border-ring:focus-visible {
+              border-color: var(--ring)
+            }
+
+            .focus-visible\:ring-\[3px\]:focus-visible {
+              --tw-ring-shadow: var(--tw-ring-inset, )0 0 0 calc(3px + var(--tw-ring-offset-width))var(--tw-ring-color, currentColor);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .focus-visible\:ring-destructive\/20:focus-visible {
+              --tw-ring-color: color-mix(in oklab, var(--destructive)20%, transparent)
+            }
+
+            .focus-visible\:ring-ring\/50:focus-visible {
+              --tw-ring-color: color-mix(in oklab, var(--ring)50%, transparent)
+            }
+
+            .focus-visible\:outline-1:focus-visible {
+              outline-style: var(--tw-outline-style);
+              outline-width: 1px
+            }
+
+            .focus-visible\:outline-ring:focus-visible {
+              outline-color: var(--ring)
+            }
+
+            .disabled\:pointer-events-none:disabled {
+              pointer-events: none
+            }
+
+            .disabled\:cursor-not-allowed:disabled {
+              cursor: not-allowed
+            }
+
+            .disabled\:opacity-50:disabled,
+            .has-disabled\:opacity-50:has(:disabled) {
+              opacity: .5
+            }
+
+            .has-\[\>svg\]\:grid-cols-\[calc\(var\(--spacing\)\*4\)_1fr\]:has(>svg) {
+              grid-template-columns: calc(var(--spacing)*4)1fr
+            }
+
+            .has-\[\>svg\]\:gap-x-3:has(>svg) {
+              column-gap: calc(var(--spacing)*3)
+            }
+
+            .has-\[\>svg\]\:px-2\.5:has(>svg) {
+              padding-inline: calc(var(--spacing)*2.5)
+            }
+
+            .has-\[\>svg\]\:px-3:has(>svg) {
+              padding-inline: calc(var(--spacing)*3)
+            }
+
+            .has-\[\>svg\]\:px-4:has(>svg) {
+              padding-inline: calc(var(--spacing)*4)
+            }
+
+            .aria-invalid\:border-destructive[aria-invalid=true] {
+              border-color: var(--destructive)
+            }
+
+            .aria-invalid\:ring-destructive\/20[aria-invalid=true] {
+              --tw-ring-color: color-mix(in oklab, var(--destructive)20%, transparent)
+            }
+
+            .data-\[active\=true\]\:z-10[data-active=true] {
+              z-index: 10
+            }
+
+            .data-\[active\=true\]\:border-ring[data-active=true] {
+              border-color: var(--ring)
+            }
+
+            .data-\[active\=true\]\:ring-\[3px\][data-active=true] {
+              --tw-ring-shadow: var(--tw-ring-inset, )0 0 0 calc(3px + var(--tw-ring-offset-width))var(--tw-ring-color, currentColor);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .data-\[active\=true\]\:ring-ring\/50[data-active=true] {
+              --tw-ring-color: color-mix(in oklab, var(--ring)50%, transparent)
+            }
+
+            .data-\[active\=true\]\:aria-invalid\:border-destructive[data-active=true][aria-invalid=true] {
+              border-color: var(--destructive)
+            }
+
+            .data-\[active\=true\]\:aria-invalid\:ring-destructive\/20[data-active=true][aria-invalid=true] {
+              --tw-ring-color: color-mix(in oklab, var(--destructive)20%, transparent)
+            }
+
+            .data-\[disabled\]\:pointer-events-none[data-disabled] {
+              pointer-events: none
+            }
+
+            .data-\[disabled\]\:opacity-50[data-disabled] {
+              opacity: .5
+            }
+
+            .data-\[error\=true\]\:text-destructive-foreground[data-error=true] {
+              color: var(--destructive-foreground)
+            }
+
+            .data-\[inset\]\:pl-8[data-inset] {
+              padding-left: calc(var(--spacing)*8)
+            }
+
+            .data-\[orientation\=horizontal\]\:h-px[data-orientation=horizontal] {
+              height: 1px
+            }
+
+            .data-\[orientation\=horizontal\]\:w-full[data-orientation=horizontal] {
+              width: 100%
+            }
+
+            .data-\[orientation\=vertical\]\:h-full[data-orientation=vertical] {
+              height: 100%
+            }
+
+            .data-\[orientation\=vertical\]\:w-px[data-orientation=vertical] {
+              width: 1px
+            }
+
+            .data-\[placeholder\]\:text-muted-foreground[data-placeholder] {
+              color: var(--muted-foreground)
+            }
+
+            .data-\[side\=bottom\]\:translate-y-1[data-side=bottom] {
+              --tw-translate-y: calc(var(--spacing)*1);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .data-\[side\=bottom\]\:slide-in-from-top-2[data-side=bottom] {
+              --tw-enter-translate-y: -8px
+            }
+
+            .data-\[side\=left\]\:-translate-x-1[data-side=left] {
+              --tw-translate-x: calc(var(--spacing)*-1);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .data-\[side\=left\]\:slide-in-from-right-2[data-side=left] {
+              --tw-enter-translate-x: 8px
+            }
+
+            .data-\[side\=right\]\:translate-x-1[data-side=right] {
+              --tw-translate-x: calc(var(--spacing)*1);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .data-\[side\=right\]\:slide-in-from-left-2[data-side=right] {
+              --tw-enter-translate-x: -8px
+            }
+
+            .data-\[side\=top\]\:-translate-y-1[data-side=top] {
+              --tw-translate-y: calc(var(--spacing)*-1);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .data-\[side\=top\]\:slide-in-from-bottom-2[data-side=top] {
+              --tw-enter-translate-y: 8px
+            }
+
+            :is(.\*\:data-\[slot\=alert-description\]\:text-destructive-foreground\/80>*)[data-slot=alert-description] {
+              color: color-mix(in oklab, var(--destructive-foreground)80%, transparent)
+            }
+
+            :is(.\*\:data-\[slot\=select-value\]\:line-clamp-1>*)[data-slot=select-value] {
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              display: -webkit-box;
+              overflow: hidden
+            }
+
+            :is(.\*\:data-\[slot\=select-value\]\:flex>*)[data-slot=select-value] {
+              display: flex
+            }
+
+            :is(.\*\:data-\[slot\=select-value\]\:items-center>*)[data-slot=select-value] {
+              align-items: center
+            }
+
+            :is(.\*\:data-\[slot\=select-value\]\:gap-2>*)[data-slot=select-value] {
+              gap: calc(var(--spacing)*2)
+            }
+
+            .data-\[state\=active\]\:bg-background[data-state=active] {
+              background-color: var(--background)
+            }
+
+            .data-\[state\=active\]\:text-foreground[data-state=active] {
+              color: var(--foreground)
+            }
+
+            .data-\[state\=active\]\:shadow-sm[data-state=active] {
+              --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, #0000001a), 0 1px 2px -1px var(--tw-shadow-color, #0000001a);
+              box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+            }
+
+            .data-\[state\=checked\]\:translate-x-4[data-state=checked] {
+              --tw-translate-x: calc(var(--spacing)*4);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .data-\[state\=checked\]\:border-primary[data-state=checked] {
+              border-color: var(--primary)
+            }
+
+            .data-\[state\=checked\]\:bg-primary[data-state=checked] {
+              background-color: var(--primary)
+            }
+
+            .data-\[state\=checked\]\:text-primary-foreground[data-state=checked] {
+              color: var(--primary-foreground)
+            }
+
+            .data-\[state\=closed\]\:animate-accordion-up[data-state=closed] {
+              animation: .2s ease-out accordion-up
+            }
+
+            .data-\[state\=closed\]\:animate-out[data-state=closed] {
+              --tw-exit-opacity: initial;
+              --tw-exit-scale: initial;
+              --tw-exit-rotate: initial;
+              --tw-exit-translate-x: initial;
+              --tw-exit-translate-y: initial;
+              animation-name: exit;
+              animation-duration: .15s
+            }
+
+            .data-\[state\=closed\]\:fade-out-0[data-state=closed] {
+              --tw-exit-opacity: 0
+            }
+
+            .data-\[state\=closed\]\:zoom-out-95[data-state=closed] {
+              --tw-exit-scale: .95
+            }
+
+            .data-\[state\=open\]\:animate-accordion-down[data-state=open] {
+              animation: .2s ease-out accordion-down
+            }
+
+            .data-\[state\=open\]\:bg-accent[data-state=open] {
+              background-color: var(--accent)
+            }
+
+            .data-\[state\=open\]\:text-accent-foreground[data-state=open] {
+              color: var(--accent-foreground)
+            }
+
+            .data-\[state\=open\]\:text-muted-foreground[data-state=open] {
+              color: var(--muted-foreground)
+            }
+
+            .data-\[state\=open\]\:animate-in[data-state=open] {
+              --tw-enter-opacity: initial;
+              --tw-enter-scale: initial;
+              --tw-enter-rotate: initial;
+              --tw-enter-translate-x: initial;
+              --tw-enter-translate-y: initial;
+              animation-name: enter;
+              animation-duration: .15s
+            }
+
+            .data-\[state\=open\]\:fade-in-0[data-state=open] {
+              --tw-enter-opacity: 0
+            }
+
+            .data-\[state\=open\]\:zoom-in-95[data-state=open] {
+              --tw-enter-scale: .95
+            }
+
+            .data-\[state\=selected\]\:bg-muted[data-state=selected] {
+              background-color: var(--muted)
+            }
+
+            .data-\[state\=unchecked\]\:translate-x-0[data-state=unchecked] {
+              --tw-translate-x: calc(var(--spacing)*0);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .data-\[state\=unchecked\]\:bg-input[data-state=unchecked] {
+              background-color: var(--input)
+            }
+
+            .data-\[variant\=destructive\]\:text-destructive-foreground[data-variant=destructive] {
+              color: var(--destructive-foreground)
+            }
+
+            .data-\[variant\=destructive\]\:focus\:bg-destructive\/10[data-variant=destructive]:focus {
+              background-color: color-mix(in oklab, var(--destructive)10%, transparent)
+            }
+
+            .data-\[variant\=destructive\]\:focus\:text-destructive-foreground[data-variant=destructive]:focus {
+              color: var(--destructive-foreground)
+            }
+
+            @media (width>=40rem) {
+              .sm\:max-w-lg {
+                max-width: var(--container-lg)
+              }
+
+              .sm\:flex-row {
+                flex-direction: row
+              }
+
+              .sm\:justify-end {
+                justify-content: flex-end
+              }
+
+              .sm\:text-left {
+                text-align: left
+              }
+            }
+
+            @media (width>=48rem) {
+              .md\:text-sm {
+                font-size: var(--text-sm);
+                line-height: var(--tw-leading, var(--text-sm--line-height))
+              }
+            }
+
+            .dark\:focus-visible\:ring-destructive\/40:is(.dark *):focus-visible,
+            .dark\:aria-invalid\:ring-destructive\/40:is(.dark *)[aria-invalid=true],
+            .dark\:data-\[active\=true\]\:aria-invalid\:ring-destructive\/40:is(.dark *)[data-active=true][aria-invalid=true] {
+              --tw-ring-color: color-mix(in oklab, var(--destructive)40%, transparent)
+            }
+
+            .dark\:data-\[variant\=destructive\]\:focus\:bg-destructive\/40:is(.dark *)[data-variant=destructive]:focus {
+              background-color: color-mix(in oklab, var(--destructive)40%, transparent)
+            }
+
+            .\[\&_p\]\:leading-relaxed p {
+              --tw-leading: var(--leading-relaxed);
+              line-height: var(--leading-relaxed)
+            }
+
+            .\[\&_svg\]\:pointer-events-none svg {
+              pointer-events: none
+            }
+
+            .\[\&_svg\]\:shrink-0 svg {
+              flex-shrink: 0
+            }
+
+            .\[\&_svg\:not\(\[class\*\=\'size-\'\]\)\]\:size-4 svg:not([class*=size-]) {
+              width: calc(var(--spacing)*4);
+              height: calc(var(--spacing)*4)
+            }
+
+            .\[\&_svg\:not\(\[class\*\=\'text-\'\]\)\]\:text-muted-foreground svg:not([class*=text-]) {
+              color: var(--muted-foreground)
+            }
+
+            .\[\&_tr\]\:border-b tr {
+              border-bottom-style: var(--tw-border-style);
+              border-bottom-width: 1px
+            }
+
+            .\[\&_tr\:last-child\]\:border-0 tr:last-child {
+              border-style: var(--tw-border-style);
+              border-width: 0
+            }
+
+            .\[\&\:has\(\[role\=checkbox\]\)\]\:pr-0:has([role=checkbox]) {
+              padding-right: calc(var(--spacing)*0)
+            }
+
+            :is(.\*\:\[span\]\:last\:flex>*):is(span):last-child {
+              display: flex
+            }
+
+            :is(.\*\:\[span\]\:last\:items-center>*):is(span):last-child {
+              align-items: center
+            }
+
+            :is(.\*\:\[span\]\:last\:gap-2>*):is(span):last-child {
+              gap: calc(var(--spacing)*2)
+            }
+
+            :is(.data-\[variant\=destructive\]\:\*\:\[svg\]\:\!text-destructive-foreground[data-variant=destructive]>*):is(svg) {
+              color: var(--destructive-foreground) !important
+            }
+
+            .\[\&\>\[role\=checkbox\]\]\:translate-y-\[2px\]>[role=checkbox] {
+              --tw-translate-y: 2px;
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .\[\&\>svg\]\:pointer-events-none>svg {
+              pointer-events: none
+            }
+
+            .\[\&\>svg\]\:size-3>svg {
+              width: calc(var(--spacing)*3);
+              height: calc(var(--spacing)*3)
+            }
+
+            .\[\&\>svg\]\:size-4>svg {
+              width: calc(var(--spacing)*4);
+              height: calc(var(--spacing)*4)
+            }
+
+            .\[\&\>svg\]\:translate-y-0\.5>svg {
+              --tw-translate-y: calc(var(--spacing)*.5);
+              translate: var(--tw-translate-x)var(--tw-translate-y)
+            }
+
+            .\[\&\>svg\]\:text-current>svg {
+              color: currentColor
+            }
+
+            .\[\&\>tr\]\:last\:border-b-0>tr:last-child {
+              border-bottom-style: var(--tw-border-style);
+              border-bottom-width: 0
+            }
+
+            .\[\&\[data-state\=open\]\>svg\]\:rotate-180[data-state=open]>svg {
+              rotate: 180deg
+            }
+
+            @media (hover:hover) {
+              a.\[a\&\]\:hover\:bg-accent:hover {
+                background-color: var(--accent)
+              }
+
+              a.\[a\&\]\:hover\:bg-destructive\/90:hover {
+                background-color: color-mix(in oklab, var(--destructive)90%, transparent)
+              }
+
+              a.\[a\&\]\:hover\:bg-primary\/90:hover {
+                background-color: color-mix(in oklab, var(--primary)90%, transparent)
+              }
+
+              a.\[a\&\]\:hover\:bg-secondary\/90:hover {
+                background-color: color-mix(in oklab, var(--secondary)90%, transparent)
+              }
+
+              a.\[a\&\]\:hover\:text-accent-foreground:hover {
+                color: var(--accent-foreground)
+              }
+            }
+          }
+
+          :host {
+            --background: oklch(1 0 0);
+            --foreground: oklch(.145 0 0);
+            --card: oklch(1 0 0);
+            --card-foreground: oklch(.145 0 0);
+            --popover: oklch(1 0 0);
+            --popover-foreground: oklch(.145 0 0);
+            --primary: oklch(.205 0 0);
+            --primary-foreground: oklch(.985 0 0);
+            --secondary: oklch(.97 0 0);
+            --secondary-foreground: oklch(.205 0 0);
+            --muted: oklch(.97 0 0);
+            --muted-foreground: oklch(.556 0 0);
+            --accent: oklch(.97 0 0);
+            --accent-foreground: oklch(.205 0 0);
+            --destructive: oklch(.577 .245 27.325);
+            --destructive-foreground: oklch(.577 .245 27.325);
+            --border: oklch(.922 0 0);
+            --input: oklch(.922 0 0);
+            --ring: oklch(.708 0 0);
+            --chart-1: oklch(.646 .222 41.116);
+            --chart-2: oklch(.6 .118 184.704);
+            --chart-3: oklch(.398 .07 227.392);
+            --chart-4: oklch(.828 .189 84.429);
+            --chart-5: oklch(.769 .188 70.08);
+            --radius: 10px;
+            --sidebar: oklch(.985 0 0);
+            --sidebar-foreground: oklch(.145 0 0);
+            --sidebar-primary: oklch(.205 0 0);
+            --sidebar-primary-foreground: oklch(.985 0 0);
+            --sidebar-accent: oklch(.97 0 0);
+            --sidebar-accent-foreground: oklch(.205 0 0);
+            --sidebar-border: oklch(.922 0 0);
+            --sidebar-ring: oklch(.708 0 0)
+          }
+
+          .dark {
+            --background: oklch(.145 0 0);
+            --foreground: oklch(.985 0 0);
+            --card: oklch(.145 0 0);
+            --card-foreground: oklch(.985 0 0);
+            --popover: oklch(.145 0 0);
+            --popover-foreground: oklch(.985 0 0);
+            --primary: oklch(.985 0 0);
+            --primary-foreground: oklch(.205 0 0);
+            --secondary: oklch(.269 0 0);
+            --secondary-foreground: oklch(.985 0 0);
+            --muted: oklch(.269 0 0);
+            --muted-foreground: oklch(.708 0 0);
+            --accent: oklch(.269 0 0);
+            --accent-foreground: oklch(.985 0 0);
+            --destructive: oklch(.396 .141 25.723);
+            --destructive-foreground: oklch(.637 .237 25.331);
+            --border: oklch(.269 0 0);
+            --input: oklch(.269 0 0);
+            --ring: oklch(.556 0 0);
+            --chart-1: oklch(.488 .243 264.376);
+            --chart-2: oklch(.696 .17 162.48);
+            --chart-3: oklch(.769 .188 70.08);
+            --chart-4: oklch(.627 .265 303.9);
+            --chart-5: oklch(.645 .246 16.439);
+            --sidebar: oklch(.205 0 0);
+            --sidebar-foreground: oklch(.985 0 0);
+            --sidebar-primary: oklch(.488 .243 264.376);
+            --sidebar-primary-foreground: oklch(.985 0 0);
+            --sidebar-accent: oklch(.269 0 0);
+            --sidebar-accent-foreground: oklch(.985 0 0);
+            --sidebar-border: oklch(.269 0 0);
+            --sidebar-ring: oklch(.439 0 0)
+          }
+
+          @keyframes enter {
+            0% {
+              opacity: var(--tw-enter-opacity, 1);
+              transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1))rotate(var(--tw-enter-rotate, 0))
+            }
+          }
+
+          @keyframes exit {
+            to {
+              opacity: var(--tw-exit-opacity, 1);
+              transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0)scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1))rotate(var(--tw-exit-rotate, 0))
+            }
+          }
+
+          @property --tw-translate-x {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0
+          }
+
+          @property --tw-translate-y {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0
+          }
+
+          @property --tw-translate-z {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0
+          }
+
+          @property --tw-rotate-x {
+            syntax: "*";
+            inherits: false;
+            initial-value: rotateX(0)
+          }
+
+          @property --tw-rotate-y {
+            syntax: "*";
+            inherits: false;
+            initial-value: rotateY(0)
+          }
+
+          @property --tw-rotate-z {
+            syntax: "*";
+            inherits: false;
+            initial-value: rotateZ(0)
+          }
+
+          @property --tw-skew-x {
+            syntax: "*";
+            inherits: false;
+            initial-value: skewX(0)
+          }
+
+          @property --tw-skew-y {
+            syntax: "*";
+            inherits: false;
+            initial-value: skewY(0)
+          }
+
+          @property --tw-space-y-reverse {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0
+          }
+
+          @property --tw-space-x-reverse {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0
+          }
+
+          @property --tw-border-style {
+            syntax: "*";
+            inherits: false;
+            initial-value: solid
+          }
+
+          @property --tw-leading {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-font-weight {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-tracking {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-shadow {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0 0 #0000
+          }
+
+          @property --tw-shadow-color {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-inset-shadow {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0 0 #0000
+          }
+
+          @property --tw-inset-shadow-color {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-ring-color {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-ring-shadow {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0 0 #0000
+          }
+
+          @property --tw-inset-ring-color {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-inset-ring-shadow {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0 0 #0000
+          }
+
+          @property --tw-ring-inset {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-ring-offset-width {
+            syntax: "<length>";
+            inherits: false;
+            initial-value: 0
+          }
+
+          @property --tw-ring-offset-color {
+            syntax: "*";
+            inherits: false;
+            initial-value: #fff
+          }
+
+          @property --tw-ring-offset-shadow {
+            syntax: "*";
+            inherits: false;
+            initial-value: 0 0 #0000
+          }
+
+          @property --tw-outline-style {
+            syntax: "*";
+            inherits: false;
+            initial-value: solid
+          }
+
+          @property --tw-duration {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-ease {
+            syntax: "*";
+            inherits: false
+          }
+
+          @property --tw-content {
+            syntax: "*";
+            inherits: false;
+            initial-value: ""
+          }
+
+          @keyframes spin {
+            to {
+              transform: rotate(360deg)
+            }
+          }
+
+          @keyframes pulse {
+            50% {
+              opacity: .5
+            }
+          }
+
+          @keyframes accordion-down {
+            0% {
+              height: 0
+            }
+
+            to {
+              height: var(--radix-accordion-content-height)
+            }
+          }
+
+          @keyframes accordion-up {
+            0% {
+              height: var(--radix-accordion-content-height)
+            }
+
+            to {
+              height: 0
+            }
+          }
+
+          @keyframes caret-blink {
+
+            0%,
+            70%,
+            to {
+              opacity: 1
+            }
+
+            20%,
+            50% {
+              opacity: 0
+            }
+          }
+        </style>
+      </head>
+
+      <body>
+        <div></div>
+      </body>
+
+      </html>
+    </template></browser-mcp-container><iframe id="intercom-frame"
+    style="position: absolute !important; opacity: 0 !important; width: 1px !important; height: 1px !important; top: 0 !important; left: 0 !important; border: none !important; display: block !important; z-index: -1 !important; pointer-events: none;"
+    aria-hidden="true" tabindex="-1" title="Intercom"></iframe>
+  <div class="intercom-lightweight-app">
+    <style id="intercom-lightweight-app-style" type="text/css">
+      @keyframes intercom-lightweight-app-launcher {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes intercom-lightweight-app-gradient {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes intercom-lightweight-app-messenger {
+        0% {
+          opacity: 0;
+          transform: scale(0);
+        }
+
+        40% {
+          opacity: 1;
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .intercom-lightweight-app {
+        position: fixed;
+        z-index: 2147483001;
+        width: 0;
+        height: 0;
+        font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      }
+
+      .intercom-lightweight-app-gradient {
+        position: fixed;
+        z-index: 2147483002;
+        width: 500px;
+        height: 500px;
+        bottom: 0;
+        right: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse at bottom right,
+            rgba(29, 39, 54, 0.16) 0%,
+            rgba(29, 39, 54, 0) 72%);
+        animation: intercom-lightweight-app-gradient 200ms ease-out;
+      }
+
+      .intercom-lightweight-app-launcher {
+        position: fixed;
+        z-index: 2147483003;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none;
+        bottom: 20px;
+        right: 20px;
+        max-width: 48px;
+        width: 48px;
+        max-height: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #0099CC;
+        cursor: pointer;
+        box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06), 0 2px 32px 0 rgba(0, 0, 0, 0.16);
+        transition: transform 167ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+        box-sizing: content-box;
+      }
+
+
+      .intercom-lightweight-app-launcher:hover {
+        transition: transform 250ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+        transform: scale(1.1)
+      }
+
+      .intercom-lightweight-app-launcher:active {
+        transform: scale(0.85);
+        transition: transform 134ms cubic-bezier(0.45, 0, 0.2, 1);
+      }
+
+
+      .intercom-lightweight-app-launcher:focus {
+        outline: none;
+
+
+      }
+
+      .intercom-lightweight-app-launcher-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 48px;
+        height: 48px;
+        transition: transform 100ms linear, opacity 80ms linear;
+      }
+
+      .intercom-lightweight-app-launcher-icon-open {
+
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+
+      }
+
+      .intercom-lightweight-app-launcher-icon-open svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .intercom-lightweight-app-launcher-icon-open svg path {
+        fill: rgb(255, 255, 255);
+      }
+
+      .intercom-lightweight-app-launcher-icon-self-serve {
+
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+
+      }
+
+      .intercom-lightweight-app-launcher-icon-self-serve svg {
+        height: 44px;
+      }
+
+      .intercom-lightweight-app-launcher-icon-self-serve svg path {
+        fill: rgb(255, 255, 255);
+      }
+
+      .intercom-lightweight-app-launcher-custom-icon-open {
+        max-height: 24px;
+        max-width: 24px;
+
+
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+
+      }
+
+      .intercom-lightweight-app-launcher-icon-minimize {
+
+        opacity: 0;
+        transform: rotate(-60deg) scale(0);
+
+      }
+
+      .intercom-lightweight-app-launcher-icon-minimize svg path {
+        fill: rgb(255, 255, 255);
+      }
+
+      /* Extended launcher styles */
+      .intercom-lightweight-app-launcher.intercom-launcher-extended {
+        width: calc(180px - 30px);
+        max-width: calc(180px - 30px);
+        height: calc(45px - 26px);
+        max-height: calc(45px - 26px);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 12px 16px 12px 12px !important;
+        gap: 6px;
+        /* Use theme background instead of hardcoded gradient */
+        background: #0099CC;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0px -2px 50px rgba(0, 0, 0, 0.1);
+
+      }
+
+      .intercom-lightweight-app-launcher.intercom-launcher-extended .intercom-lightweight-app-launcher-icon {
+        position: relative;
+        width: 24px;
+        height: 24px;
+      }
+
+      .intercom-lightweight-app-launcher-text {
+        /* Match text color with launcher icon */
+        color: rgb(255, 255, 255);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 140px;
+        opacity: 1;
+        transition: opacity 80ms linear;
+      }
+
+      .intercom-lightweight-app-messenger {
+        position: fixed;
+        z-index: 2147483003;
+        overflow: hidden;
+        background-color: #ffffff;
+        animation: intercom-lightweight-app-messenger 250ms cubic-bezier(0, 1, 1, 1);
+        transform-origin: bottom right;
+
+
+        width: 400px;
+        height: calc(100% - 40px);
+        max-height: 704px;
+        min-height: 250px;
+        right: 20px;
+        bottom: 20px;
+        box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+
+
+        border-radius: 24px;
+      }
+
+      .intercom-lightweight-app-messenger-header {
+        height: 64px;
+        border-bottom: none;
+        background: #ffffff;
+      }
+
+      .intercom-lightweight-app-messenger-footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 80px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 21px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.05);
+      }
+
+      @media print {
+        .intercom-lightweight-app {
+          display: none;
+        }
+      }
+    </style>
+  </div>
+</body>

@@ -160,7 +160,7 @@
 
     #user-profile-btn {
       margin-top: auto;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border-300);
       border-radius: 0;
       width: 100%;
     }
@@ -340,7 +340,7 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 8px;
+      padding: 0;
     }
 
     .sessions-list {
@@ -353,7 +353,7 @@
       justify-content: flex-start;
       align-items: center;
       height: 36px;
-      padding: 0 8px;
+      padding: 0;
       border-radius: var(--radius-md);
       cursor: pointer;
       transition: background var(--transition);
@@ -382,7 +382,7 @@
       white-space: nowrap;
       font-size: 0.875rem;
       color: var(--text-primary);
-      margin-left: 8px;
+      margin-left: 0;
     }
 
     .session-item .delete-session {
@@ -1577,32 +1577,30 @@
 
   <!-- Expanded Sidebar -->
   <aside class="sessions-sidebar collapsed" id="sessions-sidebar">
-    <!-- Header spacer to align with toggle button -->
-    <div style="height: 44px; padding: 4px 8px; display: flex; align-items: center;">
-      <!-- Empty - aligns with toggle button -->
-    </div>
+    <!-- Header spacer - matches icon rail top padding (8px) + toggle button (36px) -->
+    <div style="height: 44px; padding: 8px; display: flex; align-items: center;"></div>
 
-    <!-- New Chat button (aligns with new chat icon in rail) -->
-    <div style="padding: 0 8px;">
+    <!-- New Chat button - aligns with rail new chat button (48px from top) -->
+    <div style="padding: 0 8px; margin-top: 4px;">
       <button class="sidebar-action-btn" id="new-session-btn-expanded" onclick="createNewSession()" title="New Chat">
         <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
         <span>New Chat</span>
       </button>
     </div>
 
-    <!-- Search label (aligns with search icon in rail) -->
+    <!-- Search label - aligns with rail search icon (88px from top) -->
     <div style="padding: 0 8px; margin-top: 4px;">
       <span class="sidebar-nav-text">Search</span>
     </div>
 
     <!-- Sessions list container -->
-    <div class="sessions-list-container" style="padding-top: 8px;">
+    <div class="sessions-list-container">
       <div id="sessions-list" class="sessions-list">
         <!-- Sessions loaded dynamically -->
       </div>
     </div>
 
-    <!-- Sidebar Footer -->
+    <!-- Sidebar Footer - aligns with user avatar in rail -->
     <div class="sidebar-footer" style="padding: 8px;">
       <span id="username-display" class="username" style="font-size: 0.875rem;">Loading...</span>
       <a href="/logout" style="font-size: 0.75rem;">Logout</a>
