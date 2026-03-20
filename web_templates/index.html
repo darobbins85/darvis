@@ -1553,15 +1553,15 @@
     <button class="icon-btn" id="sidebar-toggle" title="Toggle Sidebar">
       <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4.5A.5.5 0 0 1 2.5 4h15a.5.5 0 0 1 0 1H2.5a.5.5 0 0 1-.5-.5M2 10a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15A.5.5 0 0 1 2 10m.5 5.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-15"/></svg>
     </button>
-    
-    <!-- Search -->
-    <button class="icon-btn" id="search-btn" title="Search">
-      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 2a6.5 6.5 0 0 1 4.935 10.728l4.419 4.419.064.078a.5.5 0 0 1-.693.693l-.079-.064-4.419-4.42A6.5 6.5 0 1 1 8.5 2m0 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11"/></svg>
-    </button>
-    
+     
     <!-- New Chat -->
     <button class="icon-btn" id="new-session-btn" title="New Chat">
       <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
+    </button>
+     
+    <!-- Search -->
+    <button class="icon-btn" id="search-btn" title="Search">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 2a6.5 6.5 0 0 1 4.935 10.728l4.419 4.419.064.078a.5.5 0 0 1-.693.693l-.079-.064-4.419-4.42A6.5 6.5 0 1 1 8.5 2m0 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11"/></svg>
     </button>
     
     <!-- Sessions in Rail -->
@@ -1583,7 +1583,7 @@
     </div>
 
     <!-- New Chat button (aligns with new chat icon in rail) -->
-    <div style="padding: 0 8px; margin-bottom: 4px;">
+    <div style="padding: 0 8px;">
       <button class="sidebar-action-btn" id="new-session-btn-expanded" onclick="createNewSession()" title="New Chat">
         <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 .077 1.496l-.077.004h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3"/></svg>
         <span>New Chat</span>
@@ -1591,12 +1591,12 @@
     </div>
 
     <!-- Search label (aligns with search icon in rail) -->
-    <div style="padding: 0 8px;">
+    <div style="padding: 0 8px; margin-top: 4px;">
       <span class="sidebar-nav-text">Search</span>
     </div>
 
     <!-- Sessions list container -->
-    <div class="sessions-list-container">
+    <div class="sessions-list-container" style="padding-top: 8px;">
       <div id="sessions-list" class="sessions-list">
         <!-- Sessions loaded dynamically -->
       </div>
