@@ -675,6 +675,8 @@ class DarvisGUI:
         if not getattr(self, "web_sync_enabled", False):
             self.display_message(f"AI: {response}\n")
             self.display_message("─" * 50 + "\n")
+        else:
+            self.send_to_web(f"AI: {response}")
 
         # Update waybar status to speaking and speak the response
         try:

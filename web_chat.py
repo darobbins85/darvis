@@ -40,7 +40,7 @@ from flask import (
     request,
     jsonify,
 )
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room
 from flask_login import (
     LoginManager,
     UserMixin,
@@ -57,7 +57,8 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 # Import darvis modules
-from darvis.ai import process_ai_query
+from darvis.ai import process_ai_query, get_available_ollama_models, set_ai_backend
+import darvis.ai as darvis_ai
 from darvis.apps import open_app
 from darvis.waybar_status import update_waybar_status
 from darvis.config import DARVIS_MODE, WEB_APP_HOST, WEB_APP_PORT
@@ -309,12 +310,35 @@ def get_session_messages_api(session_id):
     return jsonify({"error": "Not found"}), 404
 
 
+@app.route("/api/ai/models")
+@login_required
+def get_ai_models():
+    """Return available Ollama models and the current active backend/model."""
+    return jsonify({
+        "backend": darvis_ai.AI_BACKEND,
+        "claude_model": darvis_ai.CLAUDE_MODEL,
+        "ollama_model": darvis_ai.OLLAMA_MODEL,
+        "ollama_models": get_available_ollama_models(),
+    })
+
+
+@app.route("/api/ai/backend", methods=["POST"])
+@login_required
+def set_ai_backend_api():
+    """Set the active AI backend and optional Ollama model."""
+    data = request.get_json()
+    backend = data.get("backend", "claude")
+    model = data.get("model")
+    set_ai_backend(backend, model)
+    return jsonify({"success": True, "backend": backend, "model": model})
+
+
 @socketio.on("connect")
 def handle_connect():
     """Handle client connection."""
     user_id = session.get("user_id")
     if user_id:
-        # Join user-specific room for isolated messaging
+        join_room(f"user_{user_id}")
         socketio.emit("join_room", {"room": f"user_{user_id}"}, to=request.sid)
         print(f"Client connected and joined room: user_{user_id}")
     else:
@@ -323,12 +347,6 @@ def handle_connect():
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    """Handle client disconnection."""
-    print("Client disconnected")
-
-
-@socketio.on("disconnect")
-def handle_disconnect_wrapper():
     """Handle client disconnection."""
     print("Client disconnected")
 
@@ -360,11 +378,13 @@ def handle_message(data):
             return
 
     # Emit the user message ONLY to this user's room
+    print(f"DEBUG: Emitting user_message to user_{user_id} with session_id={session_id}")
     socketio.emit(
         "user_message",
         {"message": message, "session_id": session_id},
         to=f"user_{user_id}",
     )
+    print(f"DEBUG: user_message emitted")
 
     # Signal AI processing start (red eyes) - ONLY to this user
     socketio.emit("ai_processing", {"session_id": session_id}, to=f"user_{user_id}")
@@ -448,6 +468,7 @@ def handle_message(data):
 
             # Save assistant message
             add_message(session_id, "assistant", response)
+            print(f"DEBUG: assistant message saved to DB, emitting ai_message to user_{user_id} with session_id={session_id}")
 
             # Emit ONLY to this user's room
             socketio.emit(
@@ -455,6 +476,7 @@ def handle_message(data):
                 {"message": response, "session_id": session_id},
                 to=f"user_{user_id}",
             )
+            print(f"DEBUG: ai_message emit complete")
 
         except Exception as e:
             error_msg = f"Error: {str(e)}"

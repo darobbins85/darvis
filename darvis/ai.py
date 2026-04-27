@@ -2,121 +2,107 @@
 AI integration and intelligent response functionality.
 """
 
-import os
 import subprocess
 from typing import Tuple
 
 # Global conversation state
 conversation_history = []
-current_session_id = None
-current_ai_process = None  # Track the current AI subprocess for cancellation
+current_ai_process = None
+
+CLAUDE_MODEL = "claude-sonnet-4-6"
+AI_BACKEND = "claude"   # "claude" | "ollama"
+OLLAMA_MODEL = None     # active Ollama model name when backend is "ollama"
 
 
-def _get_opencode_cmd() -> str:
-    """Get the opencode command, checking PATH and common locations."""
-    # First try PATH
-    result = subprocess.run(["which", "opencode"], capture_output=True, text=True)
-    if result.returncode == 0:
-        return "opencode"
-
-    # Try home directory location
-    home_opencode = os.path.expanduser("~/.opencode/bin/opencode")
-    if os.path.isfile(home_opencode) and os.access(home_opencode, os.X_OK):
-        return home_opencode
-
-    # Fall back to PATH
-    return "opencode"
-
-
-# Get the opencode command once at module load
-OPENCODE_CMD = _get_opencode_cmd()
-
-
-def get_latest_session_id() -> str:
-    """Extract the latest session ID from opencode session list."""
+def get_available_ollama_models() -> list:
+    """Return model names from `ollama ls`, empty list on failure."""
     try:
         result = subprocess.run(
-            [OPENCODE_CMD, "session", "list"], capture_output=True, text=True, timeout=10
+            ["ollama", "ls"], capture_output=True, text=True, timeout=10
         )
+        if result.returncode != 0:
+            return []
+        lines = result.stdout.strip().split("\n")
+        models = []
+        for line in lines[1:]:   # skip header row
+            parts = line.split()
+            if parts:
+                models.append(parts[0])
+        return models
+    except Exception:
+        return []
 
-        if result.returncode == 0 and result.stdout:
-            # Parse the session list output
-            lines = result.stdout.strip().split("\n")
-            # Skip header (line 0) and separator (line 1), get first data line
-            if len(lines) >= 3:  # Need header, separator, and at least one data line
-                # Get the first data line (most recent session)
-                first_data_line = lines[2].strip()
-                if first_data_line and not first_data_line.startswith("─"):
-                    session_id = first_data_line.split()[0]
-                    print(f"DEBUG: Extracted session ID: {session_id}")
-                    return session_id
 
-        return ""
-    except Exception as e:
-        print(f"DEBUG: Error getting session ID: {e}")
-        return ""
+def set_ai_backend(backend: str, model: str = None) -> None:
+    """Switch the active AI backend.  backend: 'claude' | 'ollama'"""
+    global AI_BACKEND, OLLAMA_MODEL
+    AI_BACKEND = backend
+    OLLAMA_MODEL = model
 
 
 def process_ai_query(query: str) -> Tuple[str, str]:
     """
     Process a query using AI assistance.
 
+    Uses the Claude CLI directly when AI_BACKEND == 'claude', or
+    `ollama launch claude` with the selected Ollama model otherwise.
+
     Args:
         query: The user's query to process
 
     Returns:
-        Tuple of (response_text, session_id)
+        Tuple of (response_text, session_marker)
     """
-    global current_session_id, current_ai_process
+    global current_ai_process
+
+    is_first = len(conversation_history) == 0
+    conversation_history.append(query)
 
     try:
-        if current_session_id is None:
-            # First query: start new session with darvis agent
-            command = [OPENCODE_CMD, "run", "--agent", "darvis", query]
-            print(f"DEBUG: Executing command: {' '.join(command)}")
-            current_ai_process = subprocess.Popen(
-                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-            )
-            try:
-                stdout, stderr = current_ai_process.communicate(timeout=300)
-                result = subprocess.CompletedProcess(
-                    command, current_ai_process.returncode, stdout, stderr
-                )
-            finally:
-                current_ai_process = None
-            response = (result.stdout or "").strip() or "No response"
-
-            # Get the session ID (this would need proper implementation)
-            current_session_id = get_latest_session_id()
-            print(f"DEBUG: New session ID: {current_session_id}")
-
-            return response, current_session_id or ""
+        if AI_BACKEND == "ollama" and OLLAMA_MODEL:
+            base = ["ollama", "launch", "claude", "--model", OLLAMA_MODEL, "--yes", "--"]
+            command = base + (["-p", query] if is_first else ["-c", "-p", query])
         else:
-            # Subsequent queries: continue the last session with @darvis prefix
-            # This ensures the session continues with the darvis agent
-            darvis_query = f"@darvis {query}"
-            command = [OPENCODE_CMD, "run", "--session", current_session_id, darvis_query]
-            print(f"DEBUG: Executing command: {' '.join(command)}")
-            current_ai_process = subprocess.Popen(
-                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            command = (
+                ["claude", "--model", CLAUDE_MODEL, "-p", query]
+                if is_first
+                else ["claude", "--model", CLAUDE_MODEL, "-c", "-p", query]
             )
-            try:
-                stdout, stderr = current_ai_process.communicate(timeout=300)
-                result = subprocess.CompletedProcess(
-                    command, current_ai_process.returncode, stdout, stderr
-                )
-                if stderr:
-                    print(f"DEBUG: stderr: {stderr}")
-            finally:
-                current_ai_process = None
-            response = (result.stdout or "").strip() or "No response"
-            print(f"DEBUG: Response: {response[:100]}...")
-            return response, current_session_id
+
+        print(f"DEBUG: Executing command: {' '.join(command)}")
+        current_ai_process = subprocess.Popen(
+            command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True
+        )
+        print("DEBUG: process started, waiting for output...")
+        try:
+            stdout, stderr = current_ai_process.communicate(timeout=60)
+            print(f"DEBUG: process completed with returncode={current_ai_process.returncode}")
+            print(f"DEBUG: stdout len={len(stdout) if stdout else 0}, stderr len={len(stderr) if stderr else 0}")
+            print(f"DEBUG: stdout={repr(stdout[:500]) if stdout else 'empty'}")
+            print(f"DEBUG: stderr={repr(stderr[:500]) if stderr else 'empty'}")
+            result = subprocess.CompletedProcess(
+                command, current_ai_process.returncode, stdout, stderr
+            )
+        except subprocess.TimeoutExpired:
+            print("DEBUG: process timed out, killing...")
+            current_ai_process.kill()
+            stdout, stderr = current_ai_process.communicate()
+            print(f"DEBUG: killed process, got stdout={stdout[:200] if stdout else 'none'}")
+            return "AI query timed out", ""
+        finally:
+            current_ai_process = None
+
+        if result.returncode != 0 and stderr:
+            print(f"DEBUG: stderr: {stderr}")
+
+        response = (result.stdout or "").strip() or "No response"
+        return response, AI_BACKEND
 
     except subprocess.TimeoutExpired:
         return "AI query timed out", ""
     except FileNotFoundError:
-        return "AI assistance not available (opencode not found)", ""
+        backend_name = "ollama" if AI_BACKEND == "ollama" else "claude"
+        return f"AI assistance not available ({backend_name} not found)", ""
     except Exception as e:
         return f"AI error: {str(e)}", ""
 
@@ -148,8 +134,7 @@ def cancel_ai_request() -> bool:
 
 def reset_ai_session() -> None:
     """Reset the AI conversation session."""
-    global current_session_id, conversation_history
-    current_session_id = None
+    global conversation_history
     conversation_history = []
     if current_ai_process:
         cancel_ai_request()
