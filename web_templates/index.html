@@ -1687,6 +1687,101 @@
       background: var(--accent-red);
       animation: none;
     }
+
+    /* Model Settings Panel */
+    #model-settings-panel {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: var(--icon-rail-width);
+      transform: translateY(-50%);
+      width: 260px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-300);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      z-index: 200;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    #model-settings-panel.open {
+      display: block;
+    }
+
+    .model-panel-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .model-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.5rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      transition: background var(--transition);
+    }
+
+    .model-option:hover {
+      background: var(--bg-hover);
+    }
+
+    .model-option input[type="radio"] {
+      accent-color: var(--accent);
+    }
+
+    .model-option.active {
+      color: var(--text-primary);
+    }
+
+    #ollama-model-select {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    #ollama-model-select:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .model-panel-footer {
+      margin-top: 0.75rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .model-refresh-btn {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition);
+    }
+
+    .model-refresh-btn:hover {
+      color: var(--text-primary);
+    }
+
+    #model-btn.active {
+      color: var(--accent);
+    }
   </style>
 
 
@@ -1723,6 +1818,14 @@
         <circle cx="12" cy="12" r="10"/>
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
         <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </button>
+
+    <!-- Model Selector -->
+    <button class="icon-btn" id="model-btn" title="AI Model">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     </button>
 
@@ -1768,6 +1871,27 @@
 
   <!-- Mobile sidebar overlay -->
   <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- Model Settings Panel -->
+  <div id="model-settings-panel">
+    <div class="model-panel-title">AI Model</div>
+
+    <label class="model-option" id="opt-claude">
+      <input type="radio" name="ai-backend" value="claude"> Claude (default)
+    </label>
+
+    <label class="model-option" id="opt-ollama">
+      <input type="radio" name="ai-backend" value="ollama"> Ollama model
+    </label>
+
+    <select id="ollama-model-select" disabled>
+      <option value="">-- select model --</option>
+    </select>
+
+    <div class="model-panel-footer">
+      <button class="model-refresh-btn" id="refresh-models-btn">↻ refresh models</button>
+    </div>
+  </div>
 
   <!-- Chat Area -->
   <div class="chat-wrapper">
@@ -1837,6 +1961,13 @@
          Initialization - Socket connection and DOM element references
           ============================================================================= */
       const socket = io();
+      console.log('🔌 SocketIO connecting...');
+      socket.on('connect', () => {
+        console.log('🔌 SocketIO connected, sid:', socket.id);
+      });
+      socket.on('disconnect', (reason) => {
+        console.log('🔌 SocketIO disconnected:', reason);
+      });
       const chatMessages = document.getElementById('chat-messages');
       const messageInput = document.getElementById('message-input');
       const messageForm = document.getElementById('message-form');
@@ -2102,14 +2233,21 @@
          ============================================================================= */
       // Handle incoming user messages (only if belongs to current session)
       socket.on('user_message', (data) => {
+        console.log('💬 user_message received:', data);
         // Only display if no session selected or matches current session
         if (!currentSessionId || data.session_id === currentSessionId) {
           addMessage(data.message, 'user');
         }
       });
 
+      // Handle join room confirmation
+      socket.on('join_room', (data) => {
+        console.log('🔗 join_room received:', data);
+      });
+
       // Handle incoming AI messages (only if belongs to current session)
       socket.on('ai_message', (data) => {
+        console.log('🤖 ai_message received:', data);
         // Only display if no session selected or matches current session
         if (!currentSessionId || data.session_id === currentSessionId) {
           stopAiProcessing();
@@ -2124,6 +2262,79 @@
             }, 1000);
           }
           addMessage(data.message, 'ai');
+        } else {
+          console.log('🤖 ai_message ignored - session mismatch. currentSessionId:', currentSessionId, 'data.session_id:', data.session_id);
+        }
+      });
+
+      /* =============================================================================
+         Model Settings Panel
+         ============================================================================= */
+      const modelBtn = document.getElementById('model-btn');
+      const modelPanel = document.getElementById('model-settings-panel');
+      const ollamaSelect = document.getElementById('ollama-model-select');
+      const refreshModelsBtn = document.getElementById('refresh-models-btn');
+      const backendRadios = document.querySelectorAll('input[name="ai-backend"]');
+
+      async function loadModelSettings() {
+        try {
+          const res = await fetch('/api/ai/models');
+          const data = await res.json();
+
+          // Set radio
+          const radio = document.querySelector(`input[name="ai-backend"][value="${data.backend}"]`);
+          if (radio) radio.checked = true;
+
+          // Populate ollama dropdown
+          ollamaSelect.innerHTML = '<option value="">-- select model --</option>';
+          (data.ollama_models || []).forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = m;
+            if (m === data.ollama_model) opt.selected = true;
+            ollamaSelect.appendChild(opt);
+          });
+
+          ollamaSelect.disabled = data.backend !== 'ollama';
+          modelBtn.classList.toggle('active', data.backend === 'ollama');
+        } catch (e) {
+          console.error('Failed to load model settings:', e);
+        }
+      }
+
+      async function applyBackend(backend, model) {
+        await fetch('/api/ai/backend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ backend, model: model || null }),
+        });
+        modelBtn.classList.toggle('active', backend === 'ollama');
+      }
+
+      backendRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          const backend = radio.value;
+          ollamaSelect.disabled = backend !== 'ollama';
+          const model = backend === 'ollama' ? ollamaSelect.value || null : null;
+          applyBackend(backend, model);
+        });
+      });
+
+      ollamaSelect.addEventListener('change', () => {
+        applyBackend('ollama', ollamaSelect.value || null);
+      });
+
+      refreshModelsBtn.addEventListener('click', loadModelSettings);
+
+      modelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = modelPanel.classList.toggle('open');
+        if (isOpen) loadModelSettings();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!modelPanel.contains(e.target) && e.target !== modelBtn) {
+          modelPanel.classList.remove('open');
         }
       });
 
